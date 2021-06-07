@@ -1,0 +1,743 @@
+package flyspace.ogl;
+
+import flyspace.AbstractMesh;
+import flyspace.MultiMesh;
+import flyspace.Autopilot;
+import flyspace.View;
+import flyspace.FlySpace;
+import flyspace.math.Math3D;
+import flyspace.Space;
+import flyspace.SpaceDebrisPainter;
+import flyspace.ogl32.GL32Mesh;
+import flyspace.ogl32.GL32MeshFactory;
+import flyspace.ogl32.ShaderBank;
+import flyspace.particles.ParticleDriver;
+import flyspace.particles.ParticlePainter;
+import flyspace.ui.Colors;
+import flyspace.ui.Fonts;
+import flyspace.ui.UiPanel;
+import flyspace.ui.panels.CockpitPanel;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+import solarex.ship.Ship;
+import solarex.system.Solar;
+import solarex.system.Vec3;
+
+/**
+ * Isometric map display.
+ * 
+ * @author Hj. Malthaner
+ */
+public class SpacePanel extends UiPanel
+{
+    public static final Logger logger = Logger.getLogger(SpacePanel.class.getName());
+
+    private float mouseSensitivity = 0.0009f;
+    private float speed = 0f;
+
+
+    private View view;
+    
+    private FlySpace game;
+    private final Ship ship;
+    private Space space;
+
+    public int cursorI, cursorJ, cursorN;
+
+    private Texture nebula;
+    private AbstractMesh starsFar;
+    private AbstractMesh starsNear;
+
+    private final ParticleDriver debrisDriver;
+    
+    
+    float far = 100000;
+    private Autopilot autopilot;
+    
+    // Hajo: for selection
+    private int bestMatchDistance;
+    private boolean clicked;
+    
+    // Hajo: view debuging
+    /*
+    private MultiMesh frontTester;
+    private MultiMesh upTester;
+    private MultiMesh rightTester;
+    */
+    
+    public SpacePanel(FlySpace game, Ship ship, Space space) throws IOException
+    {
+        this.game = game;
+        this.ship = ship;
+        this.space = space;
+        this.view = new View();
+        this.debrisDriver = new ParticleDriver(10000);
+        
+        cursorI = -1;
+        cursorJ = -1;
+        cursorN = 9;
+
+        nebula = TextureCache.loadTexture("/flyspace/resources/nebula.png");
+        
+        starsFar = GL32MeshFactory.createStars(1500, 900f);
+        starsFar.bind();
+        starsNear = GL32MeshFactory.createStars(1500, 700f);
+        starsNear.bind();
+        
+        ShaderBank.setupShaders();
+        
+        ParticlePainter painter = new SpaceDebrisPainter();
+        debrisDriver.setPainter(painter);
+        
+        /*
+        GL32Mesh tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.9f, 0.9f);
+        tetra.bind();
+        frontTester = new MultiMesh(tetra);
+
+        tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.9f, 0.1f);
+        tetra.bind();
+        upTester = new MultiMesh(tetra);
+        
+        tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.1f, 0.9f);
+        tetra.bind();
+        rightTester = new MultiMesh(tetra);
+        */
+    }
+    
+    @Override
+    public void activate()
+    {
+        ShaderBank.setupMatrices(width, height - CockpitPanel.HEIGHT);
+        
+        /*
+        space.add(frontTester);
+        space.add(upTester);
+        space.add(rightTester);
+        */
+    }
+
+    @Override
+    public void handleInput()
+    {
+        acceptInput(10.0f);
+        
+        if(Mouse.isButtonDown(0))
+        {
+            clicked = true;
+        }
+        
+        boolean keyAutopilot = Keyboard.isKeyDown(Keyboard.KEY_A);
+        
+        if(keyAutopilot)
+        {
+            autopilot = new Autopilot(10);
+            speed = 0.0f;
+        }
+         
+        GlLifecycle.exitOnGLError("handleInput");
+    }
+
+    public void acceptInput(float delta) 
+    {
+        acceptInputRotate(delta);
+        acceptInputGrab();
+        acceptInputMove(delta);
+    }
+
+    public void acceptInputRotate(float delta) 
+    {
+        if(Mouse.isGrabbed()) 
+	{
+            int mouseDX = Mouse.getDX();
+            int mouseDY = Mouse.getDY();
+            
+            Vector4f up4 = new Vector4f(0, 1, 0, 1.0f);
+            Vector4f right4 = new Vector4f(1, 0, 0, 1.0f);
+
+            /*
+            Matrix4f inverse = view.getInverse();
+            Matrix4f inverse = view.getTransform();
+            Matrix4f.transform(inverse, right4, right4);
+            Matrix4f.transform(inverse, up4, up4);
+            */
+            
+            view.rotateAxis(mouseDY * mouseSensitivity, new Vector3f(right4.x, right4.y, right4.z));
+            view.rotateAxis(mouseDX * mouseSensitivity, new Vector3f(up4.x, up4.y, up4.z));
+        }
+    }
+
+    public void acceptInputGrab() 
+    {
+        if(Mouse.isInsideWindow() && Mouse.isButtonDown(0)) 
+	{
+            Mouse.setGrabbed(true);
+        }
+        if(!Mouse.isButtonDown(0)) 
+	{
+            Mouse.setGrabbed(false);
+        }
+    }
+
+    public void acceptInputMove(float delta) 
+    {
+        boolean keyAccell = Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_UP);
+        boolean keyDecell = Keyboard.isKeyDown(Keyboard.KEY_S) || Keyboard.isKeyDown(Keyboard.KEY_DOWN);
+        boolean keyBreak = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
+        boolean keyFast = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+        
+        
+        if(keyFast) 
+	{
+            speed += 2;
+        }
+        
+        if(keyAccell) 
+	{
+            speed += 0.2;
+        }
+        
+        if(keyDecell)
+	{
+            speed -= 0.2;
+        }
+        
+        if(keyBreak)
+	{
+            speed = 0;
+            autopilot = null;
+        }
+        
+        Matrix4f inverseView = view.getInverse();
+        Vector4f front4 = new Vector4f(0, 0, -1, 0);
+        Matrix4f.transform(inverseView, front4, front4);
+        front4.normalise();
+        
+        double mSpeed = speed * 1.0;
+        
+        Vec3 pos = ship.pos;
+        pos.x += front4.x * mSpeed;
+        pos.y += front4.y * mSpeed;
+        pos.z += front4.z * mSpeed;
+    }
+    
+    @Override
+    public void display()
+    {
+        if(autopilot != null) 
+        {
+            autopilot.drive(view, ship);
+            if(autopilot.arrived) autopilot = null;
+        }
+
+        displaySpace(view);
+    }
+    
+    private void displaySpace(View view)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, CockpitPanel.HEIGHT, width, height - CockpitPanel.HEIGHT);
+
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_CLAMP);
+
+        displayStars(starsFar);
+        displayStars(starsNear);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_CLAMP);
+        
+        Matrix4f inverse = view.getInverse();
+        Vector4f front4 = new Vector4f(0, 0, -1, 1.0f);
+        Vector4f up4 = new Vector4f(0, 1, 0, 1.0f);
+        Vector4f right4 = new Vector4f(1, 0, 0, 1.0f);
+
+        Matrix4f.transform(inverse, front4, front4);
+        Matrix4f.transform(inverse, right4, right4);
+        Matrix4f.transform(inverse, up4, up4);
+
+        // Hajo: Testing camera vectors
+        /*
+        Vec3 tPos = new Vec3(ship.pos);
+        tPos.x += front4.x * 300;
+        tPos.y += front4.y * 300;
+        tPos.z += front4.z * 300;
+        
+        frontTester.setPos(tPos);
+        
+        tPos.x += up4.x * 30;
+        tPos.y += up4.y * 30;
+        tPos.z += up4.z * 30;
+        upTester.setPos(tPos);
+        
+        tPos = new Vec3(ship.pos);
+        tPos.x += front4.x * 300;
+        tPos.y += front4.y * 300;
+        tPos.z += front4.z * 300;
+        tPos.x += right4.x * 30;
+        tPos.y += right4.y * 30;
+        tPos.z += right4.z * 30;
+
+        rightTester.setPos(tPos);
+        
+        System.err.println("front=" + front4);
+        System.err.println("up=" + up4);
+        System.err.println("right=" + right4);
+*/        
+        
+        // System.err.println("d1=" + Vector3f.dot(up, right) + " d2=" + Vector3f.dot(up, front) + "d3=" + Vector3f.dot(front, right));
+        
+        
+        // ----------
+        
+
+        // displayNebulae(camera);
+        
+
+        for(MultiMesh mesh : space.meshes)
+        {
+            Solar body = mesh.getPeer();
+            Vec3 pos = new Vec3(mesh.getPos());
+            pos.sub(ship.pos);
+            
+            double prod = front4.x * pos.x + front4.y * pos.y + front4.z * pos.z;
+            double dist2 = pos.length2();
+
+            // if(body != null) System.err.println(body.name + " at " + prod);
+            
+            // Hajo: show bodies only when in front of the camera
+            if(prod > 0)
+            {
+                // Hajo: check for collisions ...
+
+                if(body != null && dist2 < 20000*Space.DISPLAY_SCALE*Space.DISPLAY_SCALE)
+                {
+                    // Hajo: collision with a space station is considered docking ...
+                    if(body.btype == Solar.BodyType.STATION || 
+                       body.btype == Solar.BodyType.SPACEPORT)
+                    {
+                        speed = 0;
+                        // camera.setRotationX(0);
+                        // camera.setRotationY(180);
+                        game.dockAt(body);
+                    }
+                }
+                                               
+                // System.err.println(body.name + " at distance " + dist2);
+                // if(body != null) System.err.println(body.name + " at " + prod);
+                
+                showBody(mesh);
+            }
+            else
+            {
+                // Hajo: don't show labels for bodies behind the camera
+                mesh.lastScreenX = 999999;
+                mesh.lastScreenY = 999999;
+            }
+        }
+
+        GlLifecycle.exitOnGLError("displaySpace");
+        
+    
+        displayDebris(view);
+        
+        glDisable(GL_DEPTH_TEST);
+
+        glPushMatrix();
+        glMatrixMode(GL_PROJECTION); 
+        glLoadIdentity(); 
+        
+	glOrtho(0, width, 0, height, 100, -100);
+
+        glMatrixMode(GL_MODELVIEW); 
+        glLoadIdentity(); 
+        
+        glViewport(0, 0, width, height);
+
+        boolean runSelection = false;
+        
+        if(clicked && Mouse.isButtonDown(0) == false)
+        {
+            runSelection = true;
+            clicked = false;
+        }
+        
+        if(runSelection) 
+        {
+            space.selectedMesh = null;
+            bestMatchDistance = 99;
+        }
+        
+        for(MultiMesh mesh : space.meshes)
+        {
+            showLabel(mesh);
+
+            int distance = Math.abs(Mouse.getX() - mesh.lastScreenX) + Math.abs(Mouse.getY() - mesh.lastScreenY);
+            
+            if(runSelection && distance < bestMatchDistance)
+            {
+                bestMatchDistance = distance;
+                space.selectedMesh = mesh;
+            }            
+        }
+
+        if(runSelection && space.selectedMesh != null)
+        {
+            setDestination();
+        }
+        
+        Fonts.g12.drawString("Speed: ", Colors.LABEL, 10, 170);
+        
+        if(autopilot != null)
+        {
+            Fonts.g12.drawString(autopilot.speedString, Colors.FIELD, 60, 170);
+        }
+        else
+        {
+            Fonts.g12.drawString("" + speed, Colors.FIELD, 60, 170);
+        }
+        
+        if(space.selectedMesh != null && space.selectedMesh.getPeer() != null)
+        {
+            Fonts.g12.drawString("Destination:", Colors.LABEL, width-240, 170);
+            Fonts.g12.drawString(space.selectedMesh.getPeer().name, Colors.FIELD, width-160, 170);
+        }
+        
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+    
+        glPopMatrix();
+    
+    }
+
+    private void displayStars(AbstractMesh stars) 
+    {
+        glEnable(GL_POLYGON_SMOOTH);
+        
+        GL20.glUseProgram(ShaderBank.brightProgId);
+        
+        GlLifecycle.exitOnGLError("displayStars1");
+
+        // Reset view and model matrices
+        Matrix4f viewMatrix = view.getTransform();
+        Matrix4f modelMatrix = new Matrix4f();
+
+        // Upload matrices to the uniform variables
+        ShaderBank.updateViewMatrix(viewMatrix);
+        ShaderBank.updateModelMatrix(modelMatrix);
+                
+        ShaderBank.uploadBrightMatrices();
+        
+        GlLifecycle.exitOnGLError("displayStars2");
+         
+        
+        stars.display();
+        
+        GL20.glUseProgram(0);
+        glDisable(GL_POLYGON_SMOOTH);
+        
+        GlLifecycle.exitOnGLError("displayStars3");
+        
+    }
+    
+    /*
+    private void displayNebulae(Camera camera) 
+    {
+        GL20.glUseProgram(0);
+        glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, nebula.id);
+        
+        glMatrixMode(GL_MODELVIEW); 
+        glLoadIdentity();
+
+        Vector3f rotation = camera.getRotation();
+        glRotatef(rotation.x, 1, 0, 0);
+        glRotatef(rotation.y, 0, 1, 0);
+        glRotatef(rotation.z, 0, 0, 1);
+    
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        
+        glBegin(GL_QUADS);
+
+        float size = 300;
+        float depth = 800;
+        
+        glColor4f(1.0f, 0.3f, 0.5f, 0.2f);
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(size, size, -depth);
+
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3f(-size, size, -depth);
+
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex3f(-size, -size, -depth);
+
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3f(size, -size, -depth);
+
+        glEnd();
+        
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+
+        glPopMatrix();
+    }
+    */
+    
+    private void showBody(MultiMesh mesh) 
+    {
+        Solar body = mesh.getPeer();
+        Vec3 meshPos = mesh.getPos();
+        
+        // Hajo: suns are fully illuminated
+        if(body == null || body.btype == Solar.BodyType.STATION)
+        {
+            mesh.demoRot();
+        }
+        else if(body.btype == Solar.BodyType.SUN)
+        {
+            glDisable(GL_LIGHTING);
+        }
+        else if(body.btype == Solar.BodyType.PLANET)
+        {
+            mesh.planetRot();
+            if(body.children.size() > 0)
+            {
+                Solar maybeSpaceport = body.children.get(0);
+                if(maybeSpaceport.btype == Solar.BodyType.SPACEPORT)
+                {
+                   MultiMesh spaceportMesh = space.findMeshForPeer(maybeSpaceport);
+                   
+                   // Hajo: this is relative to the planet center
+                   Vector3f input = 
+                           new Vector3f(0, 
+                                        0, 
+                                        (float)(body.radius * -Space.DISPLAY_SCALE));
+                   
+                   Vector3f result = new Vector3f();
+                   Math3D.rotY(input, -mesh.getAngleY(), result);
+                   
+                   // Hajo: spaceport mesh needs absolute position
+                   spaceportMesh.setPos(result.x + meshPos.x, 
+                                        result.y + meshPos.y,
+                                        result.z + meshPos.z);
+                   
+                   // fspaceportMesh.setAngleX(90);
+                   spaceportMesh.setAngleY(-mesh.getAngleY());
+                }
+            }
+        }
+
+        Vec3 relPos = new Vec3(meshPos);
+        relPos.sub(ship.pos);
+        
+        Vector3f modelPos = toVector3f(relPos);
+        Vector3f modelAngle = new Vector3f(mesh.getAngleX(), mesh.getAngleY(), 0);
+        // modelScale = new Vector3f(1, 1, 1);
+
+        //-- Update matrices
+        // Reset view and model matrices
+        Matrix4f viewMatrix = view.getTransform();
+        Matrix4f modelMatrix = new Matrix4f();
+        
+        // Scale, translate and rotate model
+        // Matrix4f.scale(modelScale, modelMatrix, modelMatrix);
+        Matrix4f.translate(modelPos, modelMatrix, modelMatrix);
+        Matrix4f.rotate(Math3D.degToRad(modelAngle.z), new Vector3f(0, 0, 1), 
+                modelMatrix, modelMatrix);
+        Matrix4f.rotate(Math3D.degToRad(modelAngle.y), new Vector3f(0, 1, 0), 
+                modelMatrix, modelMatrix);
+        Matrix4f.rotate(Math3D.degToRad(modelAngle.x), new Vector3f(1, 0, 0), 
+                modelMatrix, modelMatrix);
+
+        ShaderBank.updateViewMatrix(viewMatrix);
+        ShaderBank.updateModelMatrix(modelMatrix);
+        ShaderBank.updateLightPos((float)-ship.pos.x, (float)-ship.pos.y, (float)-ship.pos.z);
+        
+        if(body != null && body.btype == Solar.BodyType.SUN)
+        {
+            GL20.glUseProgram(ShaderBank.brightProgId);
+            ShaderBank.uploadBrightMatrices();
+        }
+        else
+        {
+            GL20.glUseProgram(ShaderBank.shadedProgId);
+            ShaderBank.uploadShadedMatrices();
+        }
+        
+         
+        mesh.display();
+        
+        GL20.glUseProgram(0);
+        
+        // Hajo: calculate name label position
+        // projectionMatrix * viewMatrix * modelMatrix * in_Position;
+        
+        Matrix4f mvp = Matrix4f.mul(viewMatrix, modelMatrix, null);
+        Matrix4f.mul(ShaderBank.projectionMatrix, mvp, mvp);
+
+        Vector4f pos = new Vector4f(0, 0, 0, 1);
+        Vector4f result = Matrix4f.transform(mvp, pos, null);        
+
+        mesh.lastScreenX = (int)(result.x/result.w * width/2 + width/2);
+
+        int viewHeight = height - CockpitPanel.HEIGHT;
+        mesh.lastScreenY = (int)((result.y/result.w * viewHeight/2) + viewHeight/2) + CockpitPanel.HEIGHT;
+    }
+
+    private void showDecal(MultiMesh mesh) 
+    {
+    }
+    
+    private void showLabel(MultiMesh mesh)
+    {
+        Solar body = mesh.getPeer();
+
+        if(body != null)
+        {
+            if(mesh == space.selectedMesh)
+            {
+                fillBorder(mesh.lastScreenX-5, mesh.lastScreenY-5, 10, 10, 1, Colors.CYAN);
+            }
+            
+            Fonts.g12.drawStringScaled(body.name, Colors.CYAN,
+                    mesh.lastScreenX+10, mesh.lastScreenY-16, 1.0f);
+        
+        }
+    }
+
+    
+    private void setDestination() 
+    {
+        setDestination(ship, space.selectedMesh);
+    }
+    
+    public static void setDestination(Ship ship, MultiMesh selectedMesh) 
+    {
+        Solar body = selectedMesh.getPeer();
+        if(body != null)
+        {
+            // Vec3 bodyPos = body.getAbsolutePosition();
+            Vec3 bodyPos = selectedMesh.getPos();
+            Vec3 destination = new Vec3(bodyPos);
+
+            // Hajo: take destination size into account - don't fly to the center of a planet
+
+            logger.log(Level.INFO, "Setting {0} as destination.", body.name);
+
+            Vec3 direction = new Vec3(ship.pos);
+            direction.sub(destination);
+
+            logger.log(Level.INFO, "Distance = {0}", direction.length());
+            
+            
+            direction.normalise();
+            
+            if(body.btype == Solar.BodyType.STATION)
+            {
+                // Hajo: station sizes are wrong in scale
+                direction.scale(30);
+            }
+            else
+            {
+                direction.scale(body.radius * 3 * Space.DISPLAY_SCALE);
+            }
+            
+            destination.add(direction);
+
+            ship.destination = destination;
+
+            // logger.log(Level.INFO, "Body position: {0}", bodyPos.toString());
+            logger.log(Level.INFO, "Body radius: {0}", body.radius);
+            logger.log(Level.INFO, "Destination: {0}", ship.destination.toString());
+        }
+    }
+
+    private void displayDebris(View camera) 
+    {
+        GL20.glUseProgram(ShaderBank.brightProgId);
+        glDisable(GL_DEPTH_TEST);
+        
+        int zSource = 8000;
+        int zSpeed = (int)(speed * 0.1 * 5);
+        
+        if(autopilot != null)
+        {
+            zSpeed = (int)(autopilot.currentSpeed * 0.01 * 5);
+        }
+        
+        if(zSpeed > 1)
+        {
+            int count = (int)(Math.pow(zSpeed, 1.6) * 0.007);
+
+            int lifetime = Math.min(2*zSource/zSpeed, 1000);
+            
+            // System.err.println("zSpeed=" + zSpeed + " count=" + count);
+            
+            for(int i=0; i < count; i++)
+            {
+                debrisDriver.addParticle(
+                        (int)(Math.random() * zSource*2 - zSource),
+                        (int)(Math.random() * zSource*2 - zSource),
+                        -zSource,
+                        0, 0, zSpeed, lifetime, 
+                        (int)(Math.random() * 7),
+                        0);
+            }
+
+            debrisDriver.driveParticles();
+            
+            Matrix4f viewMatrix = new Matrix4f();
+            Matrix4f modelMatrix = new Matrix4f();
+
+            ShaderBank.updateViewMatrix(viewMatrix);
+            ShaderBank.updateModelMatrix(modelMatrix);
+            // ShaderBank.uploadBrightMatrices();
+            
+            GlLifecycle.exitOnGLError("displayDebris");
+            debrisDriver.drawParticles();
+            GlLifecycle.exitOnGLError("displayDebris");
+        }
+        else
+        {
+            debrisDriver.clear();
+        }
+
+        glEnable(GL_DEPTH_TEST);
+        GL20.glUseProgram(0);
+    }
+
+    public void lookAt(Vec3 lookAt)
+    {
+        Vec3 direction = new Vec3(lookAt);
+        direction.sub(ship.pos);
+        direction.normalise();
+        
+        Vector3f front = new Vector3f((float)-direction.x, (float)-direction.y, (float)-direction.z);
+        Vector3f up = new Vector3f(0, 1, 0); // Hajo: pray ...
+        Vector3f right = Vector3f.cross(up, front, null);
+        
+        view.orient(front, right);
+    }
+
+    private static Vector3f toVector3f(Vec3 pos)
+    {
+        return new Vector3f((float)pos.x, (float)pos.y, (float)pos.z);
+    }
+
+}
