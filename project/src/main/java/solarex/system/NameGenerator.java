@@ -28,7 +28,7 @@ public class NameGenerator {
         "o",
         "u",
         "y",
-        "aú",
+        "aÃº",
         
         "oal",
         "al",
@@ -100,7 +100,7 @@ public class NameGenerator {
         "min",
         "us",
         "run",
-        "rée",
+        "rÃ©e",
         "ter",
         "mim",
         "sol",
@@ -258,14 +258,14 @@ public class NameGenerator {
         "Akiba",
         "Buschujew",
         "Von Braun",
-        "Büdeler",
+        "BÃ¼deler",
         "Colombo",
         "Congreve",
         "Dannenberg",
         "Debus",
         "Dornberger",
         "Dryden",
-        "Dürr",
+        "DÃ¼rr",
         "Ehricke",
         "Faget",
         "Feoktistow",
@@ -278,13 +278,13 @@ public class NameGenerator {
         "Goddard",
         "Grau",
         "Griffin",
-        "Gröttrup",
-        "Grüne",
+        "GrÃ¶ttrup",
+        "GrÃ¼ne",
         "Haas",
         "Haber",
-        "Häussermann", 
+        "HÃ¤ussermann", 
         "Hohmann",
-        "Hölzer",
+        "HÃ¶lzer",
         "Itokawa",
         "Jangel",
         "Kalam",
@@ -313,7 +313,7 @@ public class NameGenerator {
         "Seamans",
         "Schmiedl",
         "Schmucker",
-        "Sänger",
+        "SÃ¤nger",
         "Schtscherbakow",
         "Steinhoff",
         "Thiel",
@@ -497,7 +497,7 @@ public class NameGenerator {
                 buf.append('\'');
             }
             if(i > 0 && i < n-1 && buf.charAt(buf.length()-1) != '-' && rng.nextDouble() <= 0.1) {
-                buf.append("-á-");
+                buf.append("-Ã¡-");
             }
             if(i > 0 && i < n-1 && buf.charAt(buf.length()-1) != '-' && rng.nextDouble() <= 0.1) {
                 buf.append("-");

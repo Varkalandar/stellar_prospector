@@ -47,7 +47,7 @@ public class PlanetDetailLabel extends JLabel
         nf.setMaximumFractionDigits(2);
 
         final double gravity =  body.calcSurfaceGravity();
-        // System.err.println(body.name + " a=" + gravity + "m/s² g=" + gravity/9.81 + "g");
+        // System.err.println(body.name + " a=" + gravity + "m/sÂ² g=" + gravity/9.81 + "g");
 
         
         final Solar parent = body.getParent();

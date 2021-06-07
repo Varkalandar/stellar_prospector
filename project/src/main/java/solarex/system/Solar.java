@@ -130,7 +130,7 @@ public class Solar
 
     /**
      * Sun densities. Only data for our sun is real.
-     * Given in g/cm³
+     * Given in g/cmÂ³
      */
     private static final double sunDensity [] = 
     {
@@ -146,7 +146,7 @@ public class Solar
 
     /**
      * Planet densities.
-     * Given in g/cm³
+     * Given in g/cmÂ³
      */
     private static final double planetDensity [] = 
     {
@@ -253,18 +253,18 @@ public class Solar
 
     private static double calcPlanetMass(PlanetType ptype, double radius) 
     {
-        // Hajo: Volume in km³, radius is in km.
+        // Hajo: Volume in kmÂ³, radius is in km.
         final double v = calcVolume(radius);
 
         // 1km = 100.000 cm = 1*10^6 cm
 
         // 1 ton = 1000kg = 1.000.000g
 
-        // 1m³ = 1.000.000cm
+        // 1mÂ³ = 1.000.000cm
 
-        // x [g/cm³] = x [t/m³]
+        // x [g/cmÂ³] = x [t/mÂ³]
         
-        // 1km³ = 1.000.000.000m³
+        // 1kmÂ³ = 1.000.000.000mÂ³
 
         
         double mass = 1.0E9 * v * planetDensity[ptype.ordinal()];
@@ -274,7 +274,7 @@ public class Solar
     
     private static double calcSunMass(SunType stype, double radius) 
     {
-        // Hajo: Volume in km³, radius is in km.
+        // Hajo: Volume in kmÂ³, radius is in km.
         final double v = calcVolume(radius);
         final double m = v * sunDensity[stype.ordinal()];
         final double mass = 1.0E9 * m;
@@ -968,7 +968,7 @@ public class Solar
     
     public double calcSurfaceGravity()
     {
-        // g = H*M/R²
+        // g = H*M/RÂ²
         final double h = 6.674E-11;
         final double m = mass * 1000; // kg
         final double r = radius * 1000; // m

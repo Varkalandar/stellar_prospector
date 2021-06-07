@@ -142,12 +142,12 @@ public class BodyInfoLabel extends JLabel {
         setText(infoText);
 
         /*
-        // g = H*M/R²
+        // g = H*M/RÂ²
         final double h = 6.674E-11;
         final double mass = body.mass * 1000; // kg
         final double radius = body.radius * 1000; // m
         double gravity =  h * mass / (radius * radius);
-        System.err.println(body.name + " a=" + gravity + "m/s² g=" + gravity/9.81 + "g");
+        System.err.println(body.name + " a=" + gravity + "m/sÂ² g=" + gravity/9.81 + "g");
          */
     }
 
