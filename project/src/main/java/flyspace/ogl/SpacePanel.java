@@ -8,7 +8,6 @@ import flyspace.FlySpace;
 import flyspace.math.Math3D;
 import flyspace.Space;
 import flyspace.SpaceDebrisPainter;
-import flyspace.ogl32.GL32Mesh;
 import flyspace.ogl32.GL32MeshFactory;
 import flyspace.ogl32.ShaderBank;
 import flyspace.particles.ParticleDriver;
@@ -503,45 +502,6 @@ public class SpacePanel extends UiPanel
     {
         Solar body = mesh.getPeer();
         Vec3 meshPos = mesh.getPos();
-        
-        // Hajo: suns are fully illuminated
-        if(body == null || body.btype == Solar.BodyType.STATION)
-        {
-            mesh.demoRot();
-        }
-        else if(body.btype == Solar.BodyType.SUN)
-        {
-            glDisable(GL_LIGHTING);
-        }
-        else if(body.btype == Solar.BodyType.PLANET)
-        {
-            mesh.planetRot();
-            if(body.children.size() > 0)
-            {
-                Solar maybeSpaceport = body.children.get(0);
-                if(maybeSpaceport.btype == Solar.BodyType.SPACEPORT)
-                {
-                   MultiMesh spaceportMesh = space.findMeshForPeer(maybeSpaceport);
-                   
-                   // Hajo: this is relative to the planet center
-                   Vector3f input = 
-                           new Vector3f(0, 
-                                        0, 
-                                        (float)(body.radius * -Space.DISPLAY_SCALE));
-                   
-                   Vector3f result = new Vector3f();
-                   Math3D.rotY(input, -mesh.getAngleY(), result);
-                   
-                   // Hajo: spaceport mesh needs absolute position
-                   spaceportMesh.setPos(result.x + meshPos.x, 
-                                        result.y + meshPos.y,
-                                        result.z + meshPos.z);
-                   
-                   // fspaceportMesh.setAngleX(90);
-                   spaceportMesh.setAngleY(-mesh.getAngleY());
-                }
-            }
-        }
 
         Vec3 relPos = new Vec3(meshPos);
         relPos.sub(ship.pos);
@@ -567,6 +527,7 @@ public class SpacePanel extends UiPanel
 
         ShaderBank.updateViewMatrix(viewMatrix);
         ShaderBank.updateModelMatrix(modelMatrix);
+        
         ShaderBank.updateLightPos((float)-ship.pos.x, (float)-ship.pos.y, (float)-ship.pos.z);
         
         if(body != null && body.btype == Solar.BodyType.SUN)

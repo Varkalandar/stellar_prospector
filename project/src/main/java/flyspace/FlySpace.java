@@ -235,7 +235,7 @@ public class FlySpace
     
     public void run()
     {
-        long lastTime = 0;
+        long lastTime = System.currentTimeMillis();
         int frameCount = 0;
         
         while (!Display.isCloseRequested() && 
@@ -245,23 +245,12 @@ public class FlySpace
             if (Display.isVisible())
             {
                 long currentTime = System.currentTimeMillis();
-                if(lastTime < currentTime - 30000)
-                {
-                    lastTime = currentTime;
-                    // Display.setTitle(title + " FPS: " + frameCount );
-                    System.err.println("Average FPS last 30 seconds: " + (frameCount + 15)/30);
-                    frameCount = 0;
-                }
+                int dt = (int)(currentTime - lastTime);
 
-
-                activePanel.handleInput();
-                activePanel.display();
+                update(dt);
+                display();
                 
-                cockpitPanel.handleInput();
-                cockpitPanel.display();
-
-                // cockpitPanel.fillRect(0, 0, 500, 500, 0xFFFF7700);
-                
+                lastTime = currentTime;
                 frameCount ++;
             } 
             else
@@ -283,6 +272,30 @@ public class FlySpace
         frame.dispose();
     }
 
+    
+    /**
+     * Called before a frame is displayed. All updates to game data should
+     * happen here.
+     * @param dt Time passed since last update call
+     */
+    private void update(int dt)
+    {
+        space.update(dt);
+    }
+    
+    /**
+     * Display the frame
+     */
+    private void display()
+    {
+        activePanel.handleInput();
+        activePanel.display();
+
+        cockpitPanel.handleInput();
+        cockpitPanel.display();
+
+        // cockpitPanel.fillRect(0, 0, 500, 500, 0xFFFF7700);
+    }
     
     private void safeSleep(int millis)
     {

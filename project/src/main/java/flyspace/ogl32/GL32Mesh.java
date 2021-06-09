@@ -21,8 +21,8 @@ public class GL32Mesh extends AbstractMesh
 {
     private static int WHITE_TEX;
     
-    private VertexData [] vertexData;
-    private int [] indexData;
+    private final VertexData [] vertexData;
+    private final int [] indexData;
     private ByteBuffer textureData;
     private int textureId;
 

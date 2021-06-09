@@ -26,8 +26,10 @@ public class MeshFactory
     {
         InputStream is = url.openStream();
         ObjReader reader = new ObjReader();        
-        Mesh mesh = reader.read(is);
-        return mesh;
+        ObjReader.Object obj = reader.read(is);
+        
+        Mesh result = new Mesh(obj.vBuffer, obj.nBuffer, obj.cBuffer, null, 0, obj.faces*3);
+        return result;
     }
     
     public static Mesh createShipOld() 

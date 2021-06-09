@@ -1,7 +1,11 @@
 package flyspace.ogl32;
 
+import flyspace.io.ObjReader;
 import flyspace.math.Math3D;
 import flyspace.math.SimplexNoise;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -16,6 +20,18 @@ import solarex.util.RandomHelper;
 public class GL32MeshFactory 
 {
     private static final Logger logger = Logger.getLogger(GL32MeshFactory.class.getName());
+    
+    
+    public static GL32Mesh createMesh(URL url) throws IOException 
+    {
+        InputStream is = url.openStream();
+        ObjReader reader = new ObjReader();        
+        ObjReader.Faces obj = reader.readFaces(is);
+        
+        GL32Mesh result = new GL32Mesh(obj.vertexData, obj.indexData, null);
+        return result;
+    }
+    
     
     public static GL32Mesh createTetra(float radius, float r, float g, float b) 
     {

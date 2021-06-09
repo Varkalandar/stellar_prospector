@@ -1,15 +1,18 @@
 package flyspace.ui.panels;
 
+import flyspace.AbstractMesh;
 import flyspace.FlySpace;
 import flyspace.Space;
 import flyspace.ogl.GlPortraitPanel;
 import flyspace.MultiMesh;
+import flyspace.ogl32.GL32MeshFactory;
 import flyspace.ui.Colors;
 import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import static flyspace.ui.UiPanel.fillRect;
+import java.net.URL;
 import java.util.Random;
 import org.lwjgl.input.Mouse;
 import static org.lwjgl.opengl.GL11.*;
@@ -500,6 +503,20 @@ public class StationPanel extends DecoratedUiPanel
             
             shipPos = new Vec3(bodyPos);
             shipPos.z -= station.orbit * 3 * Space.DISPLAY_SCALE;
+            
+            // testing
+            /*
+            try
+            {
+                URL url = getClass().getResource("/flyspace/resources/3d/ship.obj");        
+                AbstractMesh mesh = GL32MeshFactory.createMesh(url);
+
+                MultiMesh multiMesh = new MultiMesh(mesh);
+                multiMesh.setPos(new Vec3(ship.pos.x, ship.pos.y, ship.pos.z-400));
+
+                space.add(multiMesh);
+            } catch(Exception e) { e.printStackTrace(); }
+            */
         }
         else
         {

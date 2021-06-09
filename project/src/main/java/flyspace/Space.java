@@ -1,10 +1,14 @@
 package flyspace;
 
+import flyspace.math.Math3D;
 import flyspace.ogl32.GL32MeshFactory;
 import flyspace.ui.JumpEffectPainter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.lwjgl.opengl.GL11.GL_LIGHTING;
+import static org.lwjgl.opengl.GL11.glDisable;
+import org.lwjgl.util.vector.Vector3f;
 import solarex.system.Solar;
 import solarex.system.Vec3;
 
@@ -24,7 +28,7 @@ public class Space
 
     public Space()
     {
-        this.meshes = new ArrayList<>();
+        this.meshes = new ArrayList<>(1024);
     }
     
     
@@ -88,7 +92,7 @@ public class Space
         logger.log(Level.INFO, "System fully converted in {0} ms", (T1 - T0));
     }
 
-    public void convertSystem(Solar system)
+    private void convertSystem(Solar system)
     {
         convertBodyAsync(system);
         
@@ -349,6 +353,88 @@ public class Space
         }
         
         meshes.clear();
+    }
+
+    
+    /**
+     * Update positions and rotations of all bodies in this space.
+     * @param dt Time passed since last update
+     */
+    void update(int dt) 
+    {
+        for(MultiMesh multiMesh : meshes)
+        {
+            updateBody(multiMesh, dt);
+        }
+    }
+
+            
+    private void updateBody(MultiMesh mesh, int dt) 
+    {
+        Solar body = mesh.getPeer();
+        Vec3 meshPos = mesh.getPos();
+        
+        // Hajo: suns are fully illuminated
+        if(body == null || body.btype == Solar.BodyType.STATION)
+        {
+            rotateStation(mesh, dt);
+        }
+        else if(body.btype == Solar.BodyType.PLANET)
+        {
+            rotatePlanet(mesh, dt);
+            if(body.children.size() > 0)
+            {
+                Solar maybeSpaceport = body.children.get(0);
+                if(maybeSpaceport.btype == Solar.BodyType.SPACEPORT)
+                {
+                   MultiMesh spaceportMesh = findMeshForPeer(maybeSpaceport);
+                   
+                   // Hajo: this is relative to the planet center
+                   Vector3f input = 
+                           new Vector3f(0, 
+                                        0, 
+                                        (float)(body.radius * -Space.DISPLAY_SCALE));
+                   
+                   Vector3f result = new Vector3f();
+                   Math3D.rotY(input, -mesh.getAngleY(), result);
+                   
+                   // Hajo: spaceport mesh needs absolute position
+                   spaceportMesh.setPos(result.x + meshPos.x, 
+                                        result.y + meshPos.y,
+                                        result.z + meshPos.z);
+                   
+                   // fspaceportMesh.setAngleX(90);
+                   spaceportMesh.setAngleY(-mesh.getAngleY());
+                }
+            }
+        }
+    }
+    
+    
+    public void rotateStation(MultiMesh mesh, int dt)
+    {      
+        float angleX = mesh.getAngleX();
+        angleX += 0.00625f * dt;
+        if(angleX > 360) angleX -= 360;
+        
+        mesh.setAngleY(angleX);
+        
+        
+        float angleY = mesh.getAngleY();
+        angleY += 0.00625 * dt;
+        if(angleY > 360) angleY -= 360;
+        
+        mesh.setAngleY(angleY);
+    }
+    
+    
+    public void rotatePlanet(MultiMesh mesh, int dt)
+    {
+        float angleY = mesh.getAngleY();
+        angleY += 0.00125f * dt;
+        if(angleY > 360) angleY -= 360;
+        
+        mesh.setAngleY(angleY);
     }
     
 }

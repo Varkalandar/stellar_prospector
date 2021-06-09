@@ -199,7 +199,7 @@ public class PlanetInfoPanel extends DecoratedUiPanel
         glEnable(GL_CULL_FACE);  
         glEnable(GL_BLEND);        
         
-        planetMesh.planetRot();
+        rotatePlanet(planetMesh);
         
         Matrix4f modelMatrix = new Matrix4f();
         
@@ -221,6 +221,17 @@ public class PlanetInfoPanel extends DecoratedUiPanel
         GL20.glUseProgram(0);
     }
 
+    
+    public void rotatePlanet(MultiMesh mesh)
+    {
+        float angleY = mesh.getAngleY();
+        angleY += 0.02;
+        if(angleY > 360) angleY -= 360;
+        
+        mesh.setAngleY(angleY);
+    }
+    
+    
     public void setPlanet(Solar planet, Space space) 
     {
         this.space = space;

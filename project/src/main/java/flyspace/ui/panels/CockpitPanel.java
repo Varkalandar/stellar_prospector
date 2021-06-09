@@ -190,27 +190,30 @@ public class CockpitPanel extends UiPanel
         glBindTexture(GL_TEXTURE_2D, 0);
         
         int stateX = 17;
-        int stateW = 0;
+        int stateW;
         int statusY = 145;
 
 
         String shipState;
         
-        if(ship.getState() == Ship.State.DOCKED)
-        {
-            shipState = "Docked at " + ship.loca.name;
-        }
-        else if(ship.getState() == Ship.State.ORBIT)
-        {
-            shipState = "Orbiting " + ship.loca.name;
-        }
-        else if(ship.getState() == Ship.State.FLIGHT)
-        {
-            shipState = "In flight";
-        }
-        else
+        if(null == ship.getState())
         {
             shipState = "Unknown";
+        }
+        else switch (ship.getState()) 
+        {
+            case DOCKED:
+                shipState = "Docked at " + ship.loca.name;
+                break;
+            case ORBIT:
+                shipState = "Orbiting " + ship.loca.name;
+                break;
+            case FLIGHT:
+                shipState = "In flight";
+                break;
+            default:
+                shipState = "Unknown";
+                break;
         }
 
         int chars = shipState.length();
@@ -265,7 +268,5 @@ public class CockpitPanel extends UiPanel
         glDisable(GL_LIGHTING);
         
         displayTriggers();
-        
     }
-    
 }

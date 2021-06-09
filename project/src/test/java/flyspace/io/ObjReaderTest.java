@@ -21,7 +21,7 @@ public class ObjReaderTest extends TestCase
         assertNotNull(is);
         
         ObjReader reader = new ObjReader();        
-        Mesh mesh = reader.read(is);
-        assertNotNull(mesh);        
+        ObjReader.Faces faces = reader.readFaces(is);
+        assertNotNull(faces);        
     }
 }

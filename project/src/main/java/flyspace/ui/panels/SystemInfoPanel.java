@@ -603,7 +603,8 @@ public class SystemInfoPanel extends DecoratedUiPanel
         glEnable(GL_CULL_FACE);  
         glBindTexture(GL_TEXTURE_2D, 0);
         
-        planetMesh.planetRot();
+        // needed?
+        // planetMesh.planetRot();
         
         Matrix4f modelMatrix = new Matrix4f();
         Matrix4f viewMatrix = new Matrix4f();
