@@ -11,6 +11,7 @@ import flyspace.ui.panels.CockpitPanel;
 import flyspace.ui.panels.GalacticMapPanel;
 import flyspace.ui.panels.OptionsPanel;
 import flyspace.ui.panels.PlanetInfoPanel;
+import flyspace.ui.panels.PlanetMiningPanel;
 import flyspace.ui.panels.ShipInfoPanel;
 import flyspace.ui.panels.StationPanel;
 import flyspace.ui.panels.SystemInfoPanel;
@@ -72,7 +73,7 @@ public class FlySpace
     private SpacePanel spacePanel;
     
     /** Space for the current system */
-    private Space space;
+    private Space localSpace;
     
     /** Space of a distant system that e.g. is being inspected */
     private Space distantSpace;
@@ -81,6 +82,7 @@ public class FlySpace
     private SystemInfoPanel systemInfoPanel;
     private SystemInfoPanel distantSystemInfoPanel;
     private PlanetInfoPanel planetInfoPanel;
+    private PlanetMiningPanel planetMiningPanel;
     private SystemMapPanel systemMapPanel;
     private GalacticMapPanel galacticMapPanel;
     private CockpitPanel cockpitPanel;
@@ -209,12 +211,13 @@ public class FlySpace
         Fonts.init();
         ImageCache imageCache = new ImageCache();
 
-        spacePanel = new SpacePanel(this, ship, space);
+        spacePanel = new SpacePanel(this, ship, localSpace);
         stationPanel = new StationPanel(this, galaxy, ship, imageCache);
         systemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
         distantSystemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
         planetInfoPanel = new PlanetInfoPanel(this, ship);
-        systemMapPanel = new SystemMapPanel(this, space, ship);
+        planetMiningPanel = new PlanetMiningPanel(this, ship);
+        systemMapPanel = new SystemMapPanel(this, localSpace, ship);
         galacticMapPanel = new GalacticMapPanel(this, galaxy, ship);
         
         cockpitPanel = new CockpitPanel(this, ship);
@@ -280,7 +283,7 @@ public class FlySpace
      */
     private void update(int dt)
     {
-        space.update(dt);
+        localSpace.update(dt);
     }
     
     /**
@@ -313,7 +316,7 @@ public class FlySpace
      */
     public void showStationPanel()
     {
-        stationPanel.setStation(currentBody, space);
+        stationPanel.setStation(currentBody, localSpace);
         activatePanel(stationPanel);
     }
     
@@ -323,13 +326,13 @@ public class FlySpace
      */
     public void showStationPanel(Solar station)
     {
-        stationPanel.setStation(station, space);
+        stationPanel.setStation(station, localSpace);
         activatePanel(stationPanel);
     }
     
     public void showSystemInfoPanel()
     {
-        systemInfoPanel.setSystem(space, system);
+        systemInfoPanel.setSystem(localSpace, system);
         activatePanel(systemInfoPanel);
     }
     
@@ -343,7 +346,7 @@ public class FlySpace
 
     public void showLocalPlanetDetailPanel(Solar planet)
     {
-        planetInfoPanel.setPlanet(planet, space);
+        planetInfoPanel.setPlanet(planet, localSpace);
         activatePanel(planetInfoPanel);
     }
     
@@ -351,6 +354,12 @@ public class FlySpace
     {
         planetInfoPanel.setPlanet(planet, distantSpace);
         activatePanel(planetInfoPanel);
+    }
+    
+    public void showPlanetMiningPanel(Solar planet)
+    {
+        planetMiningPanel.setPlanet(planet, localSpace);
+        activatePanel(planetMiningPanel);
     }
     
     public void showGalacticMapPanel()
@@ -429,7 +438,7 @@ public class FlySpace
      */
     public Solar changeSystem(SystemLocation loca)
     {
-        system = makeSystem(loca, space, new JumpEffectPainter());
+        system = makeSystem(loca, localSpace, new JumpEffectPainter());
         return system;
     }
     
@@ -442,7 +451,7 @@ public class FlySpace
      */
     public Solar makeSystemWithHome(SystemLocation loca)
     {
-        system = makeSystem(loca, space, new TitlePainter(TITLE_VERSION));
+        system = makeSystem(loca, localSpace, new TitlePainter(TITLE_VERSION));
         Solar home = null;
         
         // Hajo: look for home planet ...
@@ -474,7 +483,7 @@ public class FlySpace
     {
         ship = new Ship();
         ship.cargo.money = 108.35;
-        space = new Space();
+        localSpace = new Space();
         distantSpace = new Space();
     
         world = new World();
@@ -524,7 +533,7 @@ public class FlySpace
             final long seed = ship.spaceBodySeed;
             
             loca = ship.loca;
-            makeSystem(loca, space, new TextPainter());
+            makeSystem(loca, localSpace, new TextPainter());
 
             if(ship.getState() == Ship.State.DOCKED ||
                ship.getState() == Ship.State.ORBIT) 
