@@ -36,15 +36,6 @@ public abstract class AbstractMesh
         this.pos.z = z;
     } 
     
-    public void demoRot()
-    {
-        angleX += 0.1;
-        if(angleX > 360) angleX -= 360;
-        
-        angleY += 1.0;
-        if(angleY > 360) angleY -= 360;
-    }
-    
     public float getAngleX()
     {
         return angleX;

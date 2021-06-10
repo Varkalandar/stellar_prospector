@@ -63,7 +63,7 @@ public class MeshDisplayTest
     public boolean quitRequested;
 
     private SpacePanel spacePanel;
-    
+    private MultiMesh multiMesh;
     
     private Space space;
     private Ship ship;
@@ -189,11 +189,12 @@ public class MeshDisplayTest
         space.convertSystemParallelAndWait(system);
 
 
-        // URL url = getClass().getResource("/flyspace/resources/3d/ship.obj");        
-        // AbstractMesh mesh = GL32MeshFactory.createMesh(url);
+        URL url = getClass().getResource("/flyspace/resources/3d/ship.obj");        
+        AbstractMesh mesh = GL32MeshFactory.createMesh(url);
         
-        AbstractMesh mesh = GL32MeshFactory.createEarthTypePlanet(200, 123456);
-        MultiMesh multiMesh = new MultiMesh(mesh);
+        // AbstractMesh mesh = GL32MeshFactory.createEarthTypePlanet(200, 123456);
+        mesh.bind();
+        multiMesh = new MultiMesh(mesh);
         multiMesh.setPos(new Vec3(ship.pos.x, ship.pos.y, ship.pos.z-400));
         
         space.add(multiMesh);
@@ -234,6 +235,8 @@ public class MeshDisplayTest
 
                 spacePanel.handleInput();
                 spacePanel.display();
+                
+                multiMesh.setAngleY(multiMesh.getAngleY() + 0.1f);
                 
                 
                 frameCount ++;
