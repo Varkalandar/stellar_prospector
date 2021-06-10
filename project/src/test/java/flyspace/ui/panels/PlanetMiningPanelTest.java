@@ -1,7 +1,6 @@
 package flyspace.ui.panels;
 
 import flyspace.FlySpace;
-import flyspace.Space;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -77,7 +76,8 @@ public class PlanetMiningPanelTest extends TestCase
             System.err.println(body.name);
         }
         
-        game.showPlanetMiningPanel(system.children.get(1));
+        // game.showPlanetMiningPanel(system.children.get(1));
+        game.showPlanetMiningPanel(system.children.get(1).children.get(3));
         game.run();
         
     }

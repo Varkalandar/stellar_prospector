@@ -12,6 +12,7 @@ import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import org.lwjgl.input.Mouse;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
@@ -31,6 +32,7 @@ import solarex.ship.Ship;
 import solarex.system.PlanetResources;
 import solarex.system.Solar;
 import solarex.ui.panels.PlanetDetailPanel;
+import solarex.util.RandomHelper;
 
 /**
  *
@@ -49,12 +51,19 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
     private Space space;
     
-    private String [] gases;
-    private String [] fluids;
-    private String [] minerals;
-    private String [] metals;
-    private String [] biosphere;
-    private String [] misc;
+    private int [] gases;
+    private int [] fluids;
+    private int [] minerals;
+    private int [] metals;
+    private int [] biosphere;
+    private int [] misc;
+    
+    private final ArrayList<PlanetResources.Gases> gasesFound = new ArrayList<>();
+    private final ArrayList<PlanetResources.Fluids> fluidsFound = new ArrayList<>();
+    private final ArrayList<PlanetResources.Minerals> mineralsFound = new ArrayList<>();
+    private final ArrayList<PlanetResources.Metals> metalsFound = new ArrayList<>();
+    
+    
     private final DecoratedTrigger scanTrigger;
 
     
@@ -173,23 +182,22 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         Random rng = PlanetResources.getPlanetRng(planet);
         
-        int [] weights = new int [PlanetResources.Gases.values().length];
-        gases = PlanetDetailPanel.calculateAtmosphere(planet, rng, weights);
+        gases = new int [PlanetResources.Gases.values().length];
+        PlanetDetailPanel.calculateAtmosphere(planet, rng, gases);
 
-        int [] fluidDeposits = new int [PlanetResources.Fluids.values().length];
-        long [] positions = new long [PlanetResources.Fluids.values().length];
-        fluids = PlanetDetailPanel.calculateFluids(planet, rng, weights, fluidDeposits, positions);
+        fluids = new int [PlanetResources.Fluids.values().length];
+        long [] fluidPositions = new long [PlanetResources.Fluids.values().length];
+        PlanetDetailPanel.calculateFluids(planet, rng, gases, fluids, fluidPositions);
         
-        int [] deposits = PlanetResources.calculateMinerals(planet, rng);
-        minerals = PlanetDetailPanel.calculateMinerals(planet, deposits);
+        minerals = PlanetResources.calculateMinerals(planet, rng);
         
-        deposits = new int [PlanetResources.Metals.values().length];
-        positions = new long [PlanetResources.Metals.values().length];
-        metals = PlanetDetailPanel.calculateMetals(planet, rng, deposits, positions);
+        metals = new int [PlanetResources.Metals.values().length];
+        long [] metalPositions = new long [PlanetResources.Metals.values().length];
+        PlanetDetailPanel.calculateMetals(planet, rng, metals, metalPositions);
         
-        biosphere = PlanetDetailPanel.calculateBiosphere(planet, rng, fluidDeposits);
+        // todo: check if biosphere allows mining?
         
-        misc = PlanetDetailPanel.calculateOtherResources(planet, rng);
+        misc = PlanetResources.calculateOtherResources(planet, rng);
     }
 
     private void displayPlanetInfo() 
@@ -350,6 +358,32 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         fillRect(left, top-8-bh, 320, bh, Colors.LIST_BG);
         fillBorder(left, top-8-bh, 320, bh, 1, Colors.LIGHT_GRAY);
+        
+        int lineY = top - 40;
+        
+        for(PlanetResources.Gases gas : gasesFound)
+        {
+            Fonts.g12.drawString(gas.toString(), Colors.FIELD, left+8, lineY);
+            lineY -= 18;
+        }
+        
+        for(PlanetResources.Fluids fluid : fluidsFound)
+        {
+            Fonts.g12.drawString(fluid.toString(), Colors.FIELD, left+8, lineY);
+            lineY -= 18;
+        }
+        
+        for(PlanetResources.Minerals mineral : mineralsFound)
+        {
+            Fonts.g12.drawString(mineral.toString(), Colors.FIELD, left+8, lineY);
+            lineY -= 18;
+        }
+        
+        for(PlanetResources.Metals metal : metalsFound)
+        {
+            Fonts.g12.drawString(metal.toString(), Colors.FIELD, left+8, lineY);
+            lineY -= 18;
+        }
     }
 
     
@@ -399,8 +433,66 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     }
 
     
+    /**
+     * Scan the planet for resources. Depending on the
+     * quality of the ships scanners more or less resources
+     * will be revealed. Resources which come in large quantities
+     * have better chances to be discovered.
+     */
     private void performResourcesScan() 
     {
         System.err.println("Starting resources scan.");
+        
+        Random rng = RandomHelper.createRNG(planet.seed + 17);
+        gasesFound.clear();
+        mineralsFound.clear();
+        metalsFound.clear();
+        
+        
+        int max = 1;
+        
+        for(int i = 0; i<gases.length; i++)
+        {
+            int w = gases[i];
+            if(w > rng.nextInt(max))
+            {
+                PlanetResources.Gases gas = PlanetResources.Gases.values()[i];
+                System.err.println(gas.toString() + " " + w);
+                gasesFound.add(gas);
+            }
+        }
+        
+        for(int i = 0; i<fluids.length; i++)
+        {
+            int w = fluids[i];
+            if(w > rng.nextInt(max))
+            {
+                PlanetResources.Fluids fluid = PlanetResources.Fluids.values()[i];
+                System.err.println(fluid.toString() + " " + w);
+                fluidsFound.add(fluid);
+            }
+        }
+        
+        for(int i = 0; i<minerals.length; i++)
+        {
+            int w = minerals[i];
+            if(w > rng.nextInt(max))
+            {
+                PlanetResources.Minerals mineral = PlanetResources.Minerals.values()[i];
+                System.err.println(mineral.toString() + " " + w);
+                mineralsFound.add(mineral);
+            }
+        }
+        
+        for(int i = 0; i<metals.length; i++)
+        {
+            int w = metals[i];
+            if(w > rng.nextInt(max))
+            {
+                PlanetResources.Metals metal = PlanetResources.Metals.values()[i];
+                System.err.println(metal.toString() + " " + w);
+                metalsFound.add(metal);
+            }
+        }
     }
 }

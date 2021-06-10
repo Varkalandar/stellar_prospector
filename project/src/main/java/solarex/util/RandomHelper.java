@@ -11,7 +11,6 @@
 
 package solarex.util;
 
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
@@ -55,6 +54,9 @@ public class RandomHelper
     /**
      * Gets a random element out of an array.
      * 
+     * @param <T> Element type
+     * @param rng The rng to use
+     * @param array The array to select from
      * @return Chosen element.
      */
     public static <T> T oneOf(Random rng, T[] array)
@@ -62,14 +64,25 @@ public class RandomHelper
         return array[rng.nextInt(array.length)];
     }
     
+    
+    /**
+     * Gets a random element out of a list. Uses Math.random()
+     * 
+     * @param <T> Element type
+     * @param list The list to select from
+     * @return Chosen element.
+     */
     public static <T> T oneOf(List <T> list)
     {
         return list.get((int)(Math.random() * list.size()));
     }
 
+    
     /**
-     * Gets a random element out of an array.
+     * Gets a random element out of an array. Uses Math.random()
      * 
+     * @param <T> Element type
+     * @param array The array to select from
      * @return Chosen element.
      */
     public static <T> T oneOf(T[] array)
@@ -80,6 +93,8 @@ public class RandomHelper
     /**
      * Gets a random element out of a weighted list.
      * 
+     * @param rng The rng to use
+     * @param weights Interval size (weight)
      * @return index of chosen interval.
      */
     public static int oneOfWeightedList(Random rng, final int [] weights)

@@ -12,7 +12,6 @@ import flyspace.ui.Fonts;
 import flyspace.ui.LabeledTrigger;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
-import java.nio.FloatBuffer;
 import java.text.NumberFormat;
 import java.util.Random;
 import org.lwjgl.input.Mouse;
@@ -20,7 +19,6 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
@@ -33,7 +31,6 @@ import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
 import solarex.system.PlanetResources;
 import solarex.system.Solar;
-import solarex.system.Vec3;
 import solarex.ui.panels.PlanetDetailPanel;
 
 /**
@@ -508,7 +505,7 @@ public class PlanetInfoPanel extends DecoratedUiPanel
         for(String gas : items)
         {
             displayHTMLLine(font, gas, 0xFFFFFFFF, left + 16, top);
-            top -= 16;
+            top -= 18;
         }
     }
 }
