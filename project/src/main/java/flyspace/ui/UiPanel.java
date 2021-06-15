@@ -47,6 +47,16 @@ public abstract class UiPanel
     
     abstract public void handleInput();
     
+    /**
+     * Called before a frame is displayed. All updates to game data should
+     * happen here.
+     * @param dt Time passed since last update call
+     */
+    public void update(int dt)
+    {
+        
+    }
+    
     abstract public void display();
 
     public void displayTriggers()

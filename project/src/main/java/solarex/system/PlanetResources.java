@@ -177,10 +177,14 @@ public class PlanetResources {
         private String name;
         public String color;
 
+        /** color as 32 bit argb */
+        public final int argb;
+
         Gases(String name, String color)
         {
             this.name = name;
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         @Override
@@ -219,14 +223,19 @@ public class PlanetResources {
         /** Color for display purposes */
         public final String color;
 
+        /** color as 32 bit argb */
+        public final int argb;
+        
         Metals()
         {
             color = "#eeeeee";
-        };
+            argb = Integer.parseInt(color.substring(1), 16);            
+        }
 
         Metals(String color)
         {
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
     }
 
@@ -262,6 +271,9 @@ public class PlanetResources {
         /** Color for display purposes */
         public final String color;
 
+        /** color as 32 bit argb */
+        public final int argb;
+        
         /** Name for display purposes */
         private String name;
 
@@ -269,18 +281,21 @@ public class PlanetResources {
         {
             name = name();
             color = "#cccccc";
-        };
+            argb = Integer.parseInt(color.substring(1), 16);
+        }
 
         Minerals(String color)
         {
             name = name();
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         Minerals(String name, String color)
         {
             this.name = name;
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         @Override
@@ -302,6 +317,9 @@ public class PlanetResources {
         /** Color for display purposes */
         public final String color;
 
+        /** color as 32 bit argb */
+        public final int argb;
+        
         /** Name for display purposes */
         private String name;
 
@@ -309,6 +327,7 @@ public class PlanetResources {
         {
             this.name = name;
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         @Override
@@ -330,6 +349,9 @@ public class PlanetResources {
         /** Color for display purposes */
         public final String color;
 
+        /** color as 32 bit argb */
+        public final int argb;
+        
         /** Name for display purposes */
         private String name;
 
@@ -338,12 +360,14 @@ public class PlanetResources {
         {
             name = name();
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         OtherResource(String name, String color)
         {
             this.name = name;
             this.color = color;
+            argb = Integer.parseInt(color.substring(1), 16);
         }
 
         @Override

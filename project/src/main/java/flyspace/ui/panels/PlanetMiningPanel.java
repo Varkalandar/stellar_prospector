@@ -65,8 +65,9 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     
     
     private final DecoratedTrigger scanTrigger;
-
-    
+    private final DecoratedTrigger launchTrigger;
+    private final DecoratedTrigger recallTrigger;
+            
     public PlanetMiningPanel(FlySpace game, Ship ship) 
     {
         this.game = game;
@@ -74,8 +75,16 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         this.camera = new View();
         
         scanTrigger = new DecoratedTrigger(Fonts.g17, "Start Resources Scan", 0x3377FF00, 0xFF66EE00);
-        scanTrigger.setArea(450, 650, 320, 32);
+        scanTrigger.setArea(450, 210, 300, 32);
         addTrigger(scanTrigger);
+
+        launchTrigger = new DecoratedTrigger(Fonts.g17, "Launch Drone", 0x3377FF00, 0xFF66EE00);
+        launchTrigger.setArea(800, 450, 300, 32);
+        addTrigger(launchTrigger);
+
+        recallTrigger = new DecoratedTrigger(Fonts.g17, "Recall Drone", 0x3377FF00, 0xFF66EE00);
+        recallTrigger.setArea(800, 210, 300, 32);
+        addTrigger(recallTrigger);
     }
 
     
@@ -131,6 +140,8 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         displayPlanetInfo();
         
         displayScanResults();
+        displayDronesList();
+        displayActiveDronesList();
         
         displayTriggers();
 
@@ -303,7 +314,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
         if(planet.btype == Solar.BodyType.PLANET)
         {
-            font.drawString("Temp.:", Colors.LABEL, left, lineOffset);
+            font.drawString("Temperature:", Colors.LABEL, left, lineOffset);
             font.drawString(planet.eet + " Kelvin", Colors.FIELD, left+columnOffset, lineOffset);
             lineOffset -= lineSpace;
                 
@@ -351,41 +362,72 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     private void displayScanResults() 
     {
         int left = 450;
-        int top = 600;
+        int top = 652;
         int bh = 390;
+        int bw = 300;
         
         Fonts.g17.drawString("Scan Results:", Colors.LABEL, left, top);
         
-        fillRect(left, top-8-bh, 320, bh, Colors.LIST_BG);
-        fillBorder(left, top-8-bh, 320, bh, 1, Colors.LIGHT_GRAY);
+        fillRect(left, top-4-bh, bw, bh, Colors.LIST_BG);
+        fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
         
-        int lineY = top - 40;
+        int lineY = top - 42;
         
         for(PlanetResources.Gases gas : gasesFound)
         {
-            Fonts.g12.drawString(gas.toString(), Colors.FIELD, left+8, lineY);
+            Fonts.g12.drawString(gas.toString(), gas.argb, left+8, lineY);
             lineY -= 18;
         }
         
         for(PlanetResources.Fluids fluid : fluidsFound)
         {
-            Fonts.g12.drawString(fluid.toString(), Colors.FIELD, left+8, lineY);
+            Fonts.g12.drawString(fluid.toString(), fluid.argb, left+8, lineY);
             lineY -= 18;
         }
         
         for(PlanetResources.Minerals mineral : mineralsFound)
         {
-            Fonts.g12.drawString(mineral.toString(), Colors.FIELD, left+8, lineY);
+            Fonts.g12.drawString(mineral.toString(), mineral.argb, left+8, lineY);
             lineY -= 18;
         }
         
         for(PlanetResources.Metals metal : metalsFound)
         {
-            Fonts.g12.drawString(metal.toString(), Colors.FIELD, left+8, lineY);
+            Fonts.g12.drawString(metal.toString(), metal.argb, left+8, lineY);
             lineY -= 18;
         }
     }
 
+    
+    private void displayDronesList()
+    {
+        int left = 800;
+        int top = 652;
+        int bh = 150;
+        int bw = 300;
+        
+        Fonts.g17.drawString("Available Drones:", Colors.LABEL, left, top);
+        
+        fillRect(left, top-4-bh, bw, bh, Colors.LIST_BG);
+        fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
+        
+    }
+    
+    
+    private void displayActiveDronesList()
+    {
+        int left = 800;
+        int top = 410;
+        int bh = 150;
+        int bw = 300;
+        
+        Fonts.g17.drawString("Active Drones:", Colors.LABEL, left, top);
+        
+        fillRect(left, top-4-bh, bw, bh, Colors.LIST_BG);
+        fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
+        
+    }
+    
     
     private void displayHTMLLine(PixFont font, String line, int color, int left, int top) 
     {

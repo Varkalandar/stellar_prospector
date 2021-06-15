@@ -284,6 +284,8 @@ public class FlySpace
     private void update(int dt)
     {
         localSpace.update(dt);
+        activePanel.update(dt);
+        cockpitPanel.update(dt);
     }
     
     /**

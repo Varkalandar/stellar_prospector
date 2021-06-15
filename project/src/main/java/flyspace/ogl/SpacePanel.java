@@ -17,6 +17,7 @@ import flyspace.ui.Fonts;
 import flyspace.ui.UiPanel;
 import flyspace.ui.panels.CockpitPanel;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.input.Keyboard;
@@ -32,7 +33,7 @@ import solarex.system.Solar;
 import solarex.system.Vec3;
 
 /**
- * Isometric map display.
+ * Space view
  * 
  * @author Hj. Malthaner
  */
@@ -40,21 +41,21 @@ public class SpacePanel extends UiPanel
 {
     public static final Logger logger = Logger.getLogger(SpacePanel.class.getName());
 
-    private float mouseSensitivity = 0.0009f;
+    private final float mouseSensitivity = 0.0009f;
     private float speed = 0f;
 
 
-    private View view;
+    private final View view;
     
-    private FlySpace game;
+    private final FlySpace game;
     private final Ship ship;
-    private Space space;
-
+    private final Space space;
+    private final ArrayList<Solar> bodiesInMiningRange = new ArrayList<>(8);
     public int cursorI, cursorJ, cursorN;
 
-    private Texture nebula;
-    private AbstractMesh starsFar;
-    private AbstractMesh starsNear;
+    private final Texture nebula;
+    private final AbstractMesh starsFar;
+    private final AbstractMesh starsNear;
 
     private final ParticleDriver debrisDriver;
     
@@ -141,7 +142,9 @@ public class SpacePanel extends UiPanel
             autopilot = new Autopilot(10);
             speed = 0.0f;
         }
-         
+        
+        handleMiningList();
+        
         GlLifecycle.exitOnGLError("handleInput");
     }
 
@@ -228,6 +231,72 @@ public class SpacePanel extends UiPanel
         pos.z += front4.z * mSpeed;
     }
     
+    
+    private void handleMiningList()
+    {
+        if(Mouse.isButtonDown(0) == false & clicked)
+        {
+            int y = 250;
+            int left = width-240;
+
+            y -= 20;
+
+            int mx = Mouse.getX();
+            int my = Mouse.getY();
+            
+            for(Solar body : bodiesInMiningRange)
+            {
+                if(mx >= left && mx < width && my > y+16 && my < y+34)
+                {
+                    System.err.println("Clicked for mining: " + body.name);
+                    game.showPlanetMiningPanel(body);
+                }
+                y -= 18;
+            }        
+            
+            clicked = false;
+        }
+    }
+    
+    /**
+     * Called before a frame is displayed. All updates to game data should
+     * happen here.
+     * @param dt Time passed since last update call
+     */
+    @Override
+    public void update(int dt)
+    {
+        // Hajo: collect bodies in mining distance
+        
+        bodiesInMiningRange.clear();
+        double maxMining = 1.0E8;
+        
+        for(MultiMesh mesh : space.meshes)
+        {
+            Vec3 v = new Vec3(mesh.getPos());
+            v.sub(ship.pos);
+            
+            double d2 = v.length2();
+            
+            // System.err.println("d2=" + d2);
+            
+            if(d2 < maxMining)
+            {
+                Solar body = mesh.getPeer();
+                // System.err.println("  body=" + body.name);
+                
+                if(body.btype == Solar.BodyType.PLANET)
+                {
+                    // planet and in mining range
+
+                    // should this list be sorted?
+                    bodiesInMiningRange.add(body);
+                }
+            }
+        }
+    }
+    
+    
     @Override
     public void display()
     {
@@ -239,6 +308,7 @@ public class SpacePanel extends UiPanel
 
         displaySpace(view);
     }
+    
     
     private void displaySpace(View view)
     {
@@ -388,7 +458,7 @@ public class SpacePanel extends UiPanel
             {
                 bestMatchDistance = distance;
                 space.selectedMesh = mesh;
-            }            
+            }
         }
 
         if(runSelection && space.selectedMesh != null)
@@ -409,9 +479,11 @@ public class SpacePanel extends UiPanel
         
         if(space.selectedMesh != null && space.selectedMesh.getPeer() != null)
         {
-            Fonts.g12.drawString("Destination:", Colors.LABEL, width-240, 170);
+            Fonts.g12.drawString("Destination:", Colors.LABEL, 10, 152);
             Fonts.g12.drawString(space.selectedMesh.getPeer().name, Colors.FIELD, width-160, 170);
         }
+        
+        displayMiningList();
         
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
@@ -449,6 +521,22 @@ public class SpacePanel extends UiPanel
         GlLifecycle.exitOnGLError("displayStars3");
         
     }
+
+    private void displayMiningList()
+    {
+        int y = 250;
+        int left = width-240;
+
+        Fonts.g12.drawString("In mining range:", Colors.LABEL, left, y);
+        y -= 20;
+        
+        for(Solar body : bodiesInMiningRange)
+        {
+            Fonts.g12.drawString(body.name, Colors.FIELD, left, y);
+            y -= 18;
+        }        
+    }
+    
     
     /*
     private void displayNebulae(Camera camera) 
