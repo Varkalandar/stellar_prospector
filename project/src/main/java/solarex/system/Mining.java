@@ -19,11 +19,29 @@ public class Mining
     }
     
     
+    public int size()
+    {
+        return operations.size();
+    }
+    
+    
+    public Operation get(int i)
+    {
+        return operations.get(i);
+    }
+    
+    
     public void startOperation(Operation operation)
     {
         operations.add(operation);
     }
-            
+    
+    
+    public void stopOperation(Operation operation)
+    {
+        operations.remove(operation);
+    }
+    
 
     /**
      * Called before a frame is displayed. All updates to game data should
@@ -37,9 +55,15 @@ public class Mining
             ShipComponent drone = operation.drone;
             
             // time is in ms, so this should be 1/1000 of a unit?
-            int amount = drone.getUnitsPerTime() * dt;
+            int amount = drone.getUnitsPerTime() * dt * operation.depositWealth;
             operation.amount += amount;
         }
+    }
+
+    
+    public Iterable<Operation> getOperations() 
+    {
+        return operations;
     }
 
     
@@ -49,7 +73,9 @@ public class Mining
         public PlanetResources.Fluids fluid;
         public PlanetResources.Gases gas;
         public PlanetResources.Metals metal;
-        public PlanetResources.Minerals minaral;
+        public PlanetResources.Minerals mineral;
+        
+        public int depositWealth;
         
         public int amount;
     }

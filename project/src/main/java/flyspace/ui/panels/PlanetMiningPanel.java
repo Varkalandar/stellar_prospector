@@ -62,12 +62,17 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     private int [] biosphere;
     private int [] misc;
     
+    private final ArrayList<Deposit> allDepositsFound = new ArrayList<>();
     private final ArrayList<PlanetResources.Gases> gasesFound = new ArrayList<>();
     private final ArrayList<PlanetResources.Fluids> fluidsFound = new ArrayList<>();
     private final ArrayList<PlanetResources.Minerals> mineralsFound = new ArrayList<>();
     private final ArrayList<PlanetResources.Metals> metalsFound = new ArrayList<>();
     
     private final ArrayList<ShipComponent> availableDrones = new ArrayList<>();
+    
+    private int resourceSelected = -1;
+    private int availableDronesSelected = -1;
+    private int activeDronesSelected = -1;
     
     private final DecoratedTrigger scanTrigger;
     private final DecoratedTrigger launchTrigger;
@@ -137,21 +142,145 @@ public class PlanetMiningPanel extends DecoratedUiPanel
                 }
                 else if(t == launchTrigger)
                 {
-                    // todo: selected item in resources list
-                    // todo: selected drone
-                    
-                    Mining.Operation operation = new Mining.Operation();
-                    operation.drone = availableDrones.get(0);
-                    operation.metal = metalsFound.get(0);
-                            
-                    mining.startOperation(operation);
+                    launchDrone();
                 }
+                else if(t == recallTrigger)
+                {
+                    recallDrone();
+                }
+                
+                handleResourceListSelection(mx, my);
+                handleDroneListSelection(mx, my);
+                handleActiveDroneListSelection(mx, my);
                 
                 clicked = false;
             }
         }
     }
 
+    
+    private void launchDrone()
+    {
+        if(availableDronesSelected > -1 && availableDronesSelected < availableDrones.size())
+        {
+            Mining.Operation operation = new Mining.Operation();
+            operation.drone = availableDrones.get(availableDronesSelected);
+
+            int s = resourceSelected;
+            Deposit deposit = allDepositsFound.get(s);
+            operation.depositWealth = deposit.wealth;
+
+            if(s > 0 && s < gasesFound.size())
+            {
+                operation.gas = gasesFound.get(s);
+            }
+
+            s -= gasesFound.size();
+
+            if(s > 0 && s < fluidsFound.size())
+            {
+                operation.fluid = fluidsFound.get(s);
+            }
+
+            s -= fluidsFound.size();
+
+            if(s > 0 && s < mineralsFound.size())
+            {
+                operation.mineral = mineralsFound.get(s);
+            }
+
+            s -= mineralsFound.size();
+
+            if(s > 0 && s < metalsFound.size())
+            {
+                operation.metal = metalsFound.get(s);        
+            }
+
+            mining.startOperation(operation);
+            ship.equipment.removeComponent(operation.drone);
+            availableDrones.remove(operation.drone);
+        }
+    }
+    
+    
+    private void recallDrone()
+    {
+        if(activeDronesSelected > -1 && activeDronesSelected < mining.size())
+        {
+            Mining.Operation operation = mining.get(activeDronesSelected);
+
+            int units = operation.amount / 100000;
+            int goodType = -1;
+
+            if(operation.gas != null)
+            {
+                goodType = PlanetResources.gasToGood(operation.gas.ordinal());
+            }
+            if(operation.fluid != null)
+            {
+                goodType = PlanetResources.fluidToGood(operation.fluid.ordinal());
+            }
+            if(operation.mineral != null)
+            {
+                goodType = PlanetResources.mineralToGood(operation.mineral.ordinal());
+            }
+            if(operation.metal != null)
+            {
+                goodType = PlanetResources.metalToGood(operation.metal.ordinal());
+            }
+
+            ship.cargo.goods[goodType].units += units;
+
+            mining.stopOperation(operation);
+            ship.equipment.addComponent(operation.drone);
+            availableDrones.add(operation.drone);
+            
+        }
+    }
+    
+
+    private void handleResourceListSelection(int mx, int my)
+    {
+        int left = 450;
+        int top = 652;
+        int bh = 390;
+        int bw = 300;
+
+        if(mx > left && mx < left + bw && my < top && my > top-bh)
+        {
+            resourceSelected = (top - my - 14) / 18;
+        }
+    }
+
+    
+    private void handleDroneListSelection(int mx, int my)
+    {
+        int left = 800;
+        int top = 652;
+        int bh = 150;
+        int bw = 300;
+
+        if(mx > left && mx < left + bw && my < top && my > top-bh)
+        {
+            availableDronesSelected = (top - my - 14) / 18;
+        }
+    }
+    
+    
+    private void handleActiveDroneListSelection(int mx, int my)
+    {
+        int left = 800;
+        int top = 410;
+        int bh = 150;
+        int bw = 300;
+
+        if(mx > left && mx < left + bw && my < top && my > top-bh)
+        {
+            activeDronesSelected = (top - my - 14) / 40;
+        }
+    }
+    
+    
     @Override
     public void display() 
     {
@@ -165,7 +294,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         displayPlanetInfo();
         
-        displayScanResults();
+        displayResourceList();
         displayDronesList();
         displayActiveDronesList();
         
@@ -385,7 +514,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     }
 
     
-    private void displayScanResults() 
+    private void displayResourceList() 
     {
         int left = 450;
         int top = 652;
@@ -399,29 +528,25 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         int lineY = top - 42;
         
-        for(PlanetResources.Gases gas : gasesFound)
+        if(resourceSelected > -1 && resourceSelected < allDepositsFound.size())
         {
-            Fonts.g12.drawString(gas.toString(), gas.argb, left+8, lineY);
+            int selY = lineY - resourceSelected * 18 + 11;
+            displayListSelectionBox(left+4, selY, bw-8, 21);
+        }
+        
+        String [] size = {"Traces", "Poor", "Average", "Rich", "Abundant"};
+        
+        for(Deposit deposit : allDepositsFound)
+        {            
+            Fonts.g12.drawString(deposit.resource.toString(), 
+                                 deposit.resource.getARGB(), left+8, lineY);
+            
+            Fonts.g12.drawString(size[deposit.wealth-1],
+                                 Colors.FIELD, left+120, lineY);
+            
             lineY -= 18;
         }
         
-        for(PlanetResources.Fluids fluid : fluidsFound)
-        {
-            Fonts.g12.drawString(fluid.toString(), fluid.argb, left+8, lineY);
-            lineY -= 18;
-        }
-        
-        for(PlanetResources.Minerals mineral : mineralsFound)
-        {
-            Fonts.g12.drawString(mineral.toString(), mineral.argb, left+8, lineY);
-            lineY -= 18;
-        }
-        
-        for(PlanetResources.Metals metal : metalsFound)
-        {
-            Fonts.g12.drawString(metal.toString(), metal.argb, left+8, lineY);
-            lineY -= 18;
-        }
     }
 
     
@@ -438,6 +563,12 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
         
         int lineY = top - 42;
+        
+        if(availableDronesSelected > -1 && availableDronesSelected < availableDrones.size())
+        {
+            int selY = lineY - availableDronesSelected * 18 + 11;
+            displayListSelectionBox(left+4, selY, bw-8, 21);
+        }
         
         for(ShipComponent drone : availableDrones)
         {
@@ -460,8 +591,45 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         fillRect(left, top-4-bh, bw, bh, Colors.LIST_BG);
         fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
         
+        int lineY = top - 42;
+        
+        if(activeDronesSelected > -1 && activeDronesSelected < mining.size())
+        {
+            int selY = lineY - availableDronesSelected * 18 + 11 - 20;
+            displayListSelectionBox(left+4, selY, bw-8, 43);
+        }
+        
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumFractionDigits(3);
+        nf.setMaximumFractionDigits(3);
+        
+        for(Mining.Operation operation : mining.getOperations())
+        {
+            displayHTMLLine(Fonts.g12, operation.drone.getName(), Colors.FIELD, left+8, lineY);
+            
+            PlanetResources.Resource resource = PlanetResources.Gases.Hydrogen;
+            if(operation.gas != null) resource = operation.gas;
+            if(operation.fluid != null) resource = operation.fluid;
+            if(operation.mineral != null) resource = operation.mineral;
+            if(operation.metal != null) resource = operation.metal;
+
+            String amount = nf.format(operation.amount * 0.00001);
+            String label = resource.toString() + ":";
+            int lw = Fonts.g12.getStringWidth(label);
+            Fonts.g12.drawString(label, resource.getARGB(), left+20, lineY - 18);
+            Fonts.g12.drawString(amount, Colors.FIELD, left+24 + lw, lineY - 18);
+            
+            lineY -= 40;
+        }
     }
     
+    
+    public void displayListSelectionBox(int left, int top, int bw, int bh)
+    {
+        fillRect(left, top, bw, bh, Colors.LIST_SELECT);        
+        fillBorder(left, top, bw, bh, 1, Colors.LIST_SELECT_BORDER);
+    }
+
     
     private void displayHTMLLine(PixFont font, String line, int color, int left, int top) 
     {
@@ -498,16 +666,6 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     }
 
     
-    private void showList(String[] items, PixFont font, int left, int top) 
-    {
-        for(String gas : items)
-        {
-            displayHTMLLine(font, gas, 0xFFFFFFFF, left + 16, top);
-            top -= 16;
-        }
-    }
-
-    
     /**
      * Scan the planet for resources. Depending on the
      * quality of the ships scanners more or less resources
@@ -528,46 +686,63 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         for(int i = 0; i<gases.length; i++)
         {
-            int w = gases[i];
-            if(w > rng.nextInt(max))
+            int wealth = gases[i];
+            if(wealth > rng.nextInt(max))
             {
                 PlanetResources.Gases gas = PlanetResources.Gases.values()[i];
-                System.err.println(gas.toString() + " " + w);
+                // System.err.println(gas.toString() + " " + w);
                 gasesFound.add(gas);
+                allDepositsFound.add(new Deposit(gas, wealth));
             }
         }
         
         for(int i = 0; i<fluids.length; i++)
         {
-            int w = fluids[i];
-            if(w > rng.nextInt(max))
+            int wealth = fluids[i];
+            if(wealth > rng.nextInt(max))
             {
                 PlanetResources.Fluids fluid = PlanetResources.Fluids.values()[i];
-                System.err.println(fluid.toString() + " " + w);
+                // System.err.println(fluid.toString() + " " + w);
                 fluidsFound.add(fluid);
+                allDepositsFound.add(new Deposit(fluid, wealth));
             }
         }
         
         for(int i = 0; i<minerals.length; i++)
         {
-            int w = minerals[i];
-            if(w > rng.nextInt(max))
+            int wealth = minerals[i];
+            if(wealth > rng.nextInt(max))
             {
                 PlanetResources.Minerals mineral = PlanetResources.Minerals.values()[i];
-                System.err.println(mineral.toString() + " " + w);
+                // System.err.println(mineral.toString() + " " + w);
                 mineralsFound.add(mineral);
+                allDepositsFound.add(new Deposit(mineral, wealth));
             }
         }
         
         for(int i = 0; i<metals.length; i++)
         {
-            int w = metals[i];
-            if(w > rng.nextInt(max))
+            int wealth = metals[i];
+            if(wealth > rng.nextInt(max))
             {
                 PlanetResources.Metals metal = PlanetResources.Metals.values()[i];
-                System.err.println(metal.toString() + " " + w);
+                // System.err.println(metal.toString() + " " + w);
                 metalsFound.add(metal);
+                allDepositsFound.add(new Deposit(metal, wealth));
             }
+        }
+    }
+    
+    
+    private class Deposit
+    {
+        PlanetResources.Resource resource;
+        int wealth;
+
+        private Deposit(PlanetResources.Resource resource, int wealth) 
+        {
+            this.resource = resource;
+            this.wealth = wealth;
         }
     }
 }

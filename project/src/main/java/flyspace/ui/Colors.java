@@ -27,8 +27,8 @@ public class Colors
     
     public static final int LIST_BG = DARKER_GRAY;
     public static final int LIST_BORDER = LIGHT_GRAY;
-    public static final int LIST_SELECT = 0xFF223366;
-    public static final int LIST_SELECT_BORDER = 0xFF334477;
+    public static final int LIST_SELECT = 0xFF223066;
+    public static final int LIST_SELECT_BORDER = 0xFF334077;
     public static final int TRIGGER = 0x3377FF00;
     public static final int TRIGGER_HOT = 0x33FF7700;
     public static final int TRIGGER_TEXT = 0xFF66EE00;

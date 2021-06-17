@@ -161,9 +161,91 @@ public class PlanetResources {
         return n;        
     }
 
-
     
-    public enum Gases
+    public static int mineralToGood(int i)
+    {
+        int n = 0;
+        
+        Minerals mineral = Minerals.values()[i];
+        
+        
+        // todo: review and complete the list
+        switch(mineral)
+        {
+            case CeramicMinerals:
+                n = Good.Type.CeramicMinerals.ordinal();
+                break;
+            case Cerium:
+                n = Good.Type.RareEarths.ordinal();
+                break;
+            case Dysprosium:
+                break;
+            case Erbium:
+                break;
+            case Europium:
+                break;
+            case Fluorspar:
+                n = Good.Type.Fertilizer.ordinal();
+                break;
+            case Gadolinium:
+                break;
+            case Gypsum:
+                n = Good.Type.Fertilizer.ordinal();
+                break;
+            case Holmium:
+                break;
+            case IronOxides:
+                n = Good.Type.Fertilizer.ordinal();
+                break;
+            case Lanthanum:
+                break;
+            case Lutetium:
+                break;
+            case Neodymium:
+                n = Good.Type.RareEarths.ordinal();
+                break;
+            case Phosphates:
+                n = Good.Type.Fertilizer.ordinal();
+                break;
+            case Potash:
+                break;
+            case Praseodymium:
+                n = Good.Type.RareEarths.ordinal();
+                break;
+            case Promethium:
+                n = Good.Type.RareEarths.ordinal();
+                break;
+            case Samarium:
+                n = Good.Type.RareEarths.ordinal();
+                break;
+            case Scandium:
+                break;
+            case Sulphur:
+                n = Good.Type.Fertilizer.ordinal();
+                break;
+            case Terbium:
+                break;
+            case Thulium:
+                break;
+            case Ytterbium:
+                break;
+            case Yttrium:
+                break;
+        }
+        
+        return n;
+    }
+    
+    
+    public interface Resource
+    {
+        @Override
+        public String toString();
+        
+        public int getARGB();
+    }
+    
+    public enum Gases implements Resource
     {
         Hydrogen("Hydrogen", "#eeeeee"),
         Helium("Helium", "#ffffcc"),
@@ -193,6 +275,11 @@ public class PlanetResources {
             return name;
         }
 
+        @Override
+        public int getARGB()
+        {
+            return argb;
+        }
     }
 
     /**
@@ -200,7 +287,7 @@ public class PlanetResources {
      * on some planets.
      * @author Hj. Malthaner
      */
-    public enum Metals
+    public enum Metals implements Resource
     {
         Chromium("#ddeeff"),
         Lead("#aaaaaa"),
@@ -237,10 +324,16 @@ public class PlanetResources {
             this.color = color;
             argb = Integer.parseInt(color.substring(1), 16);
         }
+        
+        @Override
+        public int getARGB()
+        {
+            return argb;
+        }
     }
 
 
-    public enum Minerals
+    public enum Minerals implements Resource
     {
         Sulphur("#dddddd"),
         Phosphates,
@@ -303,9 +396,15 @@ public class PlanetResources {
         {
             return name;
         }
+
+        @Override
+        public int getARGB()
+        {
+            return argb;
+        }
     }
 
-    public enum Fluids
+    public enum Fluids implements Resource
     {                                                 // Good:
         Water("Water", "#aabbff"),                    // -> water
         Hydrocarbons("Hydrocarbons", "#eebb88"),      // -> hydrocarbons  
@@ -335,9 +434,15 @@ public class PlanetResources {
         {
             return name;
         }
+
+        @Override
+        public int getARGB()
+        {
+            return argb;
+        }
     }
 
-    public enum OtherResource
+    public enum OtherResource implements Resource
     {
         AlienArtefacts("Alien Artefacts", "#dddddd"),
         UnknownAlienArtefacts("Unknown Alien Artefacts", "#ff7777"),
@@ -374,6 +479,12 @@ public class PlanetResources {
         public String toString()
         {
             return name;
+        }
+
+        @Override
+        public int getARGB()
+        {
+            return argb;
         }
     }
 
