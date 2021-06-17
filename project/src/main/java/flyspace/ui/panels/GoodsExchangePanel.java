@@ -187,11 +187,11 @@ public class GoodsExchangePanel extends DecoratedUiPanel
         
         font.drawText(storage.goods[selectedGood].type.description, Colors.TEXT, 919, 550, 206, 1.0f);
   
-        font.drawString("Cash:", Colors.LABEL, 500, 190);
-        font.drawString(nf.format(ship.cargo.money) + "$", Colors.TEXT, 550, 190);
+        font.drawString("Cash:", Colors.LABEL, 480, 190);
+        font.drawString(nf.format(ship.cargo.money) + "$", Colors.TEXT, 520, 190);
         
         font.drawString("Payload left:", Colors.LABEL, 610, 190);
-        font.drawString("" + ship.cargo.availableSpace() + "kg", Colors.TEXT, 690, 190);
+        font.drawString("" + ship.cargo.availableSpace() + "kg", Colors.TEXT, 695, 190);
 
         
         displayTriggers();
