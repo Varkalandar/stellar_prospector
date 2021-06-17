@@ -167,6 +167,12 @@ public class ShipAssembly extends ShipComponent
         return 0;
     }
 
+    @Override
+    public int getUnitsPerTime()
+    {
+        return 0;
+    }
+    
     public void addComponent(ShipComponent comp)
     {
         components.add(comp);

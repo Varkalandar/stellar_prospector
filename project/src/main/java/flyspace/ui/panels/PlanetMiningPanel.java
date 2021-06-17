@@ -29,6 +29,9 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
+import solarex.ship.components.EquipmentType;
+import solarex.ship.components.ShipComponent;
+import solarex.system.Mining;
 import solarex.system.PlanetResources;
 import solarex.system.Solar;
 import solarex.ui.panels.PlanetDetailPanel;
@@ -43,6 +46,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     private Solar planet;
     private final FlySpace game;
     private final Ship ship;
+    private final Mining mining;
     
     private MultiMesh planetMesh;
     private final View camera;
@@ -63,15 +67,18 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     private final ArrayList<PlanetResources.Minerals> mineralsFound = new ArrayList<>();
     private final ArrayList<PlanetResources.Metals> metalsFound = new ArrayList<>();
     
+    private final ArrayList<ShipComponent> availableDrones = new ArrayList<>();
     
     private final DecoratedTrigger scanTrigger;
     private final DecoratedTrigger launchTrigger;
     private final DecoratedTrigger recallTrigger;
             
-    public PlanetMiningPanel(FlySpace game, Ship ship) 
+    public PlanetMiningPanel(FlySpace game, Ship ship, Mining mining) 
     {
         this.game = game;
         this.ship = ship;
+        this.mining = mining;
+        
         this.camera = new View();
         
         scanTrigger = new DecoratedTrigger(Fonts.g17, "Start Resources Scan", 0x3377FF00, 0xFF66EE00);
@@ -96,6 +103,14 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         ShaderBank.setupMatrices(250, 250);
         ShaderBank.updateViewMatrix(new Matrix4f());
         ShaderBank.updateLightPos(-10000.0f, 0.0f, 10000.0f);
+        
+        for(ShipComponent component : ship.equipment.components)
+        {
+            if(component.getType() == EquipmentType.DRONE)
+            {
+                availableDrones.add(component);
+            }
+        }
     }
 
     
@@ -119,6 +134,17 @@ public class PlanetMiningPanel extends DecoratedUiPanel
                 if(t == scanTrigger)
                 {
                     performResourcesScan();
+                }
+                else if(t == launchTrigger)
+                {
+                    // todo: selected item in resources list
+                    // todo: selected drone
+                    
+                    Mining.Operation operation = new Mining.Operation();
+                    operation.drone = availableDrones.get(0);
+                    operation.metal = metalsFound.get(0);
+                            
+                    mining.startOperation(operation);
                 }
                 
                 clicked = false;
@@ -411,6 +437,14 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         fillRect(left, top-4-bh, bw, bh, Colors.LIST_BG);
         fillBorder(left, top-4-bh, bw, bh, 1, Colors.LIGHT_GRAY);
         
+        int lineY = top - 42;
+        
+        for(ShipComponent drone : availableDrones)
+        {
+            // Fonts.g12.drawString(drone.getName(), Colors.FIELD, left+8, lineY);
+            displayHTMLLine(Fonts.g12, drone.getName(), Colors.FIELD, left+8, lineY);
+            lineY -= 18;
+        }
     }
     
     
@@ -431,8 +465,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     
     private void displayHTMLLine(PixFont font, String line, int color, int left, int top) 
     {
-        line = line.replace("&lt;", "<");
-        
+        line = line.replace("&lt;", "<").replace("&gt;", ">").replace("<br>", " ");
         
         int p1, p2;
         

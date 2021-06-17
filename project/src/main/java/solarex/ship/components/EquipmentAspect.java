@@ -46,6 +46,12 @@ public enum EquipmentAspect
     CURRENT_DURABILITY,
     MAX_DURABILITY,
     
+    
+    /**
+     * Some equipments can produce things
+     */
+    UNITS_PER_TIME,
+    
     /**
      * The base price of this equipment item. May be modified 
      * by the trader.

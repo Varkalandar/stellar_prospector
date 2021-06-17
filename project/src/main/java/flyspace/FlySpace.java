@@ -42,6 +42,7 @@ import solarex.galaxy.Galaxy;
 import solarex.galaxy.SystemLocation;
 import solarex.io.LoadSave;
 import solarex.ship.Ship;
+import solarex.system.Mining;
 import solarex.system.Society;
 import solarex.system.Solar;
 import solarex.system.Vec3;
@@ -113,6 +114,7 @@ public class FlySpace
 
     private World world;
     private Galaxy galaxy;
+    private final Mining mining;
     
     private final Canvas canvas;
 
@@ -189,6 +191,7 @@ public class FlySpace
             }
         });
 
+        mining = new Mining();
         initGameData();
     }
 
@@ -216,7 +219,7 @@ public class FlySpace
         systemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
         distantSystemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
         planetInfoPanel = new PlanetInfoPanel(this, ship);
-        planetMiningPanel = new PlanetMiningPanel(this, ship);
+        planetMiningPanel = new PlanetMiningPanel(this, ship, mining);
         systemMapPanel = new SystemMapPanel(this, localSpace, ship);
         galacticMapPanel = new GalacticMapPanel(this, galaxy, ship);
         
@@ -286,6 +289,7 @@ public class FlySpace
         localSpace.update(dt);
         activePanel.update(dt);
         cockpitPanel.update(dt);
+        mining.update(dt);
     }
     
     /**

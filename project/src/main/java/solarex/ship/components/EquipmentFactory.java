@@ -103,6 +103,7 @@ public class EquipmentFactory
                 equipment.setAspect(EquipmentAspect.MAX_OPERATING_TEMP, 800);
                 equipment.setAspect(EquipmentAspect.CURRENT_DURABILITY, 100);          
                 equipment.setAspect(EquipmentAspect.MAX_DURABILITY, 100);          
+                equipment.setAspect(EquipmentAspect.UNITS_PER_TIME, 1);          
                 break;
             case FANFOSTAR:
                 equipment.setAspect(EquipmentAspect.NAME, "<font color='#FF9900'>&lt;Fanfostar Chorus-12&gt;</font><br> Gas Filtration Drone");
@@ -116,6 +117,7 @@ public class EquipmentFactory
                 equipment.setAspect(EquipmentAspect.MAX_OPERATING_TEMP, 1000);
                 equipment.setAspect(EquipmentAspect.CURRENT_DURABILITY, 100);          
                 equipment.setAspect(EquipmentAspect.MAX_DURABILITY, 100);          
+                equipment.setAspect(EquipmentAspect.UNITS_PER_TIME, 1);          
                 break;
             case SUPERSCOOPER:
                 equipment.setAspect(EquipmentAspect.NAME, "<font color='#FF9900'>&lt;Super Scooper&gt;</font><br> Mining Drone");
@@ -129,6 +131,7 @@ public class EquipmentFactory
                 equipment.setAspect(EquipmentAspect.MAX_OPERATING_TEMP, 400);
                 equipment.setAspect(EquipmentAspect.CURRENT_DURABILITY, 100);
                 equipment.setAspect(EquipmentAspect.MAX_DURABILITY, 100);          
+                equipment.setAspect(EquipmentAspect.UNITS_PER_TIME, 1);          
                 break;
             case DRILLDOWN_DYNAMOS:
                 equipment.setAspect(EquipmentAspect.NAME, "<font color='#FF9900'>&lt;Drilldown Dynamos&gt;</font><br> Mining Drone");
@@ -142,6 +145,7 @@ public class EquipmentFactory
                 equipment.setAspect(EquipmentAspect.MAX_OPERATING_TEMP, 1200);
                 equipment.setAspect(EquipmentAspect.CURRENT_DURABILITY, 150);          
                 equipment.setAspect(EquipmentAspect.MAX_DURABILITY, 150);          
+                equipment.setAspect(EquipmentAspect.UNITS_PER_TIME, 1);          
                 break;
             case INO_SLUURP:
                 equipment.setAspect(EquipmentAspect.NAME, "<font color='#FF9900'>&lt;Ino SLUURP&gt;</font><br> Fluid Distillation Drone");
@@ -155,6 +159,7 @@ public class EquipmentFactory
                 equipment.setAspect(EquipmentAspect.MAX_OPERATING_TEMP, 300);
                 equipment.setAspect(EquipmentAspect.CURRENT_DURABILITY, 100);          
                 equipment.setAspect(EquipmentAspect.MAX_DURABILITY, 100);          
+                equipment.setAspect(EquipmentAspect.UNITS_PER_TIME, 1);          
                 break;
             default:
                 equipment.setAspect(EquipmentAspect.NAME, "Unset");

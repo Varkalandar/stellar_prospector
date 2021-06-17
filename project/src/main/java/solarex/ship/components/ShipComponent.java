@@ -96,4 +96,10 @@ public abstract class ShipComponent
     
     public abstract double getEffectiveDriveRange(int mass);
     
+    /**
+     * Some equipment can produce something.
+     * @return 
+     */
+    public abstract int getUnitsPerTime();
+
 }

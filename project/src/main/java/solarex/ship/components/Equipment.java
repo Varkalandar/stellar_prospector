@@ -120,6 +120,16 @@ public class Equipment extends ShipComponent
         return (range * 100.0) / mass;
     }
     
+    /**
+     * Some equipment can produce something.
+     * @return 
+     */
+    @Override
+    public int getUnitsPerTime() 
+    {
+        return getInt(EquipmentAspect.UNITS_PER_TIME);        
+    }
+    
     /** 
      * A unique key for this component.
      * @return A unique key for this component.
@@ -151,4 +161,5 @@ public class Equipment extends ShipComponent
         
         return o.toString();
     }
+
 }
