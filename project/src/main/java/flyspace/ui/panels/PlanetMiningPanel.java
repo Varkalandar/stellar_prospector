@@ -541,7 +541,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
             Fonts.g12.drawString(deposit.resource.toString(), 
                                  deposit.resource.getARGB(), left+8, lineY);
             
-            Fonts.g12.drawString(size[deposit.wealth-1],
+            Fonts.g12.drawString(size[Math.min(deposit.wealth-1, 4)],
                                  Colors.FIELD, left+120, lineY);
             
             lineY -= 18;
@@ -686,7 +686,10 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         for(int i = 0; i<gases.length; i++)
         {
-            int wealth = gases[i];
+            // Hajo: unlike other resources, gases are given in percent of
+            // of the atmosphere and thus can range from 0 to 100, but
+            // the wealth scale is 0..4
+            int wealth = (gases[i] + 20) / 25;
             if(wealth > rng.nextInt(max))
             {
                 PlanetResources.Gases gas = PlanetResources.Gases.values()[i];
