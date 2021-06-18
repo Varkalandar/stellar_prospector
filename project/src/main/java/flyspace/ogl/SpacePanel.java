@@ -51,6 +51,7 @@ public class SpacePanel extends UiPanel
     private final Ship ship;
     private final Space space;
     private final ArrayList<Solar> bodiesInMiningRange = new ArrayList<>(8);
+    private final ArrayList<Solar> bodiesInDockingRange = new ArrayList<>(8);
     public int cursorI, cursorJ, cursorN;
 
     private final Texture nebula;
@@ -144,6 +145,34 @@ public class SpacePanel extends UiPanel
         }
         
         handleMiningList();
+        handleDockingList();
+        
+        if(clicked && Mouse.isButtonDown(0) == false)
+        {
+            space.selectedMesh = null;
+            bestMatchDistance = 99;
+            
+            for(MultiMesh mesh : space.meshes)
+            {
+                int distance = Math.abs(Mouse.getX() - mesh.lastScreenX) + Math.abs(Mouse.getY() - mesh.lastScreenY);
+
+                if(distance < bestMatchDistance)
+                {
+                    bestMatchDistance = distance;
+                    space.selectedMesh = mesh;
+                }
+            }
+
+            if(space.selectedMesh != null)
+            {
+                setDestination();
+            }
+        }
+        
+        if(Mouse.isButtonDown(0) == false & clicked)
+        {
+            clicked = false;
+        }        
         
         GlLifecycle.exitOnGLError("handleInput");
     }
@@ -237,7 +266,7 @@ public class SpacePanel extends UiPanel
         if(Mouse.isButtonDown(0) == false & clicked)
         {
             int y = 250;
-            int left = width-240;
+            int left = width-200;
 
             y -= 20;
 
@@ -253,10 +282,34 @@ public class SpacePanel extends UiPanel
                 }
                 y -= 18;
             }        
-            
-            clicked = false;
         }
     }
+    
+    
+    private void handleDockingList()
+    {
+        if(Mouse.isButtonDown(0) == false & clicked)
+        {
+            int y = 350;
+            int left = width-200;
+
+            y -= 20;
+
+            int mx = Mouse.getX();
+            int my = Mouse.getY();
+            
+            for(Solar body : bodiesInDockingRange)
+            {
+                if(mx >= left && mx < width && my > y+16 && my < y+34)
+                {
+                    System.err.println("Clicked for docking: " + body.name);
+                    game.dockAt(body);
+                }
+                y -= 18;
+            }        
+        }
+    }
+
     
     /**
      * Called before a frame is displayed. All updates to game data should
@@ -269,7 +322,9 @@ public class SpacePanel extends UiPanel
         // Hajo: collect bodies in mining distance
         
         bodiesInMiningRange.clear();
-        double maxMining = 1.0E8;
+        bodiesInDockingRange.clear();
+        double maxMining = 1.0E7;
+        double maxDocking = 1.0E6;
         
         for(MultiMesh mesh : space.meshes)
         {
@@ -291,6 +346,18 @@ public class SpacePanel extends UiPanel
 
                     // should this list be sorted?
                     bodiesInMiningRange.add(body);
+                }
+            }
+            
+            if(d2 < maxDocking)
+            {
+                Solar body = mesh.getPeer();
+                // System.err.println("  body=" + body.name);
+                
+                if(body.btype == Solar.BodyType.SPACEPORT ||
+                   body.btype == Solar.BodyType.STATION)
+                {
+                    bodiesInDockingRange.add(body);
                 }
             }
         }
@@ -434,56 +501,36 @@ public class SpacePanel extends UiPanel
         
         glViewport(0, 0, width, height);
 
-        boolean runSelection = false;
-        
-        if(clicked && Mouse.isButtonDown(0) == false)
-        {
-            runSelection = true;
-            clicked = false;
-        }
-        
-        if(runSelection) 
-        {
-            space.selectedMesh = null;
-            bestMatchDistance = 99;
-        }
         
         for(MultiMesh mesh : space.meshes)
         {
             showLabel(mesh);
-
-            int distance = Math.abs(Mouse.getX() - mesh.lastScreenX) + Math.abs(Mouse.getY() - mesh.lastScreenY);
-            
-            if(runSelection && distance < bestMatchDistance)
-            {
-                bestMatchDistance = distance;
-                space.selectedMesh = mesh;
-            }
-        }
-
-        if(runSelection && space.selectedMesh != null)
-        {
-            setDestination();
         }
         
-        Fonts.g12.drawString("Speed: ", Colors.LABEL, 10, 170);
+        Fonts.g12.drawString("Speed: ", Colors.LABEL, 10, 168);
         
         if(autopilot != null)
         {
-            Fonts.g12.drawString(autopilot.speedString, Colors.FIELD, 60, 170);
+            Fonts.g12.drawString(autopilot.speedString, Colors.FIELD, 90, 168);
         }
         else
         {
-            Fonts.g12.drawString("" + speed, Colors.FIELD, 60, 170);
+            Fonts.g12.drawString("" + speed, Colors.FIELD, 90, 168);
         }
         
         if(space.selectedMesh != null && space.selectedMesh.getPeer() != null)
         {
             Fonts.g12.drawString("Destination:", Colors.LABEL, 10, 152);
-            Fonts.g12.drawString(space.selectedMesh.getPeer().name, Colors.FIELD, width-160, 170);
+            Fonts.g12.drawString(space.selectedMesh.getPeer().name, Colors.FIELD, 90, 152);
         }
         
+        Fonts.c9.drawString("Use cursor up/down for manual thrust. Press space to break hard.", Colors.CYAN, 10, 690);
+        Fonts.c9.drawString("Drag view by mouse. Click to set autopilot destination.", Colors.CYAN, 10, 675);
+        Fonts.c9.drawString("Press A to activate autopilot.", Colors.CYAN, 10, 660);
+        
+        
         displayMiningList();
+        displayDockingList();
         
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
@@ -525,7 +572,7 @@ public class SpacePanel extends UiPanel
     private void displayMiningList()
     {
         int y = 250;
-        int left = width-240;
+        int left = width-200;
 
         Fonts.g12.drawString("In mining range:", Colors.LABEL, left, y);
         y -= 20;
@@ -536,7 +583,22 @@ public class SpacePanel extends UiPanel
             y -= 18;
         }        
     }
+
     
+    private void displayDockingList()
+    {
+        int y = 350;
+        int left = width-200;
+
+        Fonts.g12.drawString("Automatic landing options:", Colors.LABEL, left, y);
+        y -= 20;
+        
+        for(Solar body : bodiesInDockingRange)
+        {
+            Fonts.g12.drawString(body.name, Colors.FIELD, left, y);
+            y -= 18;
+        }        
+    }
     
     /*
     private void displayNebulae(Camera camera) 

@@ -21,7 +21,7 @@ public class Space
     private static final Logger logger = Logger.getLogger(Space.class.getName());
 
     public final ArrayList<MultiMesh> meshes;
-    private int convertersRunning;
+    private volatile int convertersRunning;
     public static final float DISPLAY_SCALE = 0.01f;
     
     public MultiMesh selectedMesh;
@@ -116,6 +116,7 @@ public class Space
         
         convertersRunning ++;
         t.start();
+        // t.run();
     }
     
     private synchronized void notifyConverterDone()
@@ -167,19 +168,15 @@ public class Space
                             pos.z*DISPLAY_SCALE);
             }
             
-            synchronized(meshes)
-            {
-                add(mesh);
-            }
+            add(mesh);
         }
         else
         {
             System.err.println("  " + system.name + " has no conversion.");
-            
         }
-        
     }
 
+    
     public MultiMesh convertSun(Solar system)
     {
         MultiMesh sun = new MultiMesh();
@@ -325,7 +322,7 @@ public class Space
         
     }
 
-    public void add(MultiMesh body) 
+    synchronized public void add(MultiMesh body) 
     {
         if(body == null) throw new IllegalArgumentException("Body is null!");
             

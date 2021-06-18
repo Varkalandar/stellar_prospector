@@ -121,22 +121,11 @@ public class SystemMapPanel extends DecoratedUiPanel
         {
             if(clicked)
             {
-                /*                
-                Trigger t = trigger(mx, my);
-                
-                if(t == loungeTrigger)
+                if(bestMesh != null)
                 {
-                    game.showStationPanel();
+                    space.selectedMesh = bestMesh;
+                    SpacePanel.setDestination(ship, bestMesh);
                 }
-                else
-                {
-                */
-                    if(bestMesh != null)
-                    {
-                        space.selectedMesh = bestMesh;
-                        SpacePanel.setDestination(ship, bestMesh);
-                    }
-                // }
                 
                 clicked = false;
             }
@@ -180,7 +169,7 @@ public class SystemMapPanel extends DecoratedUiPanel
         fillRect(11, 181, 308, 37, 0x99001020);
 
         Fonts.c9.drawString("Drag map by mouse. Zoom with mouse wheel.", Colors.CYAN, 18, 185);
-        Fonts.c9.drawString("Click to set autopilot destinatoin.", Colors.CYAN, 18, 170);
+        Fonts.c9.drawString("Click to set autopilot destination.", Colors.CYAN, 18, 170);
         
         
         displayTriggers();
