@@ -1,0 +1,67 @@
+<project name="Jewelhunt" default="dist" basedir=".">
+    <description>
+        A simple Jewelhunt project build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src/main/java:src/main/resources"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="release"  location="release"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" debug="true"
+              classpath="lwjgl-2.9.1/jar/lwjgl.jar:lwjgl-2.9.1/jar/lwjgl_util.jar"
+    />
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+
+    <copy todir="${build}">
+	<fileset dir="src/main/resources"/>
+	<fileset file="src/main/scripts/manifest.mf"/>
+    </copy>
+
+   <!-- Put everything in ${build} into the JewelHunt.jar file -->
+    <jar jarfile="${dist}/stellar_prospector.jar" basedir="${build}">
+     <manifest>
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Main-Class" value="flyspace.FlySpace"/>
+      <attribute name="Class-Path" value="lwjgl-2.9.1/jar/lwjgl.jar lwjgl-2.9.1/jar/lwjgl_util.jar"/>
+    </manifest>
+   </jar>
+  </target>
+
+  <target name="release" depends="dist"
+        description="generate the release" >
+    <!-- Create the release directory -->
+    <mkdir dir="${release}"/>
+
+    <copy todir="${release}/">
+	<fileset dir="src/main/scripts"/>
+	<!-- <fileset file="${src}/credits.txt"/> -->
+	<!-- <fileset file="${src}/readme.txt"/> -->
+	<fileset file="${dist}/stellar_prospector.jar"/>
+    </copy>
+    <copy todir="${release}/lwjgl-2.9.1">
+	<fileset dir="lwjgl-2.9.1"/>
+    </copy>
+  </target>
+
+<target name="clean" description="clean up" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${release}"/>
+  </target>
+</project>
