@@ -34,6 +34,9 @@ public class SystemMapPanel extends DecoratedUiPanel
     private boolean clicked;
     // private final DecoratedTrigger loungeTrigger;
     
+    // make system "lay" at 45° degree angle so once can see the orbits
+    // better on screen.
+    private final double yscale = 0.5;
     private double scale;
     private int zoom;
     
@@ -187,7 +190,7 @@ public class SystemMapPanel extends DecoratedUiPanel
         for(double u=0; u <= 2*Math.PI; u += Math.PI/128)
         {
             fillRect(xpos + (int)(Math.cos(u)*rad),
-                     ypos + (int)(Math.sin(u)*rad),
+                     ypos + (int)(Math.sin(u)*rad * yscale),
                      1,
                      1,
                      Colors.GRAY);
@@ -199,7 +202,7 @@ public class SystemMapPanel extends DecoratedUiPanel
                              MultiMesh multiMesh)
     {
         int screenX = centerX + (int) (xoff * scale);
-        int screenY = centerY + (int) (yoff * scale);
+        int screenY = centerY + (int) (yoff * scale * yscale);
         Solar body = multiMesh.getPeer();
 
         if(screenX >= 0 && screenY >= 0 && screenX < width && screenY < height && body != null)
@@ -221,7 +224,7 @@ public class SystemMapPanel extends DecoratedUiPanel
 
             Vector3f translation = new Vector3f(
                     (float) (xoff * scale),
-                    (float) (yoff * scale + CockpitPanel.HEIGHT/2),
+                    (float) (yoff * scale  * yscale + CockpitPanel.HEIGHT/2),
                     (float) (-body.radius * Space.DISPLAY_SCALE));
 
             modelMatrix.translate(translation);
@@ -308,7 +311,7 @@ public class SystemMapPanel extends DecoratedUiPanel
                     if(trabant.btype != Solar.BodyType.SPACEPORT)
                     {
                         paintOrbit(centerX + (int) (xoff * scale),
-                                   centerY + (int) (yoff * scale),
+                                   centerY + (int) (yoff * scale * yscale),
                                    (int) (trabant.orbit * scale * Space.DISPLAY_SCALE));
                     }
 
@@ -329,98 +332,23 @@ public class SystemMapPanel extends DecoratedUiPanel
         {
             // Hajo: draw player ship destination
             fillBorder(centerX + (int) ((viewX + ship.destination.x) * scale)-3,
-                       centerY + (int) ((viewY + ship.destination.z) * scale)-3,
+                       centerY + (int) ((viewY + ship.destination.z) * scale * yscale)-3,
                        6, 6, 1, Colors.MAGENTA);
 
             Fonts.c9.drawString("Current destination", Colors.MAGENTA,
                           centerX + (int) ((viewX + ship.destination.x) * scale) + 6,
-                          centerY + (int) ((viewY + ship.destination.z) * scale) - 16);
+                          centerY + (int) ((viewY + ship.destination.z) * scale * yscale) - 16);
         }
 
         // Hajo: draw player ship position
         fillBorder(centerX + (int) ((viewX + ship.pos.x) * scale)-3,
-                   centerY + (int) ((viewY + ship.pos.z) * scale)-3,
+                   centerY + (int) ((viewY + ship.pos.z) * scale * yscale)-3,
                    6, 6, 1, Colors.CYAN);
 
         
         Fonts.c9.drawString("Current location", Colors.CYAN,
                       centerX + (int) ((viewX + ship.pos.x) * scale) + 6,
-                      centerY + (int) ((viewY + ship.pos.z) * scale) - 16);
+                      centerY + (int) ((viewY + ship.pos.z) * scale * yscale) - 16);
         
     }
-
-    /*
-    @Override
-    public void paintComponent(Graphics gr)
-    {
-        final int width = getWidth();
-        final int height = getHeight();
-
-        gr.drawImage(imageCache.metalBand.getImage(), 0, 0, width, height, null);
-
-        gr.setColor(Color.GRAY);
-        gr.drawRect(10, 11, 410, 48);
-        gr.setColor(Color.BLACK);
-        gr.fillRect(11, 12, 408, 46);
-
-        gr.setColor(Color.WHITE);
-        gr.setFont(FontFactory.getPanelHeading());
-        gr.drawString("Navigation Map", 130, 43);
-
-        final int left = width/2;
-
-        gr.setColor(Color.GRAY);
-        gr.drawRect(left+10, 11, 410, 48);
-        gr.setColor(Color.BLACK);
-        gr.fillRect(left+11, 12, 408, 46);
-
-        gr.setColor(Color.GRAY);
-        gr.drawRect(10, height-61, 410, 42);
-        gr.setColor(Color.BLACK);
-        gr.fillRect(11, height-60, 408, 40);
-
-        gr.setClip(100, 75, width-200, height-150);
-        gr.drawImage(imageCache.backdrops[1].getImage(), 100, 75, null);
-        gr.setClip(0, 0, width, height);
-
-        gr.setFont(FontFactory.getNormal());
-        gr.setColor(Color.CYAN);
-        gr.drawString("Drag map by mouse. Zoom with mouse wheel.", 18, height-36);
-
-        gr.setColor(Color.GREEN);
-        gr.setFont(FontFactory.getLabelHeading());
-        gr.drawString("Destination:", left+18, 30);
-
-        gr.setColor(Color.WHITE);
-        gr.setFont(FontFactory.getLarger());
-        gr.drawString(destString, left+100, 30);
-
-        gr.setColor(Color.GREEN);
-        gr.setFont(FontFactory.getLabelHeading());
-        gr.drawString("Speed:", left+18, 50);
-
-        gr.setColor(Color.WHITE);
-        gr.setFont(FontFactory.getLarger());
-        gr.drawString(speedString, left+100, 50);
-
-        gr.setFont(FontFactory.getNormal());
-
-        gr.setColor(Color.GRAY);
-        gr.drawRect(100-1, 75-1, width-200+2, height-150+2);
-        
-        Shape clip = gr.getClip();
-        
-        gr.setClip(100, 75, width-200, height-150);
-
-        paintSystem(gr, viewX, viewY, system);
-
-        // Hajo: only paint if we are really there
-        if(ship.loca.equals(system.loca))
-        {
-            paintShip(gr);
-        }
-        
-        gr.setClip(clip);
-    }
-*/
 }

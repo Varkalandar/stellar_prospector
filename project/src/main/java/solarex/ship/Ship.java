@@ -11,6 +11,7 @@
 
 package solarex.ship;
 
+import flyspace.Space;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
@@ -38,7 +39,7 @@ public class Ship
         ORBIT("Orbit"),
         DOCKED("Docked");
 
-        private String label;
+        private final String label;
 
         State(String s)
         {
@@ -286,6 +287,7 @@ public class Ship
             
             pos = destination.getAbsolutePosition();
             pos.x += destination.radius * 2.0;
+            pos.scale(Space.DISPLAY_SCALE);
             this.destination.set(pos);
             
         }
@@ -297,16 +299,9 @@ public class Ship
             setState(State.DOCKED);
             
             pos = destination.getAbsolutePosition();
+            pos.scale(Space.DISPLAY_SCALE);
             this.destination.set(pos);
         }
-
-        // Hajo: in Solarex GL, the station panel does this now.
-        /*
-        if(player != null)
-        {
-            player.testQuests(galaxy, destination, this);
-        }
-        */ 
     }
 
     
