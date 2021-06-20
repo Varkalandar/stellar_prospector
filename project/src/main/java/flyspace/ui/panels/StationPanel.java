@@ -531,6 +531,8 @@ public class StationPanel extends DecoratedUiPanel
         }
         
         ship.pos.set(shipPos);
+        ship.destination.set(shipPos);
+        
         ship.depart();
         game.showSpacePanel(bodyPos);
     }
