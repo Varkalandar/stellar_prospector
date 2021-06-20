@@ -504,6 +504,10 @@ public class StationPanel extends DecoratedUiPanel
             shipPos = new Vec3(bodyPos);
             shipPos.z -= station.orbit * 3 * Space.DISPLAY_SCALE;
             
+            ship.destination.x = ship.pos.x;
+            ship.destination.y = ship.pos.y;
+            ship.destination.z = ship.pos.z;
+            
             // testing
             /*
             try

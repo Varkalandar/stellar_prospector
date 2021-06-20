@@ -125,12 +125,12 @@ public class Ship
         player = new Player();
         
         // Hajo: fake starting position and a destination
-        pos.x = 200000000;
+        pos.x = 0;
         pos.y = 0;
+        pos.z = 0;
         
-        destination.x = 199990000;
-        destination.y = 0;
-
+        destination.set(pos);
+        
         // Hajo: add some default equipment
         EquipmentFactory factory = new EquipmentFactory();
         ShipComponent drive = factory.create(EquipmentFactory.Component.STANDARD_DRIVE);
@@ -272,6 +272,7 @@ public class Ship
         this.state = state;
         stateString.setValue(state.toString());
     }
+    
     
     public void arrive(Galaxy galaxy, Solar destination)
     {

@@ -12,6 +12,7 @@
 package flyspace.ui.panels;
 
 import flyspace.FlySpace;
+import flyspace.Space;
 import flyspace.SystemBuilder;
 import flyspace.ui.Colors;
 import flyspace.ui.DecoratedTrigger;
@@ -449,6 +450,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
 
     }
 
+    
     private void setHyperjumpDestination(SystemLocation loca) 
     {
         ship.hyperjumpDestination = loca;
@@ -463,6 +465,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
                 "max drive range " + (((int)(maxRange*100))/100.0) + " ly";
     }
 
+    
     private void performHyperjump() 
     {
         ship.loca = ship.hyperjumpDestination;
@@ -471,11 +474,35 @@ public class GalacticMapPanel extends DecoratedUiPanel
         ship.spaceBodySeed = 0;
 
         // Hajo: stop moving after jump
-        ship.destination.x = ship.pos.x;
-        ship.destination.y = ship.pos.y;
+        ship.destination.set(ship.pos);
 
-        game.changeSystem(ship.loca);
+        Solar system = game.changeSystem(ship.loca);
 
+        // Hajo: give the ship a resonable return location.
+        double  safeDistance;
+        if(system.children.isEmpty())
+        {
+            // nothing here but the a star
+            // arrive outside the star radius.
+            safeDistance = system.radius * 5;
+        }
+        else
+        {
+            // planets are present
+            // arrive beyond last planet
+            Solar outmostPlanet = system.children.get(system.children.size() - 1);
+            safeDistance = outmostPlanet.orbit * 1.2;
+        }
+        
+        double angle = Math.random() * Math.PI * 2;
+
+        ship.pos.x = Math.cos(angle) * safeDistance;
+        ship.pos.y = 0;
+        ship.pos.z = Math.sin(angle) * safeDistance;;
+        ship.pos.scale(Space.DISPLAY_SCALE);
+        
+        ship.destination.set(ship.pos);
+        
         // game.showSystemInfoPanel();
         game.showSpacePanel();
     }

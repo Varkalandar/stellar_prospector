@@ -6,10 +6,8 @@ import flyspace.Space;
 import flyspace.ogl.SpacePanel;
 import flyspace.ogl32.ShaderBank;
 import flyspace.ui.Colors;
-import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
-import flyspace.ui.Trigger;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.*;
@@ -90,6 +88,7 @@ public class SystemMapPanel extends DecoratedUiPanel
         Mouse.getDWheel();        
     }
 
+    
     @Override
     public void handleInput() 
     {
