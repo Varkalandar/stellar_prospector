@@ -43,7 +43,7 @@ public class SpacePanel extends UiPanel
 
     private final float mouseSensitivity = 0.0009f;
     private float speed = 0f;
-
+    private float accel = 0f;
 
     private final View view;
     
@@ -141,7 +141,8 @@ public class SpacePanel extends UiPanel
         if(keyAutopilot)
         {
             autopilot = new Autopilot(10);
-            speed = 0.0f;
+            speed = 0f;
+            accel = 0f;
         }
         
         handleMiningList();
@@ -233,17 +234,37 @@ public class SpacePanel extends UiPanel
         
         if(keyAccell) 
 	{
-            speed += 0.2;
+            accel += 0.01f;
+            
+            if(accel > 10.0f)
+            {
+                accel = 10.0f;
+            }
+            
+            speed += accel;
         }
         
         if(keyDecell)
 	{
-            speed -= 0.2;
+            accel -= 0.01f;
+            
+            if(accel < -10.0f)
+            {
+                accel = -10.0f;
+            }
+            
+            speed += accel;
+        }
+        
+        if(!keyAccell && !keyDecell)
+        {
+            accel = 0f;
         }
         
         if(keyBreak)
 	{
             speed = 0;
+            accel = 0;
             autopilot = null;
         }
         
@@ -464,6 +485,7 @@ public class SpacePanel extends UiPanel
                        body.btype == Solar.BodyType.SPACEPORT)
                     {
                         speed = 0;
+                        accel = 0;
                         // camera.setRotationX(0);
                         // camera.setRotationY(180);
                         game.dockAt(body);
@@ -515,6 +537,7 @@ public class SpacePanel extends UiPanel
         }
         else
         {
+            // Fonts.g12.drawString("" + speed + " (" + accel + ")", Colors.FIELD, 90, 168);
             Fonts.g12.drawString("" + speed, Colors.FIELD, 90, 168);
         }
         
