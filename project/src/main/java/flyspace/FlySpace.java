@@ -69,6 +69,7 @@ public class FlySpace
     public int displayWidth = 1200;
     public int newDisplayHeight = displayHeight;
     public int newDisplayWidth = displayWidth;
+    private ImageCache imageCache;    
     
     public boolean quitRequested;
     private SpacePanel spacePanel;
@@ -212,7 +213,6 @@ public class FlySpace
     public void createPanels() throws IOException
     {
         Fonts.init();
-        ImageCache imageCache = new ImageCache();
 
         spacePanel = new SpacePanel(this, ship, localSpace);
         stationPanel = new StationPanel(this, galaxy, ship, imageCache);
@@ -495,7 +495,7 @@ public class FlySpace
         world = new World();
         
         // Hajo: Init game UI
-        ImageCache imageCache = new ImageCache();
+        imageCache = new ImageCache();
         
         galaxy = new Galaxy(imageCache.spiral.getImage());
         List <SystemLocation> list = galaxy.buildSector(-2, 0);

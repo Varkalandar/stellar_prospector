@@ -30,7 +30,9 @@
 
     <copy todir="${build}">
 	<fileset dir="src/main/resources"/>
-	<fileset file="src/main/scripts/manifest.mf"/>
+    </copy>
+    <copy todir="${build}/flyspace/ogl32" verbose="true">    
+	<fileset dir="src/main/java/flyspace/ogl32" includes="*.glsl"/>
     </copy>
 
    <!-- Put everything in ${build} into the JewelHunt.jar file -->
