@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import solarex.ui.ImageCache;
+import solarex.util.ResourceLoader;
 
 /**
  * Title panel - splash screen.
@@ -38,7 +39,7 @@ public class TitlePanel extends JPanel
         setLayout(null);
 
         ImageIcon background =
-                ImageCache.createImageIcon("/solarex/resources/title_bg.jpg", "");
+                ImageCache.createImageIcon(new ResourceLoader(), "/solarex/resources/title_bg.jpg", "");
 
         
         /*

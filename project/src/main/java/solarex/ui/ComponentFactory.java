@@ -33,6 +33,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.table.TableCellRenderer;
+import solarex.util.ResourceLoader;
 
 /**
  * Creates customized swing components.
@@ -82,7 +83,7 @@ public class ComponentFactory
     public static void customizeButton(JButton button, String iconFile)
     {
         button.setUI(new IconButtonUI());
-        ImageIcon icon = ImageCache.createImageIcon("/solarex/resources/ui/" + iconFile, "");
+        ImageIcon icon = ImageCache.createImageIcon(new ResourceLoader(), "/solarex/resources/ui/" + iconFile, "");
         button.setIcon(icon);
         button.setText("");
         button.setPreferredSize(new Dimension(icon.getIconWidth()+2, icon.getIconHeight()+2));

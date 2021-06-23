@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import solarex.system.Solar;
+import solarex.util.ResourceLoader;
 
 /**
  * Image cache and proxy.
@@ -55,24 +56,18 @@ public class ImageCache
     public final ImageIcon [] backdrops = new ImageIcon[5];
 
     private static final String PATH = "/solarex/resources/";
+    private final ResourceLoader loader;
     
     /** 
      * @return An ImageIcon, or null if the path was invalid.
      */
-    public static ImageIcon createImageIcon(final String path,
-                                            final String description) 
+    public static ImageIcon createImageIcon(ResourceLoader loader,
+                                            String path,
+                                            String description) 
     {
-        ImageIcon result = null;
-        URL imgURL = Class.class.getResource(path);
+        URL imgURL = loader.getResource(path);
         
-        if (imgURL != null) 
-        {
-            result = new ImageIcon(imgURL, description);
-        }
-        else 
-        {
-            System.err.println("Couldn't find file: " + path);
-        }
+        ImageIcon result = new ImageIcon(imgURL, description);
         
         return result;
     }
@@ -80,11 +75,12 @@ public class ImageCache
     /** 
      * @return An ImageIcon, or null if the path was invalid.
      */
-    public static BufferedImage createImage(final String path,
-                                            final String description) 
+    public static BufferedImage createImage(ResourceLoader loader,
+                                            String path,
+                                            String description) 
     {
         BufferedImage result = null;
-        InputStream in = Class.class.getResourceAsStream(path);
+        InputStream in = loader.getResourceAsStream(path);
         
         if (in != null) 
         {
@@ -106,49 +102,51 @@ public class ImageCache
 
     public ImageCache()
     {
-        station = createImageIcon(PATH + "station.png", "Station");
-        spaceport = createImageIcon(PATH + "city.png", "City");
-        spiral = createImageIcon(PATH + "spiral.jpg", "Spiral");
-        hyperspace = createImageIcon(PATH + "backdrop/hyperspace.jpg", "Hyperspace");
-        metalBand = createImageIcon(PATH + "backdrop/metal_band.png", "Metal band");
-        newspaper = createImageIcon(PATH + "backdrop/newspaper_foil.jpg", "Newspaper");
+        this.loader = new ResourceLoader();
+        
+        station = createImageIcon(loader, PATH + "station.png", "Station");
+        spaceport = createImageIcon(loader, PATH + "city.png", "City");
+        spiral = createImageIcon(loader, PATH + "spiral.jpg", "Spiral");
+        hyperspace = createImageIcon(loader, PATH + "backdrop/hyperspace.jpg", "Hyperspace");
+        metalBand = createImageIcon(loader, PATH + "backdrop/metal_band.png", "Metal band");
+        newspaper = createImageIcon(loader, PATH + "backdrop/newspaper_foil.jpg", "Newspaper");
 
         planets[Solar.PlanetType.BARE_ROCK.ordinal()] =
-                createImageIcon(PATH + "rock_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "rock_planet.png", "Rocky planet");
         planets[Solar.PlanetType.ATM_ROCK.ordinal()] =
-                createImageIcon(PATH + "sand_atmos_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "sand_atmos_planet.png", "Rocky planet");
         planets[Solar.PlanetType.ICE.ordinal()] =
-                createImageIcon(PATH + "ice_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "ice_planet.png", "Rocky planet");
         planets[Solar.PlanetType.BIG_GAS.ordinal()] =
-                createImageIcon(PATH + "gas_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "gas_planet.png", "Rocky planet");
         planets[Solar.PlanetType.SMALL_GAS.ordinal()] =
-                createImageIcon(PATH + "small_gas_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "small_gas_planet.png", "Rocky planet");
         planets[Solar.PlanetType.RINGS.ordinal()] =
-                createImageIcon(PATH + "ring_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "ring_planet.png", "Rocky planet");
         planets[Solar.PlanetType.CLOUD.ordinal()] =
-                createImageIcon(PATH + "cloud_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "cloud_planet.png", "Rocky planet");
         planets[Solar.PlanetType.EARTH.ordinal()] =
-                createImageIcon(PATH + "earth_planet.png", "Rocky planet");
+                createImageIcon(loader, PATH + "earth_planet.png", "Rocky planet");
         planets[Solar.PlanetType.CARBON_RICH.ordinal()] =
-                createImageIcon(PATH + "graphite_planet.png", "Rock carbon planet");
+                createImageIcon(loader, PATH + "graphite_planet.png", "Rock carbon planet");
         planets[Solar.PlanetType.STATION_1.ordinal()] = station;
 
         suns[Solar.SunType.S_YELLOW.ordinal()] =
-                createImageIcon(PATH + "yellow_sun.png", "Rocky planet");
+                createImageIcon(loader, PATH + "yellow_sun.png", "Rocky planet");
         suns[Solar.SunType.S_ORANGE.ordinal()] =
-                createImageIcon(PATH + "orange_sun.png", "Rocky planet");
+                createImageIcon(loader, PATH + "orange_sun.png", "Rocky planet");
         suns[Solar.SunType.S_RED_GIANT.ordinal()] =
-                createImageIcon(PATH + "red_giant.png", "Rocky planet");
+                createImageIcon(loader, PATH + "red_giant.png", "Rocky planet");
         suns[Solar.SunType.S_WHITE_DWARF.ordinal()] =
-                createImageIcon(PATH + "white_dwarf.png", "Rocky planet");
+                createImageIcon(loader, PATH + "white_dwarf.png", "Rocky planet");
         suns[Solar.SunType.S_BLUE_GIANT.ordinal()] =
-                createImageIcon(PATH + "blue_giant.png", "Rocky planet");
+                createImageIcon(loader, PATH + "blue_giant.png", "Rocky planet");
         suns[Solar.SunType.S_NEUTRON.ordinal()] =
-                createImageIcon(PATH + "neutron_star.png", "Neutron star");
+                createImageIcon(loader, PATH + "neutron_star.png", "Neutron star");
         suns[Solar.SunType.S_BLACK_HOLE.ordinal()] =
-                createImageIcon(PATH + "black_hole.png", "Black hole");
+                createImageIcon(loader, PATH + "black_hole.png", "Black hole");
         suns[Solar.SunType.S_BROWN_DWARF.ordinal()] =
-                createImageIcon(PATH + "brown_dwarf.png", "Brown dwarf");
+                createImageIcon(loader, PATH + "brown_dwarf.png", "Brown dwarf");
 
         loadPortraits(rockeaters, "rockeater");
         loadPortraits(poisonbreathers, "poisonbreather");
@@ -157,31 +155,31 @@ public class ImageCache
         loadPortraits(male, "terranean/male");
         loadPortraits(female, "terranean/female");
         transmissionError =
-                createImage(PATH + "portrait_generic.png", "Transmission error");
+                createImage(loader, PATH + "portrait_generic.png", "Transmission error");
 
-        backdrops[0] = createImageIcon(PATH + "backdrop/space_bg_1.jpg", "Backdrop 1");
-        backdrops[1] = createImageIcon(PATH + "backdrop/space_bg_2.jpg", "Backdrop 2");
-        backdrops[4] = createImageIcon(PATH + "backdrop/space_bg_5.jpg", "Backdrop 5");
+        backdrops[0] = createImageIcon(loader, PATH + "backdrop/space_bg_1.jpg", "Backdrop 1");
+        backdrops[1] = createImageIcon(loader, PATH + "backdrop/space_bg_2.jpg", "Backdrop 2");
+        backdrops[4] = createImageIcon(loader, PATH + "backdrop/space_bg_5.jpg", "Backdrop 5");
         
         for(int i=0; i<portraitBackgrounds.length; i++)
         {
             portraitBackgrounds[i] = 
-                    createImage(PATH + "backdrop/portrait_bg_" + i + ".png", "");
+                    createImage(loader, PATH + "backdrop/portrait_bg_" + i + ".png", "");
         }
         for(int i=0; i<floateePortraitBackgrounds.length; i++)
         {
             floateePortraitBackgrounds[i] = 
-                    createImage(PATH + "backdrop/floatee_portraits/" + i + ".png", "");
+                    createImage(loader, PATH + "backdrop/floatee_portraits/" + i + ".png", "");
         }
         for(int i=0; i<clonknikPortraitBackgrounds.length; i++)
         {
             clonknikPortraitBackgrounds[i] = 
-                    createImage(PATH + "backdrop/clonknik_portraits/" + i + ".png", "");
+                    createImage(loader, PATH + "backdrop/clonknik_portraits/" + i + ".png", "");
         }
         for(int i=0; i<rockeaterPortraitBackgrounds.length; i++)
         {
             rockeaterPortraitBackgrounds[i] = 
-                    createImage(PATH + "backdrop/rock_portraits/" + i + ".png", "");
+                    createImage(loader, PATH + "backdrop/rock_portraits/" + i + ".png", "");
         }
     }
 
@@ -206,7 +204,7 @@ public class ImageCache
     
     private BufferedImage loadPortraitPart(final String path, final String name)
     {
-        final ImageIcon orig = createImageIcon(path, name);
+        final ImageIcon orig = createImageIcon(loader, path, name);
         
         final Image img = orig.getImage();
         final int w = img.getWidth(null);

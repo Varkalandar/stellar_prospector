@@ -36,6 +36,7 @@ import solarex.ui.observables.ObservableToLabelConnector;
 import solarex.ui.panels.*;
 import solarex.util.ClockCallback;
 import solarex.util.ClockThread;
+import solarex.util.ResourceLoader;
 
 /**
  * Main frame for the stellar system explorer.
@@ -363,7 +364,7 @@ public class ApplicationFrame extends JFrame implements ShowSystemCallback, Show
         */
 
         ImagedPanel ipan = new ImagedPanel();
-        ipan.setBackgroundImage(ImageCache.createImageIcon("/solarex/resources/backdrop/screen_bg.jpg", "").getImage());
+        ipan.setBackgroundImage(ImageCache.createImageIcon(new ResourceLoader(), "/solarex/resources/backdrop/screen_bg.jpg", "").getImage());
 
         panelPanel = ipan;
         panelPanel.setLayout(new BorderLayout());
@@ -456,7 +457,7 @@ public class ApplicationFrame extends JFrame implements ShowSystemCallback, Show
         
         ImagedPanel panel = new ImagedPanel();
         panel.setLayout(flow);
-        panel.setBackgroundImage(ImageCache.createImageIcon("/solarex/resources/backdrop/metal_band.png", "").getImage());
+        panel.setBackgroundImage(ImageCache.createImageIcon(new ResourceLoader(), "/solarex/resources/backdrop/metal_band.png", "").getImage());
 
         final JLabel shipStateLabel = new JLabel("");
         shipStateLabel.setForeground(Color.GREEN);
