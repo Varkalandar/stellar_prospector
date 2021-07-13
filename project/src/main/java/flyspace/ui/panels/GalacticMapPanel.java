@@ -58,12 +58,12 @@ import solarex.system.Solar;
 public class GalacticMapPanel extends DecoratedUiPanel
 {
     /** Player ship, used for location */
-    private Ship ship;
+    private final Ship ship;
 
-    private int gridColor = 0xFF002255;
-    private int mapBackgroundColor = 0xFF000911;
-    private int hyperRangeColor = 0xFF001224;
-    private int colorBrown = 0xFFCC5000;
+    private final int gridColor = 0xFF002255;
+    private final int mapBackgroundColor = 0xFF000911;
+    private final int hyperRangeColor = 0xFF001224;
+    private final int colorBrown = 0xFFCC5000;
     
     private int zoom;
     private int centerX = -300;
@@ -74,7 +74,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
     private int dragCenterX;
     private int dragCenterY;
 
-    private Galaxy galaxy;
+    private final Galaxy galaxy;
 
     private String systemDistance;
     private boolean clicked;
@@ -87,7 +87,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         this.galaxy = galaxy;
         this.ship = ship;
         
-        zoom = 1;
+        zoom = 2;
         
         jumpTrigger = new DecoratedTrigger(Fonts.g17, "Engage Jumpdrive", 
                 Colors.TRIGGER_HOT, Colors.TRIGGER_HOT_TEXT);
@@ -95,9 +95,9 @@ public class GalacticMapPanel extends DecoratedUiPanel
         jumpTrigger.setArea(990, 190, 180, 32);
         
         addTrigger(jumpTrigger);
-        
     }
 
+    
     /*
      * Each galactical sector contains up to 6 solar systems
      * @author Hj. Malthaner
@@ -110,9 +110,9 @@ public class GalacticMapPanel extends DecoratedUiPanel
     {
         List <SystemLocation> list = galaxy.buildSector(i, j);
 
-        if(zoom < 6) 
+        if(zoom < 12) 
         {
-            int size = (256 + zoom - 1) / zoom;
+            int size = (512 + zoom - 1) / zoom;
             fillBorder(xpos, ypos, size, size, 1, gridColor);
             Fonts.c9.drawString("" + i + "/" + j, Colors.GRAY, xpos+2, ypos+size-32);
         }
@@ -122,8 +122,8 @@ public class GalacticMapPanel extends DecoratedUiPanel
         {
             SystemLocation loca = list.get(n);
 
-            final int x = xpos + loca.ioff*2 / zoom;
-            final int y = ypos + loca.joff*2 / zoom;
+            final int x = xpos + loca.ioff * 4 / zoom;
+            final int y = ypos + loca.joff * 4 / zoom;
 
             Solar system = SystemBuilder.create(loca, false);
 
@@ -151,7 +151,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
                     sunColor = Colors.DARK_GRAY;
                     break;
                 case S_BLACK_HOLE:
-                    sunColor = Colors.LIGHT_GRAY; // Hajo: outline
+                    sunColor = Colors.GRAY; // Hajo: outline
                     break;
                 case S_BROWN_DWARF:
                     sunColor = colorBrown;
@@ -163,7 +163,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
             drawSun(x, y, size, system.stype, sunColor);
 
             // Hajo: in low zoom modes, show names
-            if(zoom < 4) 
+            if(zoom < 8) 
             {
                 final int margin = Math.max(size/2+4, 12);
                 final int bw = Fonts.c9.getStringWidth(system.name) + 12;
@@ -216,28 +216,29 @@ public class GalacticMapPanel extends DecoratedUiPanel
         }
     }
 
+    
     private void drawSun(int x, int y, int size, Solar.SunType stype, int color)
     {
         if(stype == Solar.SunType.S_BLACK_HOLE)
         {            
-            drawCircle(x, y, 1 + size/2, color);
+            drawCircle(x, y, (size+1)/2, color);
         }
         else
         {
             fillCircle(x, y, size/2, color);
-            // fillRect(x, y, 2, 2, color);
         }
     }
 
+    
     private void drawHyperJumpRange(int width, int height)
     {
-        final int maxRange = (int)(ship.equipment.getEffectiveDriveRange(ship.getCurrentMass())*256.0/(zoom*10));
+        final int maxRange = (int)(ship.equipment.getEffectiveDriveRange(ship.getCurrentMass())*512.0/(zoom*10));
         
-        final int x = width / 2 + (ship.loca.galacticSectorI * 128 - 64 - centerX)*2 / zoom;
-        final int y = height / 2 + (ship.loca.galacticSectorJ * 128 - 64 - centerY)*2 / zoom;
+        final int x = width / 2 + (ship.loca.galacticSectorI * 128 - 64 - centerX) * 4 / zoom;
+        final int y = height / 2 + (ship.loca.galacticSectorJ * 128 - 64 - centerY) * 4 / zoom;
         
-        final int shipX = x + ship.loca.ioff*2 / zoom;
-        final int shipY = y + ship.loca.joff*2 / zoom;
+        final int shipX = x + ship.loca.ioff * 4 / zoom;
+        final int shipY = y + ship.loca.joff * 4 / zoom;
         
         fillCircle(shipX, shipY, maxRange, hyperRangeColor);
         drawCircle(shipX, shipY, maxRange, 0x33FFFFFF);
@@ -308,6 +309,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         jumpTrigger.setEnabled(ok && ship.getState() != State.DOCKED);
     }
 
+    
     @Override
     public void activate()
     {
@@ -331,6 +333,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         Mouse.getDWheel();        
     }
 
+    
     @Override
     public void handleInput()
     {
@@ -351,8 +354,8 @@ public class GalacticMapPanel extends DecoratedUiPanel
                 int dx = dragStartX - mx;
                 int dy = dragStartY - my;
 
-                centerX = dragCenterX + dx*zoom;
-                centerY = dragCenterY + dy*zoom;
+                centerX = dragCenterX + dx*zoom / 2;
+                centerY = dragCenterY + dy*zoom / 2;
             }
             
             clicked = true;
@@ -360,11 +363,12 @@ public class GalacticMapPanel extends DecoratedUiPanel
         
         int u = Mouse.getDWheel();
 
-        if(u < 0 && zoom > 1) 
+        if(u > 0 && zoom > 1) 
         {
             zoom --;
         }
-        if(u > 0 && zoom < 11) 
+        
+        if(u < 0 && zoom < 40) 
         {
             zoom ++;
         }
@@ -385,6 +389,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         }
     }
 
+    
     @Override
     public void display()
     {
@@ -398,8 +403,8 @@ public class GalacticMapPanel extends DecoratedUiPanel
             for (int x = (centerX/128) - zoom * 3 -1; x <= (centerX/128) + zoom * 3 + 1; x++) 
             {
                 showGalacticalSector(
-                        width / 2 + (x * 128 - 64 - centerX)*2 / zoom,
-                        height / 2 + (y * 128 - 64 - centerY)*2 / zoom,
+                        width / 2 + (x * 128 - 64 - centerX) * 4 / zoom,
+                        height / 2 + (y * 128 - 64 - centerY) * 4 / zoom,
                         x,
                         y);
             }
