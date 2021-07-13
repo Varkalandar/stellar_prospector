@@ -207,6 +207,7 @@ public class FlySpace
     public void destroyGL()
     {
         GlLifecycle.destroy();
+        frame.dispose();
     }
     
     
@@ -275,7 +276,6 @@ public class FlySpace
         logger.log(Level.FINE, "Exiting main loop.");
         
         frame.setVisible(false);
-        frame.dispose();
     }
 
     
