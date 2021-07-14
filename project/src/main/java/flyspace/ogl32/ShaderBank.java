@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector4f;
+import solarex.system.Matrix4;
+import solarex.system.Vec3;
+import solarex.util.ResourceLoader;
 
 /**
  *
@@ -18,6 +20,8 @@ import org.lwjgl.util.vector.Vector4f;
  */
 public class ShaderBank 
 {
+    public static final Logger logger = Logger.getLogger(ShaderBank.class.getName());
+    
     // Shader program IDs
     public static int shadedProgId = 0;
     public static int brightProgId = 0;
@@ -34,33 +38,35 @@ public class ShaderBank
     private static int brightLightPosLocation = 0;
     
     /** Read only! */
-    public static Matrix4f projectionMatrix = null;
+    public static Matrix4 projectionMatrix = null;
 
-    private static Matrix4f viewMatrix = null;
-    private static Matrix4f modelMatrix = null;
-    private static Vector4f lightPos = null;
+    private static Matrix4 viewMatrix = null;
+    private static Matrix4 modelMatrix = null;
+    private static Vec3 lightPos = null;
 
     private static final FloatBuffer matrix44Buffer;
+
+    private static ResourceLoader resourceLoader;
     
     static
     {
         // Create a FloatBuffer with the proper size to store our matrices later
         matrix44Buffer = BufferUtils.createFloatBuffer(16);
         
-        lightPos = new Vector4f();
+        lightPos = new Vec3();
     }
     
-    public static void updateProjectionMatrix(Matrix4f projection)
+    public static void updateProjectionMatrix(Matrix4 projection)
     {
         projectionMatrix = projection;
     }
     
-    public static void updateModelMatrix(Matrix4f model)
+    public static void updateModelMatrix(Matrix4 model)
     {
         modelMatrix = model;
     }
     
-    public static void updateViewMatrix(Matrix4f view)
+    public static void updateViewMatrix(Matrix4 view)
     {
         viewMatrix = view;
     }
@@ -72,14 +78,14 @@ public class ShaderBank
     
     public static void uploadBrightMatrices()
     {
-        projectionMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(brightProjectionMatrixLocation, false, matrix44Buffer);
-        viewMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(brightViewMatrixLocation, false, matrix44Buffer);
-        modelMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(brightModelMatrixLocation, false, matrix44Buffer);
+        store(projectionMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(brightProjectionMatrixLocation, false, matrix44Buffer);
+        store(viewMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(brightViewMatrixLocation, false, matrix44Buffer);
+        store(modelMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(brightModelMatrixLocation, false, matrix44Buffer);
         
-        GL20.glUniform4f(brightLightPosLocation, lightPos.x, lightPos.y, lightPos.z, 0f);
+        GL20.glUniform4f(brightLightPosLocation, (float)lightPos.x, (float)lightPos.y, (float)lightPos.z, 0f);
         
         GlLifecycle.exitOnGLError("uploadBrightMatrices");
     }
@@ -87,14 +93,14 @@ public class ShaderBank
         
     public static void uploadShadedMatrices()
     {
-        projectionMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(projectionMatrixLocation, false, matrix44Buffer);
-        viewMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(viewMatrixLocation, false, matrix44Buffer);
-        modelMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(modelMatrixLocation, false, matrix44Buffer);
+        store(projectionMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(projectionMatrixLocation, false, matrix44Buffer);
+        store(viewMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(viewMatrixLocation, false, matrix44Buffer);
+        store(modelMatrix, matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4fv(modelMatrixLocation, false, matrix44Buffer);
         
-        GL20.glUniform4f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z, 0f);
+        GL20.glUniform4f(lightPosLocation, (float)lightPos.x, (float)lightPos.y, (float)lightPos.z, 0f);
 
         GlLifecycle.exitOnGLError("uploadShadedMatrices");
     }
@@ -102,7 +108,7 @@ public class ShaderBank
     public static void setupMatrices(int width, int height) 
     {
         // Setup projection matrix
-        projectionMatrix = new Matrix4f();
+        projectionMatrix = new Matrix4();
         float fieldOfView = 45f;
         float aspectRatio = (float)width / (float)(height);
         float nearPlane = 1f;
@@ -123,20 +129,25 @@ public class ShaderBank
         // projectionMatrix.m31 = CockpitPanel.HEIGHT/4;
          
         // Setup view matrix
-        viewMatrix = new Matrix4f();
+        viewMatrix = new Matrix4();
          
         // Setup model matrix
-        modelMatrix = new Matrix4f();         
+        modelMatrix = new Matrix4();         
     }
 
     public static void setupShaders()
     {
+        logger.info("loading shaders");
+        
         // Load the vertex shader
         int vsId = loadShader("/flyspace/ogl32/vertex.glsl", GL20.GL_VERTEX_SHADER);
         // Load the fragment shader
         int fsId = loadShader("/flyspace/ogl32/fragment.glsl", GL20.GL_FRAGMENT_SHADER);
          
         int brightFsId = loadShader("/flyspace/ogl32/fragment_bright.glsl", GL20.GL_FRAGMENT_SHADER);
+
+
+        logger.info("creating program");
         
         // Create a new shader program that links both shaders
         shadedProgId = GL20.glCreateProgram();
@@ -155,6 +166,8 @@ public class ShaderBank
         GL20.glLinkProgram(shadedProgId);
         GL20.glValidateProgram(shadedProgId);
 
+        logger.info("loading matrices");
+        
         // Get matrices uniform locations
         projectionMatrixLocation = GL20.glGetUniformLocation(shadedProgId, "projectionMatrix");
         viewMatrixLocation = GL20.glGetUniformLocation(shadedProgId, "viewMatrix");
@@ -187,16 +200,24 @@ public class ShaderBank
         brightLightPosLocation = GL20.glGetUniformLocation(brightProgId, "light_pos");
  
         GlLifecycle.exitOnGLError("setupShaders2");
+        
+        logger.info("Shaders done.");        
     }
+    
     
     private static int loadShader(String filename, int type) 
     {
+        logger.info("loadShader: " + filename);
+
+        if(resourceLoader == null) resourceLoader = new ResourceLoader();
+        
         StringBuilder shaderSource = new StringBuilder();
         int shaderID;
          
         try 
         {
-            InputStream in = Class.class.getResourceAsStream(filename);
+            // InputStream in = Class.class.getResourceAsStream(filename);
+            InputStream in = resourceLoader.getResourceAsStream(filename);
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
@@ -214,7 +235,7 @@ public class ShaderBank
         GL20.glShaderSource(shaderID, shaderSource);
         GL20.glCompileShader(shaderID);
          
-        if (GL20.glGetShader(shaderID, GL20.GL_COMPILE_STATUS) == GL_FALSE) 
+        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL_FALSE) 
         {
             System.err.println("Could not compile shader: " + filename + ":\n");
             
@@ -237,4 +258,28 @@ public class ShaderBank
     {
         return degrees * (float)(Math.PI / 180);
     }
+    
+    /**
+     * Store a matrix in a float buffer. The matrix is stored in column
+     * major (openGL) order.
+     */
+    private static void store(Matrix4 m, FloatBuffer buf)
+    {
+        buf.put((float)(m.m00));
+        buf.put((float)(m.m01));
+        buf.put((float)(m.m02));
+        buf.put((float)(m.m03));
+        buf.put((float)(m.m10));
+        buf.put((float)(m.m11));
+        buf.put((float)(m.m12));
+        buf.put((float)(m.m13));
+        buf.put((float)(m.m20));
+        buf.put((float)(m.m21));
+        buf.put((float)(m.m22));
+        buf.put((float)(m.m23));
+        buf.put((float)(m.m30));
+        buf.put((float)(m.m31));
+        buf.put((float)(m.m32));
+        buf.put((float)(m.m33));
+    }                
 }

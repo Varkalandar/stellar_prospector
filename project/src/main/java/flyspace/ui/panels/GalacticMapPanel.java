@@ -23,7 +23,7 @@ import static flyspace.ui.UiPanel.drawRoundRect;
 import static flyspace.ui.UiPanel.fillCircle;
 import static flyspace.ui.UiPanel.fillRect;
 import java.util.List;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
@@ -133,19 +133,19 @@ public class GalacticMapPanel extends DecoratedUiPanel
             switch(system.stype) 
             {
                 case S_YELLOW:
-                    sunColor = Colors.YELLOW;
+                    sunColor = 0xFFEEDD22;
                     break;
                 case S_ORANGE:
-                    sunColor = Colors.ORANGE;
+                    sunColor = 0xFFEE8822;
                     break;
                 case S_WHITE_DWARF:
                     sunColor = Colors.WHITE;
                     break;
                 case S_BLUE_GIANT:
-                    sunColor = Colors.CYAN;
+                    sunColor = 0xFFCCEEFF;
                     break;
                 case S_RED_GIANT:
-                    sunColor = Colors.RED;
+                    sunColor = 0xFFCC2211;
                     break;
                 case S_NEUTRON:
                     sunColor = Colors.DARK_GRAY;

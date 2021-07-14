@@ -3,6 +3,7 @@ package flyspace;
 import flyspace.ui.JumpEffectPainter;
 import flyspace.ogl.GlLifecycle;
 import flyspace.ogl.SpacePanel;
+import flyspace.ui.Display;
 import flyspace.ui.Fonts;
 import flyspace.ui.TextPainter;
 import flyspace.ui.TitlePainter;
@@ -16,15 +17,6 @@ import flyspace.ui.panels.ShipInfoPanel;
 import flyspace.ui.panels.StationPanel;
 import flyspace.ui.panels.SystemInfoPanel;
 import flyspace.ui.panels.SystemMapPanel;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -34,9 +26,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 import solarex.evolution.World;
 import solarex.galaxy.Galaxy;
 import solarex.galaxy.SystemLocation;
@@ -64,11 +53,6 @@ public class FlySpace
      */
     private ClockThread clockThread;
     
-    private final Frame frame;
-    public int displayHeight = 768;
-    public int displayWidth = 1200;
-    public int newDisplayHeight = displayHeight;
-    public int newDisplayWidth = displayWidth;
     private ImageCache imageCache;    
     
     public boolean quitRequested;
@@ -116,10 +100,9 @@ public class FlySpace
     private World world;
     private Galaxy galaxy;
     private final Mining mining;
-    
-    private final Canvas canvas;
 
     
+    /*
     static
     {
         try 
@@ -132,7 +115,7 @@ public class FlySpace
             Logger.getLogger(FlySpace.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    */
     
     /**
      * @param args the command line arguments
@@ -158,30 +141,17 @@ public class FlySpace
     
     public FlySpace()
     {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-        frame = new Frame(TITLE_VERSION);
-        frame.setSize(displayWidth, displayHeight);
-        frame.setLayout(new BorderLayout());
-        // frame.setResizable(false);
-        frame.setResizable(true);
-        frame.setLocation((screenSize.width - displayWidth)/2, (screenSize.height - displayHeight - 32) / 2);
-        frame.addWindowListener(new MyWindowListener());
-
-        canvas = new Canvas();
-        frame.add(canvas);
-        frame.setVisible(true);
-
         try
         {
             BufferedImage icon = ImageIO.read(this.getClass().getResourceAsStream("/flyspace/resources/icon.png"));
-            frame.setIconImage(icon);
+            // frame.setIconImage(icon);
         }
         catch(Exception ex)
         {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
+        /*
         canvas.addComponentListener(new ComponentAdapter() 
         {
             @Override
@@ -191,15 +161,16 @@ public class FlySpace
                 newDisplayHeight = canvas.getHeight();
             }
         });
-
+*/
+        
         mining = new Mining();
         initGameData();
     }
 
     
-    public void createGL() throws LWJGLException, IOException
+    public void createGL() throws IOException
     {
-        GlLifecycle.create(canvas);
+        GlLifecycle.create(TITLE_VERSION, false);
         GlLifecycle.init();
     }
     
@@ -207,7 +178,6 @@ public class FlySpace
     public void destroyGL()
     {
         GlLifecycle.destroy();
-        frame.dispose();
     }
     
     
@@ -215,9 +185,15 @@ public class FlySpace
     {
         Fonts.init();
 
+        logger.info("Creating space panel");
         spacePanel = new SpacePanel(this, ship, localSpace);
+        
+        logger.info("Creating station panel");
         stationPanel = new StationPanel(this, galaxy, ship, imageCache);
+        
+        logger.info("Creating system info panel");
         systemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
+        
         distantSystemInfoPanel = new SystemInfoPanel(this, ship, imageCache);
         planetInfoPanel = new PlanetInfoPanel(this, ship);
         planetMiningPanel = new PlanetMiningPanel(this, ship, mining);
@@ -245,37 +221,23 @@ public class FlySpace
         long lastTime = System.currentTimeMillis();
         int frameCount = 0;
         
-        while (!Display.isCloseRequested() && 
-               !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) &&
-               !quitRequested)
+        while(GlLifecycle.windowShouldClose() == false &&
+              !quitRequested)
         {            
-            if (Display.isVisible())
-            {
-                long currentTime = System.currentTimeMillis();
-                int dt = (int)(currentTime - lastTime);
+            long currentTime = System.currentTimeMillis();
+            int dt = (int)(currentTime - lastTime);
 
-                update(dt);
-                display();
-                
-                lastTime = currentTime;
-                frameCount ++;
-            } 
-            else
-            {
-                if(Display.isDirty())
-                {
-                    activePanel.display();
-                }
-                safeSleep(100);
-            }
+            update(dt);
+            display();
+
+            lastTime = currentTime;
+            frameCount ++;
             
-            Display.update();
-            Display.sync(60);
+            GlLifecycle.pollAndSwap();
+            // Display.sync(60);
         }
         
         logger.log(Level.FINE, "Exiting main loop.");
-        
-        frame.setVisible(false);
     }
 
     
@@ -403,11 +365,13 @@ public class FlySpace
     
     public void activatePanel(UiPanel panel)
     {
-        Insets insets = frame.getInsets();
+        // Insets insets = frame.getInsets();
         
         activePanel = panel;
-        activePanel.setSize(displayWidth - insets.left - insets.right, 
-                            displayHeight - insets.top - insets.bottom);
+        // activePanel.setSize(displayWidth - insets.left - insets.right, 
+        //                     displayHeight - insets.top - insets.bottom);
+        
+        activePanel.setSize(Display.width, Display.height);
         activePanel.activate();
     }
 
@@ -520,7 +484,7 @@ public class FlySpace
         
         try
         {
-            frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            // frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             LoadSave loadSave = new LoadSave();
             loadSave.loadGame(ship);
         } 
@@ -531,7 +495,7 @@ public class FlySpace
         }
         finally
         {
-            frame.setCursor(Cursor.getDefaultCursor());
+            // frame.setCursor(Cursor.getDefaultCursor());
         }
 
         if(ok)
@@ -564,7 +528,7 @@ public class FlySpace
 
         try
         {
-            frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            // frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             LoadSave loadSave = new LoadSave();
             loadSave.saveGame(ship);
         }
@@ -575,7 +539,7 @@ public class FlySpace
         }
         finally
         {
-            frame.setCursor(Cursor.getDefaultCursor());
+            // frame.setCursor(Cursor.getDefaultCursor());
         }
 
         return ok;

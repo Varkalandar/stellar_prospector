@@ -1,6 +1,5 @@
 package flyspace.io;
 
-import flyspace.ogl.Mesh;
 import flyspace.ogl32.VertexData;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Vec3;
 
 /**
  * Wavefront *.obj file reader.
@@ -24,8 +23,8 @@ public class ObjReader
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader reader = new BufferedReader(isr);
         
-        ArrayList <Vector3f> inVertices = new ArrayList<Vector3f>(1024);
-        ArrayList <Vector3f> inNormals = new ArrayList<Vector3f>(1024);
+        ArrayList <Vec3> inVertices = new ArrayList<Vec3>(1024);
+        ArrayList <Vec3> inNormals = new ArrayList<Vec3>(1024);
         ArrayList <int []> inFaces = new ArrayList<int []>(512);
         
         String line;
@@ -33,7 +32,7 @@ public class ObjReader
         while((line = reader.readLine()) != null)
         {
             String [] parts = line.split(" ");
-            Vector3f vec;
+            Vec3 vec;
             
             if(parts[0].startsWith("vt"))
             {
@@ -42,7 +41,7 @@ public class ObjReader
             else if(parts[0].startsWith("vn"))
             {
                 // a normal line
-                vec = new Vector3f(Float.parseFloat(parts[1]),
+                vec = new Vec3(Float.parseFloat(parts[1]),
                                    Float.parseFloat(parts[2]),
                                    Float.parseFloat(parts[3]));
                 inNormals.add(vec);
@@ -50,7 +49,7 @@ public class ObjReader
             else if(parts[0].startsWith("v"))
             {
                 // a vertex line
-                vec = new Vector3f(Float.parseFloat(parts[1]),
+                vec = new Vec3(Float.parseFloat(parts[1]),
                                    Float.parseFloat(parts[2]),
                                    Float.parseFloat(parts[3]));
                 inVertices.add(vec);
@@ -87,13 +86,13 @@ public class ObjReader
             // triangles only
             for(int v = 0; v<3; v++)
             {
-                Vector3f vec;
+                Vec3 vec;
                 
                 vec = inVertices.get(vtn[v*3 + 0] - 1);
-                vBuffer.put(vec.x).put(vec.y).put(vec.z);
+                vBuffer.put((float)vec.x).put((float)vec.y).put((float)vec.z);
                 
                 vec = inNormals.get(vtn[v*3 + 2] - 1);
-                nBuffer.put(vec.x).put(vec.y).put(vec.z);
+                nBuffer.put((float)vec.x).put((float)vec.y).put((float)vec.z);
             }
         }
 
@@ -115,8 +114,8 @@ public class ObjReader
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader reader = new BufferedReader(isr);
         
-        ArrayList <Vector3f> inVertices = new ArrayList<Vector3f>(1024);
-        ArrayList <Vector3f> inNormals = new ArrayList<Vector3f>(1024);
+        ArrayList <Vec3> inVertices = new ArrayList<Vec3>(1024);
+        ArrayList <Vec3> inNormals = new ArrayList<Vec3>(1024);
         ArrayList <int []> inFaces = new ArrayList<int []>(512);
         
         String line;
@@ -124,7 +123,7 @@ public class ObjReader
         while((line = reader.readLine()) != null)
         {
             String [] parts = line.split(" ");
-            Vector3f vec;
+            Vec3 vec;
             
             if(parts[0].startsWith("vt"))
             {
@@ -133,7 +132,7 @@ public class ObjReader
             else if(parts[0].startsWith("vn"))
             {
                 // a normal line
-                vec = new Vector3f(Float.parseFloat(parts[1]),
+                vec = new Vec3(Float.parseFloat(parts[1]),
                                    Float.parseFloat(parts[2]),
                                    Float.parseFloat(parts[3]));
                 inNormals.add(vec);
@@ -141,7 +140,7 @@ public class ObjReader
             else if(parts[0].startsWith("v"))
             {
                 // a vertex line
-                vec = new Vector3f(Float.parseFloat(parts[1]),
+                vec = new Vec3(Float.parseFloat(parts[1]),
                                    Float.parseFloat(parts[2]),
                                    Float.parseFloat(parts[3]));
                 inVertices.add(vec);
@@ -183,14 +182,14 @@ public class ObjReader
             // triangles only
             for(int v = 0; v<3; v++)
             {
-                Vector3f pos = inVertices.get(vtn[v*3 + 0] - 1);
-                Vector3f normal = inNormals.get(vtn[v*3 + 2] - 1);
+                Vec3 pos = inVertices.get(vtn[v*3 + 0] - 1);
+                Vec3 normal = inNormals.get(vtn[v*3 + 2] - 1);
                 
                 VertexData vertex = new VertexData();
                 
                 vertex.setRGB(1, 1, 1);
-                vertex.setXYZ(pos.x, pos.y, pos.z);
-                vertex.setNormal(normal.x, normal.y, normal.z);
+                vertex.setXYZ((float)pos.x, (float)pos.y, (float)pos.z);
+                vertex.setNormal((float)normal.x, (float)normal.y, (float)normal.z);
                 
                 vertices[index] = vertex;
                 indices[index] = index;

@@ -1,6 +1,5 @@
 package flyspace.ui;
 
-import org.lwjgl.input.Keyboard;
 
 /**
  * A combined message and text input box.

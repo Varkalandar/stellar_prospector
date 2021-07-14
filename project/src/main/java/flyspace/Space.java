@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.lwjgl.opengl.GL11.GL_LIGHTING;
 import static org.lwjgl.opengl.GL11.glDisable;
-import org.lwjgl.util.vector.Vector3f;
 import solarex.system.Solar;
 import solarex.system.Vec3;
 
@@ -184,13 +183,13 @@ public class Space
         switch(system.stype)
         {
             case S_YELLOW:
-                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 1.0f, 0.9f, 0.0f);
+                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 1.0f, 0.9f, 0.4f);
                 break;
             case S_ORANGE:
-                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 1.0f, 0.6f, 0.0f);
+                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 1.0f, 0.6f, 0.1f);
                 break;
             case S_RED_GIANT:
-                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 0.7f, 0.0f, 0.0f);
+                mesh = GL32MeshFactory.createSphere(system.radius*DISPLAY_SCALE, 0.7f, 0.2f, 0.1f);
                 break;
             case S_BROWN_DWARF:
                 // Hajo: Wikipedia says, these are actually violet
@@ -279,7 +278,8 @@ public class Space
         
         float r = (float)(system.radius * DISPLAY_SCALE * 0.1);
         
-        mesh = MeshFactory.createSphere(r, 0.8f, 1.0f, 0.2f);
+        // mesh = MeshFactory.createSphere(r, 0.8f, 1.0f, 0.2f);
+        mesh = GL32MeshFactory.createSphere(r, 0.8f, 1.0f, 0.2f);
         station.addMesh(mesh);
         
         return station;
@@ -387,12 +387,12 @@ public class Space
                    MultiMesh spaceportMesh = findMeshForPeer(maybeSpaceport);
                    
                    // Hajo: this is relative to the planet center
-                   Vector3f input = 
-                           new Vector3f(0, 
-                                        0, 
-                                        (float)(body.radius * -Space.DISPLAY_SCALE));
+                   Vec3 input = 
+                           new Vec3(0, 
+                                    0, 
+                                    (body.radius * -Space.DISPLAY_SCALE));
                    
-                   Vector3f result = new Vector3f();
+                   Vec3 result = new Vec3();
                    Math3D.rotY(input, -mesh.getAngleY(), result);
                    
                    // Hajo: spaceport mesh needs absolute position

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.*;
 import solarex.ship.Ship;
 import solarex.util.ClockThread;
@@ -251,7 +251,7 @@ public class CockpitPanel extends UiPanel
         // glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
 
         glEnable(GL_LIGHTING);
-        glLight(GL_LIGHT0, GL_POSITION, lightPos);
+        glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
         
         glEnable(GL_NORMALIZE);
         

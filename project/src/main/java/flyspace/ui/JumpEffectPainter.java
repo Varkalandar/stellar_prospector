@@ -1,10 +1,8 @@
 package flyspace.ui;
 
-import flyspace.ui.UiPanel;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -56,7 +54,8 @@ public class JumpEffectPainter
         }
         
         time += 20;
-        Display.update();
+        // todo ?
+        // Display.update();
         
         try {
             Thread.sleep(20);

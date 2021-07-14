@@ -1,8 +1,8 @@
 package flyspace.math;
 
 import static java.lang.Math.*;
-import org.lwjgl.util.vector.Matrix3f;
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Matrix4;
+import solarex.system.Vec3;
 
 /**
  *
@@ -10,12 +10,12 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public class Math3D 
 {
-    private static final Matrix3f rotX = new Matrix3f();
-    private static final Matrix3f rotY = new Matrix3f();
-    private static final Matrix3f rotZ = new Matrix3f();
-    private static final Matrix3f rotAxis = new Matrix3f();
+    private static final Matrix4 rotX = new Matrix4();
+    private static final Matrix4 rotY = new Matrix4();
+    private static final Matrix4 rotZ = new Matrix4();
+    private static final Matrix4 rotAxis = new Matrix4();
     
-    public static Vector3f rotX(Vector3f point, double angle, Vector3f result)
+    public static Vec3 rotX(Vec3 point, double angle, Vec3 result)
     {
         double angleX = angle * 2.0 * PI / 360.0;
         float cosx = (float)cos(angleX);
@@ -27,12 +27,12 @@ public class Math3D
         rotX.m21 = sinx;
         rotX.m22 = cosx;
         
-        Matrix3f.transform(rotX, point, result);
+        Matrix4.transform(rotX, point, result);
         
         return result;
     }
     
-    public static Vector3f rotY(Vector3f point, double angle, Vector3f result)
+    public static Vec3 rotY(Vec3 point, double angle, Vec3 result)
     {
         double angleY = angle * 2.0 * PI / 360.0;
         float cosx = (float)cos(angleY);
@@ -44,12 +44,12 @@ public class Math3D
         rotY.m20 = -sinx;
         rotY.m22 = cosx;
         
-        Matrix3f.transform(rotY, point, result);
+        Matrix4.transform(rotY, point, result);
 
         return result;
     }
     
-    public static Vector3f rotZ(Vector3f point, double angle, Vector3f result)
+    public static Vec3 rotZ(Vec3 point, double angle, Vec3 result)
     {
         double angleZ = angle * 2.0 * PI / 360.0;
         
@@ -59,12 +59,12 @@ public class Math3D
         rotZ.m11 = (float)cos(angleZ);
         rotZ.m22 = 1.0f;
         
-        Matrix3f.transform(rotZ, point, result);
+        Matrix4.transform(rotZ, point, result);
         
         return result;
     }
     
-    public static Vector3f rotAxis(Vector3f point, Vector3f axis, double angle, Vector3f result)
+    public static Vec3 rotAxis(Vec3 point, Vec3 axis, double angle, Vec3 result)
     {
         double angleRad = angle * 2.0 * PI / 360.0;
         
@@ -84,29 +84,29 @@ public class Math3D
         rotAxis.m21 = axis.z * axis.y * (1-cosf) + axis.x *sinf;
         rotAxis.m22 = cosf + axis.z * axis.z * (1-cosf);
         
-        Matrix3f.transform(rotAxis, point, result);
+        Matrix4.transform(rotAxis, point, result);
         
         return result;
     }
 
-    public static Vector3f calcNormal(Vector3f left, Vector3f origin, Vector3f right) 
+    public static Vec3 calcNormal(Vec3 left, Vec3 origin, Vec3 right) 
     {
-        Vector3f normal = new Vector3f();
-        Vector3f leftEdge = new Vector3f();
-        Vector3f rightEdge = new Vector3f();
+        Vec3 normal = new Vec3();
+        Vec3 leftEdge = new Vec3(left);
+        Vec3 rightEdge = new Vec3(right);
         
-        Vector3f.sub(left, origin, leftEdge);
-        Vector3f.sub(right, origin, rightEdge);
+        leftEdge.sub(origin);
+        rightEdge.sub(origin);
         
-        Vector3f.cross(leftEdge, rightEdge, normal);
+        Vec3.cross(leftEdge, rightEdge, normal);
         normal.normalise();
         
         return normal;
     }
 
-    public static float degToRad(float degrees) 
+    public static double degToRad(double degrees) 
     {
-        return degrees * (float)(Math.PI / 180);
+        return degrees * (Math.PI / 180);
     }
     
 }

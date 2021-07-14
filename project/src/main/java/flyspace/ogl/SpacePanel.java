@@ -20,17 +20,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Keyboard;
+import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 import solarex.ship.Ship;
+import solarex.system.Matrix4;
 import solarex.system.Solar;
 import solarex.system.Vec3;
+import solarex.system.Vec4;
 
 /**
  * Space view
@@ -95,23 +94,11 @@ public class SpacePanel extends UiPanel
         starsNear.bind();
         
         ShaderBank.setupShaders();
-        
+
         ParticlePainter painter = new SpaceDebrisPainter();
         debrisDriver.setPainter(painter);
-        
-        /*
-        GL32Mesh tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.9f, 0.9f);
-        tetra.bind();
-        frontTester = new MultiMesh(tetra);
 
-        tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.9f, 0.1f);
-        tetra.bind();
-        upTester = new MultiMesh(tetra);
-        
-        tetra = GL32MeshFactory.createTetra(5, 0.9f, 0.1f, 0.9f);
-        tetra.bind();
-        rightTester = new MultiMesh(tetra);
-        */
+        logger.info("done.");
     }
     
     @Override
@@ -178,6 +165,7 @@ public class SpacePanel extends UiPanel
         GlLifecycle.exitOnGLError("handleInput");
     }
 
+    
     public void acceptInput(float delta) 
     {
         acceptInputRotate(delta);
@@ -185,41 +173,36 @@ public class SpacePanel extends UiPanel
         acceptInputMove(delta);
     }
 
-    public void acceptInputRotate(float delta) 
+    
+    private void acceptInputRotate(float delta) 
     {
         if(Mouse.isGrabbed()) 
 	{
             int mouseDX = Mouse.getDX();
             int mouseDY = Mouse.getDY();
             
-            Vector4f up4 = new Vector4f(0, 1, 0, 1.0f);
-            Vector4f right4 = new Vector4f(1, 0, 0, 1.0f);
-
-            /*
-            Matrix4f inverse = view.getInverse();
-            Matrix4f inverse = view.getTransform();
-            Matrix4f.transform(inverse, right4, right4);
-            Matrix4f.transform(inverse, up4, up4);
-            */
             
-            view.rotateAxis(mouseDY * mouseSensitivity, new Vector3f(right4.x, right4.y, right4.z));
-            view.rotateAxis(mouseDX * mouseSensitivity, new Vector3f(up4.x, up4.y, up4.z));
+            view.rotateAxis(mouseDY * mouseSensitivity, new Vec3(1, 0, 0));
+            view.rotateAxis(mouseDX * mouseSensitivity, new Vec3(0, 1, 0));
         }
     }
 
-    public void acceptInputGrab() 
+    
+    private void acceptInputGrab() 
     {
         if(Mouse.isInsideWindow() && Mouse.isButtonDown(0)) 
 	{
             Mouse.setGrabbed(true);
         }
+        
         if(!Mouse.isButtonDown(0)) 
 	{
             Mouse.setGrabbed(false);
         }
     }
 
-    public void acceptInputMove(float delta) 
+    
+    private void acceptInputMove(float delta) 
     {
         boolean keyAccell = Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_UP);
         boolean keyDecell = Keyboard.isKeyDown(Keyboard.KEY_S) || Keyboard.isKeyDown(Keyboard.KEY_DOWN);
@@ -268,9 +251,9 @@ public class SpacePanel extends UiPanel
             autopilot = null;
         }
         
-        Matrix4f inverseView = view.getInverse();
-        Vector4f front4 = new Vector4f(0, 0, -1, 0);
-        Matrix4f.transform(inverseView, front4, front4);
+        Matrix4 inverseView = view.getInverse();
+        Vec3 front4 = new Vec3(0, 0, -1);
+        Matrix4.transform(inverseView, front4, front4);
         front4.normalise();
         
         double mSpeed = speed * 1.0;
@@ -415,14 +398,14 @@ public class SpacePanel extends UiPanel
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_CLAMP);
         
-        Matrix4f inverse = view.getInverse();
-        Vector4f front4 = new Vector4f(0, 0, -1, 1.0f);
-        Vector4f up4 = new Vector4f(0, 1, 0, 1.0f);
-        Vector4f right4 = new Vector4f(1, 0, 0, 1.0f);
+        Matrix4 inverse = view.getInverse();
+        Vec3 front4 = new Vec3(0, 0, -1);
+        Vec3 up4 = new Vec3(0, 1, 0);
+        Vec3 right4 = new Vec3(1, 0, 0);
 
-        Matrix4f.transform(inverse, front4, front4);
-        Matrix4f.transform(inverse, right4, right4);
-        Matrix4f.transform(inverse, up4, up4);
+        Matrix4.transform(inverse, front4, front4);
+        Matrix4.transform(inverse, right4, right4);
+        Matrix4.transform(inverse, up4, up4);
 
         // Hajo: Testing camera vectors
         /*
@@ -453,7 +436,7 @@ public class SpacePanel extends UiPanel
         System.err.println("right=" + right4);
 */        
         
-        // System.err.println("d1=" + Vector3f.dot(up, right) + " d2=" + Vector3f.dot(up, front) + "d3=" + Vector3f.dot(front, right));
+        // System.err.println("d1=" + Vec3.dot(up, right) + " d2=" + Vec3.dot(up, front) + "d3=" + Vec3.dot(front, right));
         
         
         // ----------
@@ -571,8 +554,8 @@ public class SpacePanel extends UiPanel
         GlLifecycle.exitOnGLError("displayStars1");
 
         // Reset view and model matrices
-        Matrix4f viewMatrix = view.getTransform();
-        Matrix4f modelMatrix = new Matrix4f();
+        Matrix4 viewMatrix = view.getTransform();
+        Matrix4 modelMatrix = new Matrix4();
 
         // Upload matrices to the uniform variables
         ShaderBank.updateViewMatrix(viewMatrix);
@@ -633,7 +616,7 @@ public class SpacePanel extends UiPanel
         glMatrixMode(GL_MODELVIEW); 
         glLoadIdentity();
 
-        Vector3f rotation = camera.getRotation();
+        Vec3 rotation = camera.getRotation();
         glRotatef(rotation.x, 1, 0, 0);
         glRotatef(rotation.y, 0, 1, 0);
         glRotatef(rotation.z, 0, 0, 1);
@@ -679,23 +662,23 @@ public class SpacePanel extends UiPanel
         Vec3 relPos = new Vec3(meshPos);
         relPos.sub(ship.pos);
         
-        Vector3f modelPos = toVector3f(relPos);
-        Vector3f modelAngle = new Vector3f(mesh.getAngleX(), mesh.getAngleY(), 0);
-        // modelScale = new Vector3f(1, 1, 1);
+        Vec3 modelPos = toVec3(relPos);
+        Vec3 modelAngle = new Vec3(mesh.getAngleX(), mesh.getAngleY(), 0);
+        // modelScale = new Vec3(1, 1, 1);
 
         //-- Update matrices
         // Reset view and model matrices
-        Matrix4f viewMatrix = view.getTransform();
-        Matrix4f modelMatrix = new Matrix4f();
+        Matrix4 viewMatrix = view.getTransform();
+        Matrix4 modelMatrix = new Matrix4();
         
         // Scale, translate and rotate model
-        // Matrix4f.scale(modelScale, modelMatrix, modelMatrix);
-        Matrix4f.translate(modelPos, modelMatrix, modelMatrix);
-        Matrix4f.rotate(Math3D.degToRad(modelAngle.z), new Vector3f(0, 0, 1), 
+        // Matrix4.scale(modelScale, modelMatrix, modelMatrix);
+        Matrix4.translate(modelPos, modelMatrix, modelMatrix);
+        Matrix4.rotate(Math3D.degToRad(modelAngle.z), new Vec3(0, 0, 1), 
                 modelMatrix, modelMatrix);
-        Matrix4f.rotate(Math3D.degToRad(modelAngle.y), new Vector3f(0, 1, 0), 
+        Matrix4.rotate(Math3D.degToRad(modelAngle.y), new Vec3(0, 1, 0), 
                 modelMatrix, modelMatrix);
-        Matrix4f.rotate(Math3D.degToRad(modelAngle.x), new Vector3f(1, 0, 0), 
+        Matrix4.rotate(Math3D.degToRad(modelAngle.x), new Vec3(1, 0, 0), 
                 modelMatrix, modelMatrix);
 
         ShaderBank.updateViewMatrix(viewMatrix);
@@ -722,11 +705,11 @@ public class SpacePanel extends UiPanel
         // Hajo: calculate name label position
         // projectionMatrix * viewMatrix * modelMatrix * in_Position;
         
-        Matrix4f mvp = Matrix4f.mul(viewMatrix, modelMatrix, null);
-        Matrix4f.mul(ShaderBank.projectionMatrix, mvp, mvp);
+        Matrix4 mvp = Matrix4.mul(viewMatrix, modelMatrix, null);
+        Matrix4.mul(ShaderBank.projectionMatrix, mvp, mvp);
 
-        Vector4f pos = new Vector4f(0, 0, 0, 1);
-        Vector4f result = Matrix4f.transform(mvp, pos, null);        
+        Vec4 pos = new Vec4(0, 0, 0, 1);
+        Vec4 result = Matrix4.transform(mvp, pos, null);        
 
         mesh.lastScreenX = (int)(result.x/result.w * width/2 + width/2);
 
@@ -734,10 +717,7 @@ public class SpacePanel extends UiPanel
         mesh.lastScreenY = (int)((result.y/result.w * viewHeight/2) + viewHeight/2) + CockpitPanel.HEIGHT;
     }
 
-    private void showDecal(MultiMesh mesh) 
-    {
-    }
-    
+
     private void showLabel(MultiMesh mesh)
     {
         Solar body = mesh.getPeer();
@@ -760,6 +740,7 @@ public class SpacePanel extends UiPanel
     {
         setDestination(ship, space.selectedMesh);
     }
+    
     
     public static void setDestination(Ship ship, MultiMesh selectedMesh) 
     {
@@ -836,8 +817,8 @@ public class SpacePanel extends UiPanel
 
             debrisDriver.driveParticles();
             
-            Matrix4f viewMatrix = new Matrix4f();
-            Matrix4f modelMatrix = new Matrix4f();
+            Matrix4 viewMatrix = new Matrix4();
+            Matrix4 modelMatrix = new Matrix4();
 
             ShaderBank.updateViewMatrix(viewMatrix);
             ShaderBank.updateModelMatrix(modelMatrix);
@@ -862,16 +843,16 @@ public class SpacePanel extends UiPanel
         direction.sub(ship.pos);
         direction.normalise();
         
-        Vector3f front = new Vector3f((float)-direction.x, (float)-direction.y, (float)-direction.z);
-        Vector3f up = new Vector3f(0, 1, 0); // Hajo: pray ...
-        Vector3f right = Vector3f.cross(up, front, null);
+        Vec3 front = new Vec3((float)-direction.x, (float)-direction.y, (float)-direction.z);
+        Vec3 up = new Vec3(0, 1, 0); // Hajo: pray ...
+        Vec3 right = Vec3.cross(up, front, null);
         
         view.orient(front, right);
     }
 
-    private static Vector3f toVector3f(Vec3 pos)
+    private static Vec3 toVec3(Vec3 pos)
     {
-        return new Vector3f((float)pos.x, (float)pos.y, (float)pos.z);
+        return new Vec3((float)pos.x, (float)pos.y, (float)pos.z);
     }
 
 }

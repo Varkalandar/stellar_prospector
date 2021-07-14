@@ -1,6 +1,6 @@
 package flyspace.math;
 
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Vec3;
 
 /**
  * Simplex noise octaves integrator.
@@ -58,7 +58,7 @@ public class SimplexNoise
      * @param v location
      * @return Value in (0 .. 1)
      */
-    public double noise(Vector3f v)
+    public double noise(Vec3 v)
     {
         double value = 0;
         double amplitude = 1.0f;

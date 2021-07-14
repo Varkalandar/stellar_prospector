@@ -7,7 +7,7 @@ import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import java.text.NumberFormat;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;

@@ -14,7 +14,7 @@ import flyspace.ui.Trigger;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
@@ -26,14 +26,14 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glViewport;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
 import solarex.ship.components.EquipmentType;
 import solarex.ship.components.ShipComponent;
+import solarex.system.Matrix4;
 import solarex.system.Mining;
 import solarex.system.PlanetResources;
 import solarex.system.Solar;
+import solarex.system.Vec3;
 import solarex.ui.panels.PlanetDetailPanel;
 import solarex.util.RandomHelper;
 
@@ -106,7 +106,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         setupTextPanel(width, height);
         
         ShaderBank.setupMatrices(250, 250);
-        ShaderBank.updateViewMatrix(new Matrix4f());
+        ShaderBank.updateViewMatrix(new Matrix4());
         ShaderBank.updateLightPos(-10000.0f, 0.0f, 10000.0f);
         
         for(ShipComponent component : ship.equipment.components)
@@ -308,14 +308,14 @@ public class PlanetMiningPanel extends DecoratedUiPanel
         
         rotatePlanet(planetMesh);
         
-        Matrix4f modelMatrix = new Matrix4f();
+        Matrix4 modelMatrix = new Matrix4();
         
-        modelMatrix.translate(new Vector3f(0, 0, -planet.radius / 30));
-        Matrix4f.rotate(Math3D.degToRad(planetMesh.getAngleZ()), new Vector3f(0, 0, 1), 
+        Matrix4.translate(new Vec3(0, 0, -planet.radius / 30), modelMatrix, modelMatrix);
+        Matrix4.rotate(Math3D.degToRad(planetMesh.getAngleZ()), new Vec3(0, 0, 1), 
                 modelMatrix, modelMatrix);
-        Matrix4f.rotate(Math3D.degToRad(planetMesh.getAngleY()), new Vector3f(0, 1, 0), 
+        Matrix4.rotate(Math3D.degToRad(planetMesh.getAngleY()), new Vec3(0, 1, 0), 
                 modelMatrix, modelMatrix);
-        Matrix4f.rotate(Math3D.degToRad(planetMesh.getAngleX()), new Vector3f(1, 0, 0), 
+        Matrix4.rotate(Math3D.degToRad(planetMesh.getAngleX()), new Vec3(1, 0, 0), 
                 modelMatrix, modelMatrix);
         
         GL20.glUseProgram(ShaderBank.shadedProgId);

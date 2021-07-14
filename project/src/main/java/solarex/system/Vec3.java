@@ -18,11 +18,10 @@ package solarex.system;
  */
 public class Vec3
 {
-
     public double x, y, z;
 
     /**
-     * @returns length^2
+     * @return length^2
      * @author Hj. Malthaner
      */
     public double length2() 
@@ -70,6 +69,13 @@ public class Vec3
         z = v.z;
     }
 
+    public void set(double x, double y, double z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    
     public double length() 
     {
         return Math.sqrt(x*x + y*y + z*z);
@@ -92,4 +98,29 @@ public class Vec3
     {
         return "x=" + x + " y=" + y + " z=" + z;
     }
+    
+    /**
+     * The cross product of two vectors.
+     *
+     * @param left The LHS vector
+     * @param right The RHS vector
+     * @param dest The destination result, or null if a new vector is to be created
+     * @return left cross right
+     */
+    public static Vec3 cross(Vec3 left,
+                             Vec3 right,
+                             Vec3 dest)
+    {
+
+        if(dest == null)
+        {
+            dest = new Vec3();
+        }
+
+        dest.x = left.y * right.z - left.z * right.y;
+        dest.y = right.x * left.z - right.z * left.x;
+        dest.z = left.x * right.y - left.y * right.x;
+
+        return dest;
+    }    
 }

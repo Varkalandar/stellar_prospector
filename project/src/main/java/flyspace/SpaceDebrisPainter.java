@@ -18,8 +18,8 @@ import static flyspace.particles.ParticleDriver.ID;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Matrix4;
+import solarex.system.Vec3;
 
 /**
  *
@@ -57,10 +57,10 @@ public class SpaceDebrisPainter implements ParticlePainter
         
         if(z < 0)
         {
-            Matrix4f viewMatrix = new Matrix4f();
-            Matrix4f modelMatrix = new Matrix4f();
+            Matrix4 viewMatrix = new Matrix4();
+            Matrix4 modelMatrix = new Matrix4();
          
-            modelMatrix.translate(new Vector3f((float)x, (float)y, (float)z));
+            Matrix4.translate(new Vec3(x, y, z), modelMatrix, modelMatrix);
             ShaderBank.updateViewMatrix(viewMatrix);
             ShaderBank.updateModelMatrix(modelMatrix);
             ShaderBank.uploadBrightMatrices();

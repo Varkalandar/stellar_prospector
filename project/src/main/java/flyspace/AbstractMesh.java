@@ -1,6 +1,6 @@
 package flyspace;
 
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Vec3;
 
 /**
  * Technology independent mesh data.
@@ -9,20 +9,20 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public abstract class AbstractMesh
 {
-    private final Vector3f pos;
+    private final Vec3 pos;
     private float angleX, angleY;
     
     public AbstractMesh()
     {
-        pos = new Vector3f();
+        pos = new Vec3();
     }
     
-    protected Vector3f getPos()
+    protected Vec3 getPos()
     {
         return pos;
     }
     
-    public void setPos(Vector3f pos)
+    public void setPos(Vec3 pos)
     {
         this.pos.x = pos.x;
         this.pos.y = pos.y;

@@ -8,13 +8,12 @@ import flyspace.ogl32.ShaderBank;
 import flyspace.ui.Colors;
 import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
+import solarex.system.Matrix4;
 import solarex.system.Solar;
 import solarex.system.Vec3;
 
@@ -209,9 +208,9 @@ public class SystemMapPanel extends DecoratedUiPanel
         {
             PixFont font = Fonts.g12;
 
-            Matrix4f modelMatrix = new Matrix4f();
-            Matrix4f viewMatrix = new Matrix4f();
-            Matrix4f projection = new Matrix4f();
+            Matrix4 modelMatrix = new Matrix4();
+            Matrix4 viewMatrix = new Matrix4();
+            Matrix4 projection = new Matrix4();
 
             float far = 10000;
             float near = 1;
@@ -222,12 +221,12 @@ public class SystemMapPanel extends DecoratedUiPanel
             //projectionMatrix.m23 = - (far + near) / (far - near);
             projection.m33 = 1;
 
-            Vector3f translation = new Vector3f(
-                    (float) (xoff * scale),
-                    (float) (yoff * scale  * yscale + CockpitPanel.HEIGHT/2),
-                    (float) (-body.radius * Space.DISPLAY_SCALE));
+            Vec3 translation = new Vec3(
+                    (xoff * scale),
+                    (yoff * scale  * yscale + CockpitPanel.HEIGHT/2),
+                    (-body.radius * Space.DISPLAY_SCALE));
 
-            modelMatrix.translate(translation);
+            Matrix4.translate(translation, modelMatrix, modelMatrix);
 
             // Vector3f translation = new Vector3f((float)xoff, (float)yoff, 0);
 
@@ -238,7 +237,7 @@ public class SystemMapPanel extends DecoratedUiPanel
 
 
             float fscale = (float)(scale);
-            modelMatrix.scale(new Vector3f(fscale, fscale, fscale));
+            Matrix4.scale(new Vec3(fscale, fscale, fscale), modelMatrix, modelMatrix);
 
 
             /*

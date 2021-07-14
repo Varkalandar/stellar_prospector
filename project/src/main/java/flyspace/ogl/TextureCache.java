@@ -11,9 +11,7 @@ import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
@@ -25,15 +23,15 @@ import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL11.glPixelStorei;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.util.glu.GLU.gluErrorString;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import solarex.util.ResourceLoader;
 
 /**
  * Texture loading and texture management.
@@ -48,9 +46,10 @@ public class TextureCache
     public final static Texture [] species = new Texture [400];
     public final static Texture [] textures = new Texture [2048];
     
+    private static ResourceLoader resourceLoader;
     
     public static void initialize(LoaderCallback callback)
-    {
+    {        
         if(callback != null) callback.update("Loading ground textures ...");
         loadTextures("/jewelhunt/resources/", "grounds/", "catalog.xml", grounds, 0);
         
@@ -66,9 +65,15 @@ public class TextureCache
         loadTextures(path, folder, "catalog.xml", tex, idOffset);
     }
     
-    public static Texture loadTexture(final String filename) throws IOException
+    public static Texture loadTexture(String filename) throws IOException
     {
-        InputStream in = Class.class.getResourceAsStream(filename);
+        if(resourceLoader == null) resourceLoader = new ResourceLoader();
+
+        
+        // InputStream in = Class.class.getResourceAsStream(filename);
+        InputStream in = resourceLoader.getResourceAsStream(filename);
+        
+        
         BufferedImage img = ImageIO.read(in);
         in.close();
         ByteBuffer buf = convertTextureToRGBA(img);
@@ -100,7 +105,7 @@ public class TextureCache
                     GL_RGBA, GL_UNSIGNED_BYTE, buf);
         
 
-        exitOnGLError("Texture loading");
+        GlLifecycle.exitOnGLError("Texture loading");
 
         // Setup the ST coordinate system
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -110,7 +115,7 @@ public class TextureCache
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         
-        exitOnGLError("loadPNGTexture");
+        GlLifecycle.exitOnGLError("loadPNGTexture");
     }
 
     public static ByteBuffer convertTextureToRGB(BufferedImage img)
@@ -156,23 +161,6 @@ public class TextureCache
         return buf;
     }
     
-    private static void exitOnGLError(String errorMessage)
-    {
-        int errorValue = glGetError();
-
-        if (errorValue != GL_NO_ERROR)
-        {
-            String errorString = gluErrorString(errorValue);
-            System.err.println("ERROR - " + errorMessage + ": " + errorString);
-
-            if (Display.isCreated())
-            {
-                Display.destroy();
-            }
-            
-            System.exit(-1);
-        }
-    }
 
     private static int rgbDiff(int a, int b)
     {

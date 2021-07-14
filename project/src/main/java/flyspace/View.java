@@ -1,9 +1,7 @@
 package flyspace;
 
-
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
+import solarex.system.Matrix4;
+import solarex.system.Vec3;
 
 /**
  * 
@@ -11,33 +9,33 @@ import org.lwjgl.util.vector.Vector4f;
  */
 public class View 
 {
-    private final Matrix4f transform;
-    private final Matrix4f inverse;
+    private final Matrix4 transform;
+    private final Matrix4 inverse;
     
-    private Vector3f front;
-    private Vector3f right;
-    private Vector3f up;
+    private Vec3 front;
+    private Vec3 right;
+    private Vec3 up;
 
     public View() 
     {
-        this.front = new Vector3f(0, 0, 1);
-        this.right = new Vector3f(1, 0, 0);
-        this.up = new Vector3f(0, 1, 0);
+        this.front = new Vec3(0, 0, 1);
+        this.right = new Vec3(1, 0, 0);
+        this.up = new Vec3(0, 1, 0);
         
-        this.transform = new Matrix4f();
-        this.inverse = new Matrix4f();
+        this.transform = new Matrix4();
+        this.inverse = new Matrix4();
     }
     
-    public void orient(Vector3f front3, Vector3f right3)
+    public void orient(Vec3 front3, Vec3 right3)
     {
-        front.set(front3.x, front3.y, front3.z);
+        front.set(front3);
         front.normalise();
-        right.set(right3.x, right3.y, right3.z);
+        right.set(right3);
         right.normalise();
         
         // Vector3f up3 = Vector3f.cross(right3, front3, null);
-        Vector3f up3 = Vector3f.cross(front, right, null);
-        up.set(up3.x, up3.y, up3.z);
+        Vec3 up3 = Vec3.cross(front, right, null);
+        up.set(up3);
         up.normalise();
         
         calculateTransform();
@@ -45,50 +43,27 @@ public class View
     }
 
 
-    public Matrix4f getTransform()
+    public Matrix4 getTransform()
     {
         return transform;
-        
-        // return Matrix4f.load(transform, new Matrix4f());
-        
-        /*
-        Matrix4f result = new Matrix4f();
-        fillTransform(result);
-        return result;
-        */
     }
     
-    public Matrix4f getInverse()
+    public Matrix4 getInverse()
     {
         return inverse;
-        
-        // return Matrix4f.load(inverse, new Matrix4f());
-        
-        /*
-        Matrix4f result = new Matrix4f();
-        fillTransform(result);
-        result.invert();
-        return result;
-        */
     }
     
-    public void rotateAxis(float angleRad, Vector3f axis)
+    public void rotateAxis(float angleRad, Vec3 axis)
     {
-        Matrix4f rot = new Matrix4f();
+        Matrix4 rot = new Matrix4();
         
-        Matrix4f.rotate(angleRad, axis, rot, rot);
+        Matrix4.rotate(angleRad, axis, rot, rot);
 
-        Vector4f front4 = new Vector4f(front.x, front.y, front.z, 0);
-        Matrix4f.transform(rot, front4, front4);
-        front.set(front4.x, front4.y, front4.z);
+        Matrix4.transform(rot, front, front);
         
-        Vector4f right4 = new Vector4f(right.x, right.y, right.z, 0);
-        Matrix4f.transform(rot, right4, right4);
-        right.set(right4.x, right4.y, right4.z);
+        Matrix4.transform(rot, right, right);
         
-        Vector4f up4 = new Vector4f(up.x, up.y, up.z, 0);
-        Matrix4f.transform(rot, up4, up4);
-        up.set(up4.x, up4.y, up4.z);
+        Matrix4.transform(rot, up, up);
         
         front.normalise();
         right.normalise();
@@ -98,7 +73,7 @@ public class View
         calculateInverse();
     }
     
-    private void fillTransform(Matrix4f result)
+    private void fillTransform(Matrix4 result)
     {
         result.m00 = right.x;
         result.m01 = right.y;

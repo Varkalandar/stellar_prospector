@@ -1,20 +1,18 @@
 package flyspace.ui.panels;
 
-import flyspace.AbstractMesh;
 import flyspace.FlySpace;
 import flyspace.Space;
 import flyspace.ogl.GlPortraitPanel;
 import flyspace.MultiMesh;
-import flyspace.ogl32.GL32MeshFactory;
 import flyspace.ui.Colors;
 import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import static flyspace.ui.UiPanel.fillRect;
-import java.net.URL;
 import java.util.Random;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
+import java.util.logging.Logger;
 import static org.lwjgl.opengl.GL11.*;
 import solarex.galaxy.Galaxy;
 import solarex.ship.Ship;
@@ -30,6 +28,9 @@ import solarex.util.RandomHelper;
  */
 public class StationPanel extends DecoratedUiPanel
 {
+    public static final Logger logger = Logger.getLogger(StationPanel.class.getName());
+    
+    
     private static final String welcomeTexts [] =
     {
         "Welcome to your last stop before nowhere. We have second hand " +
@@ -268,16 +269,23 @@ public class StationPanel extends DecoratedUiPanel
     
     public StationPanel(FlySpace game, Galaxy galaxy, Ship ship, ImageCache imageCache)
     {
+        logger.info("Initializing ...");
+        
         this.game = game;
         this.galaxy = galaxy;
         this.ship = ship;
         this.imageCache = imageCache;
-        this.portraitPanel = new GlPortraitPanel();
+        
+        logger.info("Creating ...");
+        
         this.goodsExchangePanel = new GoodsExchangePanel(game, ship);
         this.prospectorsPanel = new ProspectorsAgencyPanel(game, ship);
         this.bulletinBoardPanel = new BulletinBoardPanel(game, galaxy, ship);
         this.equipmentShopPanel = new EquipmentShopPanel(game, ship);
         this.questDialog = new QuestDialog();
+        this.portraitPanel = new GlPortraitPanel();
+        
+        logger.info("Layouting ...");
         
         DecoratedTrigger trigger;
         

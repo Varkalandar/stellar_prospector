@@ -1,8 +1,8 @@
 package flyspace.ui;
 
+import flyspace.ogl.GlLifecycle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
@@ -33,7 +33,9 @@ public class TitlePainter extends JumpEffectPainter
         Fonts.g17.drawString("Please wait, initializing ... " + countdown, 
                              0xFFFFFFFF, 50, 500);
         
-        Display.update();
+        // todo ?
+        // Display.update();
+        GlLifecycle.pollAndSwap();
         
         try {
             Thread.sleep(20);

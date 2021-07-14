@@ -1,7 +1,7 @@
 package flyspace;
 
-import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
+import solarex.system.Vec3;
 
 /**
  *
@@ -37,9 +37,9 @@ public class Autopilot
             dy /= dist;
             dz /= dist;
 
-            Vector3f front = new Vector3f((float)-dx, (float)-dy, (float)-dz);
-            Vector3f up = new Vector3f(0, 1, 0); // Hajo: pray ...
-            Vector3f right = Vector3f.cross(front, up, null);
+            Vec3 front = new Vec3((float)-dx, (float)-dy, (float)-dz);
+            Vec3 up = new Vec3(0, 1, 0); // Hajo: pray ...
+            Vec3 right = Vec3.cross(front, up, null);
             
             view.orient(front, right);
             

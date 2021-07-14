@@ -24,7 +24,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import org.lwjgl.input.Mouse;
+import flyspace.ui.Mouse;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -35,28 +35,22 @@ import static org.lwjgl.opengl.GL11.GL_LIGHTING;
 import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glColor3f;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glVertex2i;
 import static org.lwjgl.opengl.GL11.glViewport;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 import solarex.ship.Ship;
+import solarex.system.Matrix4;
 import solarex.system.Solar;
+import solarex.system.Vec3;
 import solarex.ui.ImageCache;
 
 
@@ -329,7 +323,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
     
     
         ShaderBank.setupMatrices(width, height);
-        ShaderBank.updateViewMatrix(new Matrix4f());
+        ShaderBank.updateViewMatrix(new Matrix4());
         ShaderBank.updateLightPos(-10000.0f, 0.0f, 10000.0f);
     }
 
@@ -410,6 +404,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
         checkSelection(body, bodyX, bodyY, bodyW, bodyH, spacing);
     }
 
+    
     public void displayBodyInfo(Solar body, boolean isExplored, int x, int y)
     {
         if(isExplored) 
@@ -440,6 +435,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
         lineOffset -= lineSpace;
     }
 
+    
     public void displayKnownBodyInfo(Solar body, int x, int y)
     {
         NumberFormat nf = NumberFormat.getInstance();
@@ -541,6 +537,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
         }
     }
 
+    
     private void checkSelection(Solar body, int bodyX, int bodyY, int bodyW, int bodyH, int spacing)
     {
         int mx = Mouse.getX();
@@ -586,6 +583,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
         }
     }
     
+    
     private void highlightBodyAndShowBodyInfo(Solar body, Rectangle frame)
     {
         fillBorder(frame.x, frame.y, frame.width, frame.height, 1, Colors.LABEL);
@@ -606,9 +604,9 @@ public class SystemInfoPanel extends DecoratedUiPanel
         // needed?
         // planetMesh.planetRot();
         
-        Matrix4f modelMatrix = new Matrix4f();
-        Matrix4f viewMatrix = new Matrix4f();
-        Matrix4f projection = new Matrix4f();
+        Matrix4 modelMatrix = new Matrix4();
+        Matrix4 viewMatrix = new Matrix4();
+        Matrix4 projection = new Matrix4();
 
         float far = 10000;
         float near = 1;
@@ -621,18 +619,18 @@ public class SystemInfoPanel extends DecoratedUiPanel
 
         float size = scale(planet) * 64f;
         
-        Vector3f translation = new Vector3f(
+        Vec3 translation = new Vec3(
                 (float) (xpos - width/2),
                 (float) (ypos - height/2),
                 0f);
 
-        modelMatrix.translate(translation);
+        Matrix4.translate(translation, modelMatrix, modelMatrix);
 
         float scale = size / (float)planet.radius;
 
         // System.err.println("Scale=" + scale);
         
-        modelMatrix.scale(new Vector3f(scale, scale, scale));
+        Matrix4.scale(new Vec3(scale, scale, scale), modelMatrix, modelMatrix);
         
         ShaderBank.updateProjectionMatrix(projection);
         ShaderBank.updateModelMatrix(modelMatrix);

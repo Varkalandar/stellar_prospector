@@ -36,6 +36,7 @@ public class Colors
     
     public static final int TRIGGER_SELECTED = 0xFFEE6600;
     
+    
     public static final int scale(int argb, double factor)
     {
         int r = (argb >> 16) & 0xFF;
@@ -54,11 +55,13 @@ public class Colors
                 (r << 16) | (g << 8) | b;
     }
 
+    
     private static int clamp(int min, int max, int v)
     {
         return Math.min(Math.max(v, min), max);
     }
 
+    
     /**
      * Parses an HTML type color string into an argb value
      * @param color A string like "#FFFFFF"

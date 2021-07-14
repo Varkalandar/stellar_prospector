@@ -4,7 +4,8 @@ import flyspace.AbstractMesh;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL11.*;
-import org.lwjgl.util.vector.Vector3f;
+import solarex.system.Vec3;
+
 
 /**
  *
@@ -73,11 +74,11 @@ public class Mesh extends AbstractMesh
     @Override
     public void display()
     {
-        Vector3f pos = getPos();
+        Vec3 pos = getPos();
         
         glBindTexture(GL_TEXTURE_2D, textureId);
         
-        glTranslatef(pos.x, pos.y, pos.z);
+        glTranslatef((float)pos.x, (float)pos.y, (float)pos.z);
         
         glRotatef(getAngleX(), 1, 0, 0);
         glRotatef(getAngleY(), 0, 1, 0);
@@ -87,10 +88,10 @@ public class Mesh extends AbstractMesh
         if(nBuffer != null) glEnableClientState(GL_NORMAL_ARRAY);
         if(tBuffer != null) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
        
-        glColorPointer(3, 0, cBuffer);
-        glVertexPointer(3, 0, vBuffer);
-        if(nBuffer != null) glNormalPointer(0, nBuffer);
-        if(tBuffer != null) glTexCoordPointer(3, 0, tBuffer);
+        glColorPointer(3, GL_FLOAT, 0, cBuffer);
+        glVertexPointer(3, GL_FLOAT, 0, vBuffer);
+        if(nBuffer != null) glNormalPointer(GL_FLOAT, 0, nBuffer);
+        if(tBuffer != null) glTexCoordPointer(3, GL_FLOAT, 0, tBuffer);
         
         glDrawArrays(GL_TRIANGLES, 0, vertices);
 
