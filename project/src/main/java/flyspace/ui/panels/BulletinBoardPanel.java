@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import flyspace.ui.Mouse;
+import flyspace.ui.UiPanel;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
@@ -20,6 +21,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 import solarex.galaxy.Galaxy;
 import solarex.quest.Delivery;
 import solarex.quest.Donation;
+import solarex.quest.Offering;
 import solarex.quest.Quest;
 import solarex.quest.WantedResource;
 import solarex.ship.Cargo;
@@ -54,6 +56,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
     private int selectedQuest;
     
     private final QuestDialog questDialog;
+    private UiPanel newspaperPanel;
     
     
     public BulletinBoardPanel(FlySpace game, Galaxy galaxy, Ship ship) 
@@ -105,29 +108,37 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         {
             if(clicked)
             {
-                int mx = Mouse.getX();
-                int my = Mouse.getY();
-                
-                Trigger t = trigger(mx, my);
-                
-                if(t == loungeTrigger)
+                if(newspaperPanel != null)
                 {
-                    game.showStationPanel();
-                }
-                else if(t == acceptTrigger)
-                {
-                    acceptQuest();
+                    newspaperPanel = null;
                 }
                 else
                 {
-                    // Test quest list area
-                    selectQuestFromList(mx, my);
+                    int mx = Mouse.getX();
+                    int my = Mouse.getY();
+
+                    Trigger t = trigger(mx, my);
+
+                    if(t == loungeTrigger)
+                    {
+                        game.showStationPanel();
+                    }
+                    else if(t == acceptTrigger)
+                    {
+                        acceptQuest();
+                    }
+                    else
+                    {
+                        // Test quest list area
+                        selectQuestFromList(mx, my);
+                    }
                 }
                 clicked = false;
             }
         }
     }
 
+    
     @Override
     public void display() 
     {
@@ -164,7 +175,13 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         {
             questDialog.display(width, height);
         }
+    
+        if(newspaperPanel != null)
+        {
+            newspaperPanel.display();
+        }
     }
+    
     
     private void displayQuestList(PixFont font, int left, int top)
     {
@@ -184,6 +201,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         }
     }
 
+    
     private void displayQuestDetails()
     {
         Quest quest = questList.get(selectedQuest);
@@ -193,6 +211,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
                 630, 620);
         
     }
+    
     
     private void buildList(Galaxy galaxy, Solar station, Ship ship) 
     {
@@ -217,6 +236,8 @@ public class BulletinBoardPanel extends DecoratedUiPanel
             }
         }
 
+        Offering offering = new Offering(game.getWorld(), game.getImageCache());
+        questList.add(offering);
         
         // Hajo: the more population lives here, the more
         // jobs and quests should be available.
@@ -269,6 +290,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         
         addDonations();
     }
+    
     
     private void addDonations()
     {
@@ -351,7 +373,15 @@ public class BulletinBoardPanel extends DecoratedUiPanel
 
             if(ok)
             {
-                questDialog.handleQuest(quest);
+                if(quest instanceof Offering)
+                {
+                    Offering offering = (Offering)quest;
+                    newspaperPanel = offering.getNewspaper();
+                }
+                else
+                {
+                    questDialog.handleQuest(quest);
+                }
             }
             else
             {
@@ -360,6 +390,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
             questList.remove(selectedQuest);
         }
     }
+    
     
     private void selectQuest(int n)
     {
@@ -370,6 +401,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         acceptTrigger.setEnabled(p == Status.OK);
     }
 
+    
     private void selectQuestFromList(int mx, int my) 
     {
         if(mx < 600 && my > 190 && my < 610)

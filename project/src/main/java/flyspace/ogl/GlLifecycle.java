@@ -165,4 +165,9 @@ public class GlLifecycle
         //Swaps framebuffers.
         glfwSwapBuffers(window);
     }
+
+    public static void reactivateContext() 
+    {
+        glfwMakeContextCurrent(window);
+    }
 }

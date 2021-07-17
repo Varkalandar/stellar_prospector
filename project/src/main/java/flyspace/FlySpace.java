@@ -101,22 +101,7 @@ public class FlySpace
     private Galaxy galaxy;
     private final Mining mining;
 
-    
-    /*
-    static
-    {
-        try 
-        {
-            LibraryPathExtender.addLibraryPath("lwjgl-2.9.1\\native\\windows");
-            LibraryPathExtender.addLibraryPath("lwjgl-2.9.1/native/linux");
-        }
-        catch (Exception ex) 
-        {
-            Logger.getLogger(FlySpace.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    */
-    
+        
     /**
      * @param args the command line arguments
      */
@@ -138,6 +123,19 @@ public class FlySpace
             flySpace.destroyGL();
         }
     }
+
+    
+    public World getWorld()
+    {
+        return world;
+    }
+
+    
+    public ImageCache getImageCache()
+    {
+        return imageCache;
+    }
+    
     
     public FlySpace()
     {

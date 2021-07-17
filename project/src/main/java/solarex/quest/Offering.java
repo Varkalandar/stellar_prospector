@@ -10,25 +10,33 @@
  */
 package solarex.quest;
 
-import java.awt.BorderLayout;
+import flyspace.ogl.GlLifecycle;
+import flyspace.ui.UiPanel;
+import flyspace.ui.panels.NewspaperPanel;
 import java.awt.Component;
-import java.awt.Image;
-import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import org.lwjgl.glfw.GLFW;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_COMPAT_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import org.lwjgl.glfw.GLFWWindowCloseCallback;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLUtil;
 import solarex.evolution.SportsLeague;
 import solarex.evolution.World;
 import solarex.galaxy.Galaxy;
 import solarex.ship.Ship;
 import solarex.system.Solar;
 import solarex.ui.ImageCache;
-import solarex.ui.UiHelper;
-import solarex.ui.components.NewspaperPanel;
 import solarex.util.ClockThread;
 import solarex.util.Status;
 
@@ -47,6 +55,9 @@ public class Offering implements Quest
     private String newspaperName = "Secret Eye";
     private final ImageCache imageCache;
 
+    private GLFWWindowCloseCallback closeCallback;
+    
+    
     public Offering(World world, ImageCache imageCache)
     {
         this.world = world;
@@ -56,7 +67,7 @@ public class Offering implements Quest
     @Override
     public String getQuestHeadline()
     {
-        return "<html><font color='#FFFFFF'>&nbsp;Buy the latest " + newspaperName + " issue for only 0.1 Cr.</html>";
+        return "<html><font color='#FFFFFF'>&nbsp;Buy the latest " + newspaperName + " issue for only 0.1 Cr.</font></html>";
     }
 
     @Override
@@ -90,13 +101,12 @@ public class Offering implements Quest
     @Override
     public void showSuccessMessage(Component component)
     {
-        JFrame appFrame = UiHelper.findRootFrame(component);
-        JDialog dialog = new JDialog(appFrame, "The " + newspaperName);
-        
+    }
+     
+    
+    public UiPanel getNewspaper()
+    {
         NewspaperPanel newspaperPanel = new NewspaperPanel();
-        
-        Image backdrop = imageCache.newspaper.getImage();
-        newspaperPanel.setBackgroundImage(backdrop);
         
         String date = "Issue of " 
                 + ClockThread.getYear()
@@ -114,25 +124,17 @@ public class Offering implements Quest
         newspaperPanel.createRandomEquipmentAd(4);
         newspaperPanel.createRandomTravelAd(5, galaxy, station.loca);
         
-        dialog.setLayout(new BorderLayout());
-        dialog.add(newspaperPanel);
+        // newspaperPanel.activate();        
         
-        dialog.pack();
-        
-        Point p = appFrame.getLocation();
-        
-        p.x += (appFrame.getWidth() - dialog.getWidth())/2;
-        p.y += (appFrame.getHeight() - dialog.getHeight())/2;
-        
-        dialog.setLocation(p);
-        //dialog.setBackground(Color.yellow);
-        dialog.setVisible(true);
+        return newspaperPanel;
     }
 
+    
     @Override
     public Status requiresInteraction()
     {
-        return Status.OK;
+        Status status = new Status(Quest.I_NEWFRAME, "New Window");
+        return status;
     }
 
     @Override
@@ -147,33 +149,30 @@ public class Offering implements Quest
         
         addMatchNews(newspaperPanel, league.rollMatchDay());
         
-        newspaperPanel.setHeadline2("Sports News");
+        newspaperPanel.setHeadline(2, "Sports News");
         
         Collections.sort(league.teams);
         
-        StringBuilder buf = new StringBuilder("<html>");
+        StringBuilder buf = new StringBuilder();
 
         buf.append("Spaceball leage rankings after matchday ")
            .append(league.matchDayCount)
-           .append(":<br><br>")
-           .append("<table cellspacing='0'>");
+           .append(":\n");
         
         for(int i=0; i<league.teams.size(); i++)
         {
             SportsLeague.Team team = league.teams.get(i);
             
-            buf.append("<tr><td>").append(team.name).append("</td><td>").append(team.seasonScore);
-            buf.append("</tr></td>");
+            buf.append(team.name).append(" ").append(team.seasonScore);
+            buf.append("\n");
             
             // System.out.println(team.name + ":\t\t" + team.seasonScore);
         }
         
-        buf.append("</table></html>");
-        
-        newspaperPanel.setNews2(buf.toString());
-        
+        newspaperPanel.setNews(2, buf.toString());
     }
 
+    
     private void addMatchNews(NewspaperPanel newspaperPanel, ArrayList<SportsLeague.Match> rollMatchDay)
     {
         SportsLeague.Match bestMatch = null;
@@ -192,14 +191,12 @@ public class Offering implements Quest
         
         String result = "" +  bestMatch.score1 + ":" + bestMatch.score2;
         
-        newspaperPanel.setHeadline3("Sensational " + result);
+        newspaperPanel.setHeadline(3, "Sensational " + result);
         
-        newspaperPanel.setNews3(
-                "<html>" + 
+        newspaperPanel.setNews(3,
                 bestMatch.team1.name + " scores a fantastic " + result + 
                 " against " + bestMatch.team2.name + ". " + bestMatch.team1.name + " fans" +
-                " celebrate the victory for hours." +
-                "</html>"
+                " celebrate the victory for hours."
                 );
     }
     
@@ -208,19 +205,17 @@ public class Offering implements Quest
         newspaperPanel.setColumnHeadline("Scandalous!");
         
         newspaperPanel.setColumnText(
-                "<html>"
-                + "Our investigations revealed that the clonknik performance"
+                "Our investigations revealed that the clonknik performance"
                 + " 'Crescendo of a thousand tools' was"
                 + " secretly sponsored by the ear implant industry!. We've"
                 + " got intelligence that the clonkniks get a 15% share of"
                 + " each sold implant during the following four days after a"
-                + " concert, and 7% for the next ten days.<br>"
+                + " concert, and 7% for the next ten days.\n"
                 + "Furthermore there seem to be tight connections between"
                 + " the clonknik biotech exports and the terranean medtech"
                 + " industry. Clonkniks and leading medtech companies declare"
                 + " these finding to be just random coincidence, but we know"
                 + " better! Read more on page 2."
-                + "</html>"
                 );
     }
 
@@ -229,14 +224,14 @@ public class Offering implements Quest
         newspaperPanel.setHeadline(1, "We Saw It First");
 
         String s =
-                "<html>The Secret Eye reporters were the first to get a glimpse at"
+                "The Secret Eye reporters were the first to get a glimpse at"
                 + " the forthcoming new model from Spacefolks Industries, the"
                 + " Tincan Mini Clipper! It sure is a big step forward, offering"
                 + " more cargo and equipment space than their famous Space Bug"
                 + " model, while retaining almost the same hyperjump range with"
                 + " a standard Tenclon Motors drive and cheap low catalyst fuel."
                 + " Spacefolks Industries announced the Tincan Mini Clipper to be"
-                + " available in late 2160.</html>";
+                + " available in late 2160.";
         
         newspaperPanel.setNews(1, s);
     }

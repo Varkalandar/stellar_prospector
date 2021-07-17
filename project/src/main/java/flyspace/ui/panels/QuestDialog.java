@@ -79,6 +79,11 @@ public class QuestDialog
             textBox.setMessage(status.message);
             textBox.setVisible(true);
         }
+        
+        if(status.problemCode == Quest.I_NEWFRAME)
+        {
+            interactiveQuest.showSuccessMessage(null);
+        }
     }
 
     public void handleQuest(Quest quest)
