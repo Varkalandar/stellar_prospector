@@ -183,7 +183,7 @@ public class PixFont
             final char c = text.charAt(p);
             wordWidth += letterWidths[c];
 
-            if(p == letters-1 || breaks.indexOf(c) >= 0 || c == '\n')
+            if(p == letters-1 || breaks.indexOf(c) >= 0 || c == '\n' || c == '\t')
             {
                 // we found a word end
 
@@ -211,7 +211,15 @@ public class PixFont
                     x = 0;
                     y += linespace;
                 }
-                         
+                
+                if(c == '\t')
+                {
+                    // tabulator
+                    int tab = 80;
+                    int space = tab - (x % tab);
+                    x += space;
+                }
+                
                 // next word;
                 start = p+1;
                 wordWidth = 0;
