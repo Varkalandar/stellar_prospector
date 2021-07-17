@@ -1,6 +1,5 @@
 package flyspace.ui.panels;
 
-import flyspace.ogl.GlLifecycle;
 import flyspace.ui.Colors;
 import flyspace.ui.Display;
 import flyspace.ui.Fonts;
@@ -76,13 +75,26 @@ public class NewspaperPanel extends UiPanel
         
         String headline = "Buy now!";
         String base = shipComponent.getName();
-        base = base.replace("<", "&lt;");
-        base = base.replace(">", "&gt;");
+        base = base.replace("<font color='#FF9900'>&lt;", "");
+        base = base.replace("&gt;</font><br>", "");
+        
+        String [] praises = {"unsurpassed", "splendid", "magnificent", "great", "trusty"};
+        String praise = RandomHelper.oneOf(praises);
+        
+        String [] praises2 = {"is now better than ever!", 
+                              "got a complete redesign!", 
+                              "was upgraded once more!", 
+                              "will last forever!", 
+                              "now comes with a 3 day warranty."};
+        String praise2 = RandomHelper.oneOf(praises2);
+        
+        String [] visits = {"Visit your local ship component shop for more details.",
+                            "Check your local hardware store for more details."};
+        String visit = RandomHelper.oneOf(visits);
         
         
         String text =
-                "The unsurpassed " + base + " is now better than ever!"
-                + " Visit your local ship component shop for more details.";
+                "The " + praise + " " + base + " " + praise2 + " " + visit;
      
         
         setHeadline(index, headline);
@@ -126,33 +138,29 @@ public class NewspaperPanel extends UiPanel
         Fonts.g12.drawStringCentered("News For The Curious", Colors.ORANGE, 0, 650, Display.width, 1);
         Fonts.g12.drawString("Only 0.1$", Colors.ORANGE, 1080, 650);
         
-        Fonts.g17.drawStringBold(headlines[1], Colors.WHITE, 20, 620, 1);
-        Fonts.g12.drawText(news[1], Colors.WHITE, 20, 580, 460, 1);
+        // Fonts.g17.drawStringBold(headlines[1], Colors.WHITE, 20, 620, 1);
+        // Fonts.g12.drawText(news[1], Colors.WHITE, 20, 580, 460, 1);
+        displayTextBox(headlines[1], news[1], 20, 620, 480);
         
-        Fonts.g17.drawStringBold(headlines[2], Colors.WHITE, 500, 620, 1);
-        Fonts.g12.drawText(news[2], Colors.WHITE, 500, 580, 460, 1);
+        displayTextBox(headlines[2], news[2], 520, 620, 480);
 
-        Fonts.g17.drawStringBold(headlines[3], Colors.WHITE, 20, 380, 1);
-        Fonts.g12.drawText(news[3], Colors.WHITE, 20, 340, 260, 1);
-        
-        Fonts.g17.drawStringBold(headlines[4], Colors.WHITE, 310, 380, 1);
-        Fonts.g12.drawText(news[4], Colors.WHITE, 310, 340, 260, 1);
-        
-        Fonts.g17.drawStringBold(headlines[5], Colors.WHITE, 600, 380, 1);
-        Fonts.g12.drawText(news[5], Colors.WHITE, 600, 340, 260, 1);
-        
-        
-        Fonts.g17.drawStringBold(columnHeadline, Colors.WHITE, 900, 620, 1);
-        Fonts.g12.drawText(columnText, Colors.WHITE, 900, 580, 240, 1);
-        
+        displayTextBox(headlines[3], news[3], 20, 380, 260);
+        displayTextBox(headlines[4], news[4], 320, 380, 260);
+        displayTextBox(headlines[5], news[5], 610, 380, 260);
+
+        displayTextBox(columnHeadline, columnText, 920, 620, 240);
     }
 
+    private void displayTextBox(String headline, String content, 
+                                int left, int top, int width)
+    {
+        Fonts.g17.drawStringBold(headline, Colors.WHITE, left, top, 1);
+        Fonts.g12.drawText(content, Colors.WHITE, left, top-40, width, 1);        
+    }
+    
     @Override
     public void activate() 
     {
-        GlLifecycle.exitOnGLError("Newpaper.activate");
-        setupTextPanel(800, 600);
-        GlLifecycle.exitOnGLError("Newpaper.activate");
     }
 
     @Override

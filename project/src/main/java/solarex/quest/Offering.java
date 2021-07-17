@@ -10,7 +10,6 @@
  */
 package solarex.quest;
 
-import flyspace.ogl.GlLifecycle;
 import flyspace.ui.UiPanel;
 import flyspace.ui.panels.NewspaperPanel;
 import java.awt.Component;
@@ -19,18 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.lwjgl.glfw.GLFW;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_COMPAT_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLUtil;
 import solarex.evolution.SportsLeague;
 import solarex.evolution.World;
 import solarex.galaxy.Galaxy;
@@ -155,15 +143,15 @@ public class Offering implements Quest
         
         StringBuilder buf = new StringBuilder();
 
-        buf.append("Spaceball leage rankings after matchday ")
+        buf.append("Spaceball leage rankings after matchday #")
            .append(league.matchDayCount)
-           .append(":\n");
+           .append("\n");
         
         for(int i=0; i<league.teams.size(); i++)
         {
             SportsLeague.Team team = league.teams.get(i);
             
-            buf.append(team.name).append(" ").append(team.seasonScore);
+            buf.append(team.name).append(" \t").append(team.seasonScore);
             buf.append("\n");
             
             // System.out.println(team.name + ":\t\t" + team.seasonScore);
