@@ -26,6 +26,7 @@ public class HTMLHelper
         replace(buf, "&nbsp;", "");
         replace(buf, "&lt;", "<");
         replace(buf, "&gt;", ">");
+        replace(buf, "<br>", "");
         
         line = buf.toString();
         

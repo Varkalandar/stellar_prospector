@@ -340,13 +340,13 @@ public class StationPanel extends DecoratedUiPanel
     {
         if(runQuestTest)
         {
-            ship.player.testQuests(galaxy, station, ship, questDialog);
+            ship.player.testQuests(galaxy, station, ship, questDialog, this);
             runQuestTest = false;
         }
         
         if(questDialog.isVisible())
         {
-            questDialog.handleInput();
+            questDialog.handleInput(this);
             return;
         }
         

@@ -95,7 +95,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
     {
         if(questDialog.isVisible())
         {
-            questDialog.handleInput();
+            questDialog.handleInput(this);
             return;
         }
         
@@ -363,16 +363,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
 
             if(ok)
             {
-                if(quest instanceof Offering)
-                {
-                    Offering offering = (Offering)quest;
-                    UiPanel newspaperPanel = offering.getNewspaper(this);
-                    setOverlay(newspaperPanel);
-                }
-                else
-                {
-                    questDialog.handleQuest(quest);
-                }
+                questDialog.handleQuest(quest, this);
             }
             else
             {

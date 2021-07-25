@@ -29,7 +29,7 @@ public interface Quest
 {
     public static final int I_MESSAGE = 1;
     public static final int I_INPUT = 2;    
-    public static final int I_NEWFRAME = 3;
+
     
     /**
      * @return Headline type information to show for this quest.

@@ -188,6 +188,7 @@ public class Delivery implements Quest
         writer.write("<version>1</version>\n");
         
         writer.write("<price>" + price + "</price>\n");
+        writer.write("<capacity>" + requiredCapacity + "</capacity>\n");
         
         writer.write("<s>" + successMessage + "</s>\n");
         writer.write("<s>" + htmlMessage + "</s>\n");
@@ -214,6 +215,9 @@ public class Delivery implements Quest
         price = Integer.parseInt(tmp.substring(7, tmp.length()-8));
         
         tmp = reader.readLine();
+        requiredCapacity = Integer.parseInt(tmp.substring(10, tmp.length()-11));
+        
+        tmp = reader.readLine();
         successMessage = tmp.substring(3, tmp.length()-4);
         tmp = reader.readLine();
         htmlMessage = tmp.substring(3, tmp.length()-4);
@@ -232,9 +236,11 @@ public class Delivery implements Quest
     {
         String message = 
                 successMessage + "\n" +
-                "The " + price + "$ have been transferred to your account.";
+                price + "$ have been transferred to your account.";
         
-        MessagePanel messagePanel = new MessagePanel(parent, "Delivery", message);
+        String title = requiredCapacity > 0 ? "Travel" : "Delivery";
+        
+        MessagePanel messagePanel = new MessagePanel(parent, title, message);
         parent.setOverlay(messagePanel);
     }
 

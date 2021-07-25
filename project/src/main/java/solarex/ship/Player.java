@@ -11,6 +11,7 @@
 
 package solarex.ship;
 
+import flyspace.ui.UiPanel;
 import flyspace.ui.panels.QuestDialog;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -259,7 +260,7 @@ public class Player
 
     }
 
-    public void testQuests(Galaxy galaxy, Solar station, Ship ship, QuestDialog questDialog)
+    public void testQuests(Galaxy galaxy, Solar station, Ship ship, QuestDialog questDialog, UiPanel parent)
     {
         ArrayList<Quest> killList = new ArrayList<Quest>();
         
@@ -269,7 +270,7 @@ public class Player
             
             if(ok)
             {
-                questDialog.handleQuest(quest);
+                questDialog.handleQuest(quest, parent);
                 killList.add(quest);
             }
         }

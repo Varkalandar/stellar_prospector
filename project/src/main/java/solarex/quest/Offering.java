@@ -89,10 +89,12 @@ public class Offering implements Quest
     @Override
     public void showSuccessMessage(UiPanel parent)
     {
+        UiPanel newspaperPanel = getNewspaper(parent);
+        parent.setOverlay(newspaperPanel);
     }
      
     
-    public UiPanel getNewspaper(UiPanel parent)
+    private UiPanel getNewspaper(UiPanel parent)
     {
         NewspaperPanel newspaperPanel = new NewspaperPanel(parent);
         
@@ -121,7 +123,7 @@ public class Offering implements Quest
     @Override
     public Status requiresInteraction()
     {
-        Status status = new Status(Quest.I_NEWFRAME, "New Window");
+        Status status = new Status(Quest.I_MESSAGE, "New Window");
         return status;
     }
 

@@ -4,6 +4,7 @@ import flyspace.FlySpace;
 import flyspace.ui.Colors;
 import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
+import flyspace.ui.HTMLHelper;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import java.text.NumberFormat;
@@ -36,7 +37,7 @@ public class ShipInfoPanel extends DecoratedUiPanel
     private boolean clicked;
     private final DecoratedTrigger loungeTrigger;
     
-    private NumberFormat nf;
+    private final NumberFormat nf;
     
     public ShipInfoPanel(FlySpace game, Ship ship) 
     {
@@ -109,8 +110,8 @@ public class ShipInfoPanel extends DecoratedUiPanel
         PixFont font = Fonts.g12;
         
         int left = 50;
-        int col1 = 410;
-        int col2 = 800;
+        int col1 = 400;
+        int col2 = 740;
         
         font.drawStringBold(ship.type.shipName + ", a \"" + 
                 ship.type.shipClass + "\" class Ship", Colors.ORANGE, left, 600, 1.0f);
@@ -177,16 +178,16 @@ public class ShipInfoPanel extends DecoratedUiPanel
         yoff = 600;
         
         font.drawStringBold("Cargo", Colors.LABEL, col2, yoff, 1.0f);
-        fillRect(col2, yoff-170, 300, 170, Colors.LIST_BG);
-        fillBorder(col2, yoff-170, 300, 170, 1, Colors.LIST_BORDER);
+        fillRect(col2, yoff-170, 400, 170, Colors.LIST_BG);
+        fillBorder(col2, yoff-170, 400, 170, 1, Colors.LIST_BORDER);
 
         yoff -= 170;
         yoff -= 18;
         yoff -= 18;
         yoff -= 9;
         font.drawStringBold("Quests and Jobs", Colors.LABEL, col2, yoff, 1.0f);
-        fillRect(col2, yoff-140, 300, 140, Colors.LIST_BG);
-        fillBorder(col2, yoff-140, 300, 140, 1, Colors.LIST_BORDER);
+        fillRect(col2, yoff-140, 400, 140, Colors.LIST_BG);
+        fillBorder(col2, yoff-140, 400, 140, 1, Colors.LIST_BORDER);
         
         displayEquipmentList(col1+10, 560);
         displayCargoList(col2+10, 560);
@@ -196,6 +197,7 @@ public class ShipInfoPanel extends DecoratedUiPanel
         
     }
 
+    
     private void displayEquipmentList(int left, int top)
     {
         PixFont font = Fonts.g12;
@@ -203,10 +205,11 @@ public class ShipInfoPanel extends DecoratedUiPanel
         for(ShipComponent comp : ship.equipment.components)
         {
             // font.drawString(comp.getName(), Colors.TEXT, left, top);
-            displayHTMLLine(font, comp.getName(), Colors.TEXT, left, top);
+            HTMLHelper.displayHTMLLine(font, comp.getName(), Colors.TEXT, left, top);
             top -= 18;
         }
     }
+    
     
     private void displayCargoList(int left, int top) 
     {
@@ -226,7 +229,7 @@ public class ShipInfoPanel extends DecoratedUiPanel
                     plural = "s";
                 }
 
-                displayHTMLLine(font, "" + 
+                HTMLHelper.displayHTMLLine(font, "" + 
                             good.units + " unit" + plural + " of " + 
                             " <font color='" + good.type.color + "'>" +
                             good.type.toString().toLowerCase() +
@@ -248,7 +251,8 @@ public class ShipInfoPanel extends DecoratedUiPanel
         boolean found = false;
         for(Quest quest : ship.player.getQuests())
         {
-            font.drawString(quest.getQuestHeadline(), Colors.TEXT, left, top);
+            // font.drawString(quest.getQuestHeadline(), Colors.TEXT, left, top);
+            HTMLHelper.displayHTMLLine(font, quest.getQuestHeadline(), Colors.TEXT, left, top);
             top -= 18;
             found = true;
         }
@@ -258,41 +262,4 @@ public class ShipInfoPanel extends DecoratedUiPanel
             font.drawString("No quests.", Colors.TEXT, left, top);
         }
     }
-    
-    private void displayHTMLLine(PixFont font, String line, int color, int left, int top) 
-    {
-        line = line.replace("<br>", "");
-        line = line.replace("&lt;", "<");
-        line = line.replace("&gt;", ">");
-        
-        
-        int p1, p2;
-        
-        p1 = line.indexOf("<font color=");
-        if(p1 < 0)
-        {
-            // Hajo: text all in one color
-            font.drawString(line, color, left, top);
-        }
-        else
-        {
-            String part = line.substring(0, p1);
-
-            int w = font.getStringWidth(part);
-            font.drawString(part, color, left, top);
-
-            p1 += 14;
-            part = line.substring(p1, p1+6);
-            int metalColor = Integer.parseInt(part, 16);
-
-            p1 += 8;
-            p2 = line.indexOf("</font>");
-            part = line.substring(p1, p2);
-            font.drawString(part, metalColor, left+w, top);
-            w += font.getStringWidth(part);
-
-            part = line.substring(p2+7, line.length());
-            font.drawString(part, color, left+w, top);
-        }
-    }    
 }

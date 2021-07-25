@@ -22,12 +22,15 @@ public class MessagePanel extends UiPanel
     @Override
     public void displayPanel()
     {
-        int left = width / 2 - 200;
+        int left = parent.width / 2 - 200;
         int top = 500;
         int width = 400;
         
-        Fonts.g17.drawStringBold(title, Colors.WHITE, left, top, 1);
-        Fonts.g12.drawText(message, Colors.WHITE, left, top-40, width, 1);        
+        fillRect(left, top-200, width, 200, Colors.DARKER_GRAY);
+        fillBorder(left, top-200, width, 200, 1, Colors.LIGHT_GRAY);
+        
+        Fonts.g17.drawStringBold(title, Colors.WHITE, left+20, top-40, 1);
+        Fonts.g12.drawText(message, Colors.WHITE, left+20, top-80, width, 1);        
     }
     
     

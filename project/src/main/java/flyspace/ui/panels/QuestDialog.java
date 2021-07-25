@@ -2,6 +2,7 @@ package flyspace.ui.panels;
 
 import flyspace.ui.Fonts;
 import flyspace.ui.TextBox;
+import flyspace.ui.UiPanel;
 import solarex.quest.Quest;
 import solarex.util.Status;
 
@@ -20,12 +21,14 @@ public class QuestDialog
         textBox = new TextBox(Fonts.g17);
     }
     
+    
     public boolean isVisible()
     {
         return textBox.isVisible();
     }
     
-    public void handleInput()
+    
+    public void handleInput(UiPanel parent)
     {
         if(textBox.isVisible())
         {
@@ -40,9 +43,8 @@ public class QuestDialog
                 }
                 
                 Status status = interactiveQuest.requiresInteraction();
-                evalQuestStatus(status);
+                evalQuestStatus(status, parent);
             }            
-            return;
         }
     }
     
@@ -56,7 +58,8 @@ public class QuestDialog
         }
     }
     
-    private void evalQuestStatus(Status status) 
+    
+    private void evalQuestStatus(Status status, UiPanel parent) 
     {
         if(status == Status.OK)
         {
@@ -74,25 +77,17 @@ public class QuestDialog
         
         if(status.problemCode == Quest.I_MESSAGE)
         {
-            textBox.prepare();
-            textBox.setShowInputField(false);
-            textBox.setMessage(status.message);
-            textBox.setVisible(true);
-        }
-        
-        if(status.problemCode == Quest.I_NEWFRAME)
-        {
-            interactiveQuest.showSuccessMessage(null);
+            interactiveQuest.showSuccessMessage(parent);
         }
     }
 
-    public void handleQuest(Quest quest)
+    public void handleQuest(Quest quest, UiPanel parent)
     {
         Status status = quest.requiresInteraction();
         if(status != Status.OK)
         {
             interactiveQuest = quest;
-            evalQuestStatus(status);
+            evalQuestStatus(status, parent);
         }
         else
         {
