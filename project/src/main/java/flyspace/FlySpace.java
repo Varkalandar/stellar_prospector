@@ -251,6 +251,7 @@ public class FlySpace
         cockpitPanel.update(dt);
         mining.update(dt);
     }
+
     
     /**
      * Display the frame
@@ -262,9 +263,8 @@ public class FlySpace
 
         cockpitPanel.handleInput();
         cockpitPanel.display();
-
-        // cockpitPanel.fillRect(0, 0, 500, 500, 0xFFFF7700);
     }
+
     
     private void safeSleep(int millis)
     {
@@ -450,7 +450,7 @@ public class FlySpace
     private void initGameData()
     {
         ship = new Ship();
-        ship.cargo.money = 108.35;
+        ship.cargo.money = 10008.35;
         localSpace = new Space();
         distantSpace = new Space();
     

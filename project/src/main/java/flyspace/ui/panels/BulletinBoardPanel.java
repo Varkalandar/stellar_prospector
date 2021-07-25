@@ -56,11 +56,12 @@ public class BulletinBoardPanel extends DecoratedUiPanel
     private int selectedQuest;
     
     private final QuestDialog questDialog;
-    private UiPanel newspaperPanel;
     
     
     public BulletinBoardPanel(FlySpace game, Galaxy galaxy, Ship ship) 
     {
+        super(null);
+
         this.game = game;
         this.galaxy = galaxy;
         this.ship = ship;
@@ -90,7 +91,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         if(questDialog.isVisible())
         {
@@ -108,31 +109,25 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         {
             if(clicked)
             {
-                if(newspaperPanel != null)
+                int mx = Mouse.getX();
+                int my = Mouse.getY();
+
+                Trigger t = trigger(mx, my);
+
+                if(t == loungeTrigger)
                 {
-                    newspaperPanel = null;
+                    game.showStationPanel();
+                }
+                else if(t == acceptTrigger)
+                {
+                    acceptQuest();
                 }
                 else
                 {
-                    int mx = Mouse.getX();
-                    int my = Mouse.getY();
-
-                    Trigger t = trigger(mx, my);
-
-                    if(t == loungeTrigger)
-                    {
-                        game.showStationPanel();
-                    }
-                    else if(t == acceptTrigger)
-                    {
-                        acceptQuest();
-                    }
-                    else
-                    {
-                        // Test quest list area
-                        selectQuestFromList(mx, my);
-                    }
+                    // Test quest list area
+                    selectQuestFromList(mx, my);
                 }
+
                 clicked = false;
             }
         }
@@ -140,7 +135,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
 
     
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -174,11 +169,6 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         if(questDialog.isVisible())
         {
             questDialog.display(width, height);
-        }
-    
-        if(newspaperPanel != null)
-        {
-            newspaperPanel.display();
         }
     }
     
@@ -376,7 +366,8 @@ public class BulletinBoardPanel extends DecoratedUiPanel
                 if(quest instanceof Offering)
                 {
                     Offering offering = (Offering)quest;
-                    newspaperPanel = offering.getNewspaper();
+                    UiPanel newspaperPanel = offering.getNewspaper(this);
+                    setOverlay(newspaperPanel);
                 }
                 else
                 {

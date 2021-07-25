@@ -11,10 +11,13 @@ public abstract class UiPanel
 {
     private final ArrayList<Trigger> triggers;
     protected int width, height;
-
+    private UiPanel overlay;
+    protected final UiPanel parent;
     
-    public UiPanel()
+    
+    public UiPanel(UiPanel parent)
     {
+        this.parent = parent;
         triggers = new ArrayList<>();
     }
     
@@ -23,6 +26,7 @@ public abstract class UiPanel
     {
         triggers.add(trigger);
     }
+    
     
     public Trigger trigger(int x, int y)
     {
@@ -36,16 +40,39 @@ public abstract class UiPanel
         
         return null;
     }
-            
+    
+    
     public final void setSize(int width, int height)
     {
         this.width = width;
         this.height = height;
     }
     
+    
+    public final void setOverlay(UiPanel overlay)
+    {
+        this.overlay = overlay;
+    }
+    
+    
     abstract public void activate();
     
-    abstract public void handleInput();
+    
+    public final void handleInput()
+    {
+        if(overlay != null)
+        {
+            overlay.handlePanelInput();
+        }
+        else
+        {
+            handlePanelInput();
+        }
+    }
+    
+    
+    abstract public void handlePanelInput();
+    
     
     /**
      * Called before a frame is displayed. All updates to game data should
@@ -57,8 +84,21 @@ public abstract class UiPanel
         
     }
     
-    abstract public void display();
+    
+    public final void display()
+    {
+        displayPanel();
+        
+        if(overlay != null)
+        {
+            overlay.displayPanel();
+        }
+    }
+    
+    
+    abstract public void displayPanel();
 
+    
     public void displayTriggers()
     {
         for(Trigger trigger : triggers)

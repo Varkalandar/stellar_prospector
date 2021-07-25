@@ -19,22 +19,31 @@ public class Keyboard
     static int KEY_BACK = 22;
     static int KEY_RETURN = 36;
     
-    static boolean next() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    static boolean next() 
+    {
+        return false;
     }
 
-    static boolean getEventKeyState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    static boolean getEventKeyState() 
+    {
+        return false;
     }
 
-    static char getEventCharacter() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    static char getEventCharacter() 
+    {
+        return 0;
     }
 
-    static int getEventKey() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    static int getEventKey() 
+    {
+        return 0;
     }
 
+    
     public static boolean isKeyDown(int key) 
     {
         return keyStates[key];

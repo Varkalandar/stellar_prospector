@@ -12,7 +12,6 @@ package solarex.quest;
 
 import flyspace.ui.UiPanel;
 import flyspace.ui.panels.NewspaperPanel;
-import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
@@ -86,15 +85,16 @@ public class Offering implements Quest
         return true;
     }
 
+    
     @Override
-    public void showSuccessMessage(Component component)
+    public void showSuccessMessage(UiPanel parent)
     {
     }
      
     
-    public UiPanel getNewspaper()
+    public UiPanel getNewspaper(UiPanel parent)
     {
-        NewspaperPanel newspaperPanel = new NewspaperPanel();
+        NewspaperPanel newspaperPanel = new NewspaperPanel(parent);
         
         String date = "Issue of " 
                 + ClockThread.getYear()

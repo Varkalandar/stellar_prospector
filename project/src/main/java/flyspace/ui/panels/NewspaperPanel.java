@@ -3,6 +3,7 @@ package flyspace.ui.panels;
 import flyspace.ui.Colors;
 import flyspace.ui.Display;
 import flyspace.ui.Fonts;
+import flyspace.ui.Mouse;
 import flyspace.ui.UiPanel;
 import java.util.List;
 import solarex.galaxy.Galaxy;
@@ -23,12 +24,15 @@ public class NewspaperPanel extends UiPanel
     private String dateTime;
     private String columnHeadline;
     private String columnText;
+    private boolean clicked;
     
     /**
      * Creates new form NewspaperPanel
+     * @param parent The parent panel, needed to close this overlay
      */
-    public NewspaperPanel()
+    public NewspaperPanel(UiPanel parent)
     {
+        super(parent);
         headlines[0] = "The Secret Eye";              
     }
 
@@ -127,7 +131,7 @@ public class NewspaperPanel extends UiPanel
  
     
     @Override
-    public void display()
+    public void displayPanel()
     {
         fillRect(0, 0, Display.width, Display.height, 0xFF222222);
         
@@ -151,6 +155,7 @@ public class NewspaperPanel extends UiPanel
         displayTextBox(columnHeadline, columnText, 920, 620, 240);
     }
 
+    
     private void displayTextBox(String headline, String content, 
                                 int left, int top, int width)
     {
@@ -158,13 +163,27 @@ public class NewspaperPanel extends UiPanel
         Fonts.g12.drawText(content, Colors.WHITE, left, top-40, width, 1);        
     }
     
+    
     @Override
     public void activate() 
     {
     }
 
+    
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
+        if(Mouse.isButtonDown(0))
+        {
+            clicked = true;
+        }
+        
+        if(Mouse.isButtonDown(0) == false)
+        {
+            if(clicked)
+            {
+                parent.setOverlay(null);
+            }
+        }
     }
 }

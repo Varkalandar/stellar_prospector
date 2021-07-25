@@ -10,6 +10,7 @@
  */
 package solarex.quest;
 
+import flyspace.ui.UiPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
@@ -88,8 +89,11 @@ public class Donation implements Quest
     }
 
     @Override
-    public void showSuccessMessage(Component component)
+    public void showSuccessMessage(UiPanel parent)
     {
+        // todo - adpapt to LWJGL
+        
+        /*
         JFrame appFrame = UiHelper.findRootFrame(component);
         JDialog dialog = new JDialog(appFrame, message, true);
     
@@ -122,6 +126,7 @@ public class Donation implements Quest
             
             ship.cargo.money -= donationPanel.donation;
         }
+        */
     }
 
     @Override

@@ -67,6 +67,8 @@ public class PlanetInfoPanel extends DecoratedUiPanel
     
     public PlanetInfoPanel(FlySpace game, Ship ship) 
     {
+        super(null);
+
         this.game = game;
         this.ship = ship;
         this.camera = new View();
@@ -123,7 +125,7 @@ public class PlanetInfoPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         if(Mouse.isButtonDown(0))
         {
@@ -174,7 +176,7 @@ public class PlanetInfoPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         setupTextPanel(width, height);
         

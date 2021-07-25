@@ -83,6 +83,8 @@ public class GalacticMapPanel extends DecoratedUiPanel
     
     public GalacticMapPanel(FlySpace game, Galaxy galaxy, final Ship ship)
     {
+        super(null);
+
         this.game = game;
         this.galaxy = galaxy;
         this.ship = ship;
@@ -335,7 +337,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
 
     
     @Override
-    public void handleInput()
+    public void handlePanelInput()
     {
         int mx = Mouse.getX();
         int my = Mouse.getY();
@@ -391,7 +393,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
 
     
     @Override
-    public void display()
+    public void displayPanel()
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

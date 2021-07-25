@@ -273,7 +273,7 @@ public class BulletinBoardPanel extends javax.swing.JPanel
                 if(ok)
                 {
                     jLabel3.setText("");
-                    quest.showSuccessMessage(this);
+                    quest.showSuccessMessage(null);
                 }
                 else
                 {

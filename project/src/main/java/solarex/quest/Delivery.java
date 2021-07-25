@@ -7,7 +7,8 @@
 
 package solarex.quest;
 
-import java.awt.Component;
+import flyspace.ui.MessagePanel;
+import flyspace.ui.UiPanel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
@@ -225,14 +226,19 @@ public class Delivery implements Quest
         reader.readLine(); // Deliveryquest
     }    
     
+    
     @Override
-    public void showSuccessMessage(Component component)
+    public void showSuccessMessage(UiPanel parent)
     {
-        JOptionPane.showMessageDialog(component, 
+        String message = 
                 successMessage + "\n" +
-                "The " + price + " Cr have been transferred to your account.");
+                "The " + price + "$ have been transferred to your account.";
+        
+        MessagePanel messagePanel = new MessagePanel(parent, "Delivery", message);
+        parent.setOverlay(messagePanel);
     }
 
+    
     @Override
     public Status requiresInteraction()
     {

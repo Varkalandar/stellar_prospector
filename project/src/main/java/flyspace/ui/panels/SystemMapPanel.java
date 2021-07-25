@@ -56,6 +56,8 @@ public class SystemMapPanel extends DecoratedUiPanel
     
     public SystemMapPanel(FlySpace game, Space space, Ship ship) 
     {
+        super(null);
+
         this.game = game;
         this.space = space;
         this.ship = ship;
@@ -92,7 +94,7 @@ public class SystemMapPanel extends DecoratedUiPanel
 
     
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         mx = Mouse.getX();
         my = Mouse.getY();
@@ -148,7 +150,7 @@ public class SystemMapPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

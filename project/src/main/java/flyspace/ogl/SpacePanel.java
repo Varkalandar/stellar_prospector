@@ -76,6 +76,7 @@ public class SpacePanel extends UiPanel
     
     public SpacePanel(FlySpace game, Ship ship, Space space) throws IOException
     {
+        super(null);
         this.game = game;
         this.ship = ship;
         this.space = space;
@@ -114,7 +115,7 @@ public class SpacePanel extends UiPanel
     }
 
     @Override
-    public void handleInput()
+    public void handlePanelInput()
     {
         acceptInput(10.0f);
         
@@ -369,7 +370,7 @@ public class SpacePanel extends UiPanel
     
     
     @Override
-    public void display()
+    public void displayPanel()
     {
         if(autopilot != null) 
         {

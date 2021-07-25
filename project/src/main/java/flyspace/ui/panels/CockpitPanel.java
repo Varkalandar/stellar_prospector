@@ -44,6 +44,8 @@ public class CockpitPanel extends UiPanel
     
     public CockpitPanel(FlySpace game, Ship ship) throws IOException
     {
+        super(null);
+        
         this.game = game;
         this.ship = ship;
         // this.shipMesh = MeshFactory.createShip();
@@ -96,7 +98,7 @@ public class CockpitPanel extends UiPanel
 
     
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         int mx = Mouse.getX();
         int my = Mouse.getY();
@@ -146,7 +148,7 @@ public class CockpitPanel extends UiPanel
     }
 
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         glMatrixMode(GL_PROJECTION); 
         glLoadIdentity(); 

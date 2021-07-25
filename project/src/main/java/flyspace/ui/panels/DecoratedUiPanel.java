@@ -12,10 +12,17 @@ import flyspace.ui.UiPanel;
  */
 public abstract class DecoratedUiPanel extends UiPanel
 {
+    public DecoratedUiPanel(UiPanel parent)
+    {
+        super(parent);
+    }
+    
+    
     public void displayTitle(String title)
     {
         Fonts.g32.drawStringBold(title, Colors.FIELD, 50, 650, 0.9f);
     }
+    
     
     public void displayBackground(int darkColor, int midColor, int brightColor)
     {

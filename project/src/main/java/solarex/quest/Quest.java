@@ -11,7 +11,7 @@
 
 package solarex.quest;
 
-import java.awt.Component;
+import flyspace.ui.UiPanel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
@@ -19,6 +19,7 @@ import solarex.galaxy.Galaxy;
 import solarex.ship.Ship;
 import solarex.system.Solar;
 import solarex.util.Status;
+
 
 /**
  *
@@ -55,7 +56,7 @@ public interface Quest
      */
     public boolean testSolved(Galaxy galaxy, Solar station, Ship ship);
 
-    public void showSuccessMessage(Component component);
+    public void showSuccessMessage(UiPanel parent);
 
     public Status requiresInteraction();
     public Status processUserInput(String input);

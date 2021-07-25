@@ -277,9 +277,12 @@ public class SystemInfoPanel extends DecoratedUiPanel
 
     public SystemInfoPanel(FlySpace game, Ship ship, ImageCache imageCache) throws IOException
     {
+        super(null);
+
         this.game = game;
         this.ship = ship;
     }
+    
 
     public void setSystem(Space space, Solar system)
     {
@@ -287,6 +290,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
         this.system = system;
         globalScale = 0;
     }
+    
     
     @Override
     public void activate()
@@ -328,7 +332,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void handleInput()
+    public void handlePanelInput()
     {
         if(Mouse.isButtonDown(0))
         {
@@ -339,7 +343,7 @@ public class SystemInfoPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void display()
+    public void displayPanel()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

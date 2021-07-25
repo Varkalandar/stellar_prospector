@@ -32,6 +32,8 @@ public class ProspectorsAgencyPanel extends DecoratedUiPanel
     
     public ProspectorsAgencyPanel(FlySpace game, Ship ship) 
     {
+        super(null);
+
         this.game = game;
         this.ship = ship;
 
@@ -56,7 +58,7 @@ public class ProspectorsAgencyPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         if(Mouse.isButtonDown(0))
         {
@@ -83,7 +85,7 @@ public class ProspectorsAgencyPanel extends DecoratedUiPanel
     }
 
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

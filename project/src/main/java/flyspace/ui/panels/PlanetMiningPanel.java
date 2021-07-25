@@ -80,6 +80,8 @@ public class PlanetMiningPanel extends DecoratedUiPanel
             
     public PlanetMiningPanel(FlySpace game, Ship ship, Mining mining) 
     {
+        super(null);
+
         this.game = game;
         this.ship = ship;
         this.mining = mining;
@@ -120,7 +122,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
     
     @Override
-    public void handleInput() 
+    public void handlePanelInput() 
     {
         if(Mouse.isButtonDown(0))
         {
@@ -282,7 +284,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
     
     
     @Override
-    public void display() 
+    public void displayPanel() 
     {
         setupTextPanel(width, height);
         

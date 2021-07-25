@@ -7,11 +7,11 @@
 
 package solarex.quest;
 
-import java.awt.Component;
+import flyspace.ui.MessagePanel;
+import flyspace.ui.UiPanel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
-import javax.swing.JOptionPane;
 import solarex.galaxy.Galaxy;
 import solarex.ship.Cargo;
 import solarex.ship.Good;
@@ -151,11 +151,21 @@ public class WantedResource implements Quest
     }
     
     @Override
-    public void showSuccessMessage(Component component)
+    public void showSuccessMessage(UiPanel parent)
     {
+        /*
         JOptionPane.showMessageDialog(component, 
                 "<html>Thanks a lot. The " + price + "Cr have been<br>" +
                 "transferred to your account.<br></html>");        
+        */
+        
+        String message =
+                "Thanks a lot. The " + price + "$ have been" +
+                "transferred to your account.";        
+        
+        MessagePanel messagePanel = new MessagePanel(parent, "Purchase", message);
+        parent.setOverlay(messagePanel);
+        
     }
 
     @Override
