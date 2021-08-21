@@ -13,5 +13,6 @@ JDK 1.8, Open JDK 1.8 work fine.
 ## Starting the game
 
     cd release
+    chmod +x start.sh
     ./start.sh
 
