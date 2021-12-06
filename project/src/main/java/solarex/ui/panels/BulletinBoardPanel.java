@@ -27,16 +27,17 @@ import solarex.quest.WantedResource;
 import solarex.ship.Cargo;
 import solarex.ship.Good;
 import solarex.ship.Ship;
+import solarex.system.CargoFactory;
 import solarex.system.Society;
 import solarex.system.Society.Race;
 import solarex.system.Solar;
+import solarex.ui.ComponentFactory;
+import solarex.ui.FontFactory;
 import solarex.ui.ImageCache;
 import solarex.ui.components.QuestWrapper;
 import solarex.util.ClockThread;
-import solarex.ui.ComponentFactory;
-import solarex.ui.FontFactory;
-import solarex.util.Status;
 import solarex.util.RandomHelper;
+import solarex.util.Status;
 
 /**
  * Quests, jobs and trade offers are found through the bulletin board.
@@ -314,7 +315,7 @@ public class BulletinBoardPanel extends javax.swing.JPanel
         
         final List <Solar> settlements = galaxy.findSettlements(1, station.loca);
 
-        final Cargo cargo = TradePanel.createCargo(station);
+        final Cargo cargo = CargoFactory.createCargo(station);
 
         final ArrayList <Good> rareGoods = new ArrayList();
 

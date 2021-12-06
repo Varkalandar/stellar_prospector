@@ -4,12 +4,12 @@ import flyspace.FlySpace;
 import flyspace.ui.Colors;
 import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
+import flyspace.ui.Mouse;
 import flyspace.ui.PixFont;
 import flyspace.ui.Trigger;
 import static flyspace.ui.UiPanel.fillBorder;
 import static flyspace.ui.UiPanel.fillRect;
 import java.text.NumberFormat;
-import flyspace.ui.Mouse;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
@@ -18,8 +18,9 @@ import static org.lwjgl.opengl.GL11.glClear;
 import solarex.ship.Cargo;
 import solarex.ship.Good;
 import solarex.ship.Ship;
+import solarex.system.CargoFactory;
 import solarex.system.Solar;
-import solarex.ui.panels.TradePanel;
+
 
 /**
  *
@@ -68,7 +69,7 @@ public class GoodsExchangePanel extends DecoratedUiPanel
     {
         this.station = station;
         
-        storage = TradePanel.createCargo(station);
+        storage = CargoFactory.createCargo(station);
     }
     
     
@@ -186,7 +187,6 @@ public class GoodsExchangePanel extends DecoratedUiPanel
             font.drawString("Trade allowed", Colors.GREEN, 965, 590);
         }
             
-        
         font.drawText(storage.goods[selectedGood].type.description, Colors.TEXT, 919, 550, 206, 1.0f);
   
         font.drawString("Cash:", Colors.LABEL, 480, 190);
@@ -195,17 +195,15 @@ public class GoodsExchangePanel extends DecoratedUiPanel
         font.drawString("Payload left:", Colors.LABEL, 610, 190);
         font.drawString("" + ship.cargo.availableSpace() + "kg", Colors.TEXT, 695, 190);
 
-        
         displayTriggers();
-        
     }
+
 
     private void displayGood(Good good, int x, int y) 
     {
         Cargo cargo = ship.cargo; 
         PixFont font = Fonts.g12;
         nf.setMaximumFractionDigits(2);
-        
         
         int ord = good.type.ordinal();
         int color = Colors.fromString(good.type.color);

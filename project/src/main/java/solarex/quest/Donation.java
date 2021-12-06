@@ -10,6 +10,7 @@
  */
 package solarex.quest;
 
+import flyspace.ui.MessagePanel;
 import flyspace.ui.UiPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -42,7 +43,9 @@ public class Donation implements Quest
     private String details;
     
     int state = 0;
-
+    int donation = 0;
+    
+    
     public Donation(String message)
     {
         this.message = message;
@@ -91,43 +94,28 @@ public class Donation implements Quest
     @Override
     public void showSuccessMessage(UiPanel parent)
     {
-        // todo - adpapt to LWJGL
+        String response;
         
-        /*
-        JFrame appFrame = UiHelper.findRootFrame(component);
-        JDialog dialog = new JDialog(appFrame, message, true);
-    
-        DonationPanel donationPanel = new DonationPanel();
-        dialog.setLayout(new BorderLayout());
-        dialog.add(donationPanel);
-        dialog.pack();
-
-        if(appFrame != null)
+        if(donation == 0)
         {
-            Point p = appFrame.getLocation();
-            p.x += (appFrame.getWidth() - dialog.getWidth())/2;
-            p.y += (appFrame.getHeight() - dialog.getHeight())/2;
-            dialog.setLocation(p);
-        }
-        
-        dialog.setVisible(true);
-    
-        if(donationPanel.donation == 0)
-        {
-            JOptionPane.showMessageDialog(appFrame, 
-                    "Ah well. Maybe next time then.");            
+            response = "Ah well. Maybe next time then.";            
         }
         else
         {
-            JOptionPane.showMessageDialog(appFrame, 
+            response =
                     "Thank you very much for the " +
-                    donationPanel.donation +
-                    " Cr!");
+                    donation +
+                    " Cr!";
             
-            ship.cargo.money -= donationPanel.donation;
+            ship.cargo.money -= donation;
         }
-        */
+
+        String title = "Donation";
+        
+        MessagePanel messagePanel = new MessagePanel(parent, title, response);
+        parent.setOverlay(messagePanel);    
     }
+    
 
     @Override
     public Status requiresInteraction()
@@ -149,11 +137,22 @@ public class Donation implements Quest
     @Override
     public Status processUserInput(String input)
     {
-        int amount = Integer.parseInt(input);
-        ship.cargo.money -= amount;
-        if(ship.cargo.money < 0) ship.cargo.money = 0;
+        donation = Integer.parseInt(input);
+        // ship.cargo.money -= donation;
+        // if(ship.cargo.money < 0) ship.cargo.money = 0;
         
         return Status.OK;
+    }
+    
+    
+    /**
+     * Allowed characters for user input - null means all
+     * are accepted.
+     */
+    @Override
+    public String getInputFilter()
+    {
+        return "0123456789";
     }
     
     

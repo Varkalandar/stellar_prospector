@@ -84,6 +84,7 @@ public class GlLifecycle
         glfwSetMouseButtonCallback(window, mouseFeeder.mouseButtonCallback);
         glfwSetScrollCallback(window, mouseFeeder.wheelScrollCallback);
         glfwSetKeyCallback(window, keyboardFeeder.keyCallback);
+        glfwSetCharCallback(window, keyboardFeeder.charCallback);
     }
 
 

@@ -12,7 +12,6 @@ import flyspace.ui.UiPanel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
-import javax.swing.JOptionPane;
 import solarex.galaxy.Galaxy;
 import solarex.galaxy.SystemLocation;
 import solarex.ship.Ship;
@@ -263,6 +262,17 @@ public class Delivery implements Quest
     public Status processUserInput(String input)
     {
         return Status.OK;
+    }
+    
+    
+    /**
+     * Allowed characters for user input - null means all
+     * are accepted.
+     */
+    @Override
+    public String getInputFilter()
+    {
+        return null;
     }
     
     

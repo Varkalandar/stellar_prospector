@@ -61,6 +61,11 @@ public interface Quest
     public Status requiresInteraction();
     public Status processUserInput(String input);
     
+    /**
+     * Allowed characters for user input - null means all
+     * are accepted.
+     */
+    public String getInputFilter();
     
     /**
      * Save data for later re-loading

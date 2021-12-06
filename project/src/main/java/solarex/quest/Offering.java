@@ -127,11 +127,24 @@ public class Offering implements Quest
         return status;
     }
 
+    
     @Override
     public Status processUserInput(String input)
     {
         return Status.OK;
     }
+
+    
+    /**
+     * Allowed characters for user input - null means all
+     * are accepted.
+     */
+    @Override
+    public String getInputFilter()
+    {
+        return null;
+    }
+    
     
     private void createSportsNews(NewspaperPanel newspaperPanel)
     {

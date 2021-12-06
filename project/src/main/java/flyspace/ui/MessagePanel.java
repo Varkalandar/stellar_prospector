@@ -37,12 +37,12 @@ public class MessagePanel extends UiPanel
     @Override
     public void handlePanelInput() 
     {
-        if(Mouse.isButtonDown(0))
+        if(Mouse.isButtonDown(0)) //  || Keyboard.isKeyDown(Keyboard.KEY_RETURN))
         {
             clicked = true;
         }
         
-        if(Mouse.isButtonDown(0) == false)
+        if(Mouse.isButtonDown(0) == false) //  && Keyboard.isKeyDown(Keyboard.KEY_RETURN) == false)
         {
             if(clicked)
             {

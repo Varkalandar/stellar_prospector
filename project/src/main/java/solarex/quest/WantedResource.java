@@ -187,6 +187,18 @@ public class WantedResource implements Quest
     {
         return Status.OK;
     }
+
+    
+    /**
+     * Allowed characters for user input - null means all
+     * are accepted.
+     */
+    @Override
+    public String getInputFilter()
+    {
+        return null;
+    }
+    
     
     /**
      * Save data for later re-loading

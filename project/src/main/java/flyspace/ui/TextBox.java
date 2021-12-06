@@ -11,6 +11,7 @@ public class TextBox
     public final StringBuilder input;
     private final PixFont font;
     private String message;
+    private String characterFilter;
     private boolean visible;
     private boolean done;
     private boolean showInputField;
@@ -40,6 +41,11 @@ public class TextBox
     public void setMessage(String message)
     {
         this.message = message;
+    }
+    
+    public void setCharacterFilter(String characterFilter)
+    {
+        this.characterFilter = characterFilter;
     }
     
     public void prepare()
@@ -74,7 +80,7 @@ public class TextBox
                 else
                 {
                     // Hajo: todo - generify checks
-                    if(Character.isDigit(c))
+                    if(characterFilter == null || characterFilter.indexOf(c) >= 0)
                     {
                         input.append(c);
                     }
@@ -82,7 +88,6 @@ public class TextBox
             }
         }
     }
-    
     
     
     public void display(int x, int y)
