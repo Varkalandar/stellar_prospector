@@ -17,9 +17,9 @@ public class KeyboardFeeder
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) 
         {
-            Keyboard.recordKey(scancode, (action == GLFW_PRESS || action == GLFW_REPEAT));
+            Keyboard.recordKey(key, (action == GLFW_PRESS || action == GLFW_REPEAT));
             
-            System.err.println("GLFWKeyCallback: key=" + scancode + " state=" + (action == GLFW_PRESS || action == GLFW_REPEAT));
+            System.err.println("GLFWKeyCallback: key=" + key + " scan=" + scancode + " state=" + (action == GLFW_PRESS || action == GLFW_REPEAT));
         }
     };
     

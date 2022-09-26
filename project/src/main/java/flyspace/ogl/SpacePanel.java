@@ -208,7 +208,7 @@ public class SpacePanel extends UiPanel
         boolean keyAccell = Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_UP);
         boolean keyDecell = Keyboard.isKeyDown(Keyboard.KEY_S) || Keyboard.isKeyDown(Keyboard.KEY_DOWN);
         boolean keyBreak = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
-        boolean keyFast = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+        boolean keyFast = Keyboard.isKeyDown(Keyboard.KEY_LEFT_CONTROL);
         
         
         if(keyFast) 

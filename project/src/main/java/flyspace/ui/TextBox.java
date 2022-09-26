@@ -66,14 +66,14 @@ public class TextBox
                 char c = Keyboard.getEventCharacter();
                 int i = Keyboard.getEventKey();
 
-                if(i == Keyboard.KEY_BACK)
+                if(i == Keyboard.KEY_BACKSPACE)
                 {
                     if(input.length() > 0)
                     {
                         input.deleteCharAt(input.length() - 1);
                     }
                 }
-                else if(i == Keyboard.KEY_RETURN)
+                else if(i == Keyboard.KEY_ENTER)
                 {
                     done = true;
                 }
