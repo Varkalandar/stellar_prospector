@@ -20,7 +20,7 @@ public class TitlePainter extends JumpEffectPainter
     }
     
     @Override
-    public void paint(int countdown)
+    public void paint(String message)
     {
         int width = Display.getWidth();
         int height = Display.getHeight();
@@ -30,18 +30,11 @@ public class TitlePainter extends JumpEffectPainter
 
         Fonts.g32.drawStringBold(titleVersion, Colors.FIELD, 50, 650, 0.9f);
                 
-        Fonts.g17.drawString("Please wait, initializing ... " + countdown, 
+        Fonts.g17.drawString("Please wait, initializing ... " + message, 
                              0xFFFFFFFF, 50, 500);
-        
-        // todo ?
-        // Display.update();
+
         GlLifecycle.pollAndSwap();
-        
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(JumpEffectPainter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+
+        safeSleep(50);
+    }    
 }

@@ -20,7 +20,11 @@ public class Space
     private static final Logger logger = Logger.getLogger(Space.class.getName());
 
     public final ArrayList<MultiMesh> meshes;
+    
+    // to handle async conversion
     private volatile int convertersRunning;
+    private volatile String converterMessage;
+    
     public static final float DISPLAY_SCALE = 0.01f;
     
     public MultiMesh selectedMesh;
@@ -38,8 +42,9 @@ public class Space
         clear();
         
         convertersRunning = 0;
-        convertSystem(system);
+        converterMessage = "starting";
         
+        convertSystem(system);        
         
         while(convertersRunning > 0)
         {
@@ -61,19 +66,22 @@ public class Space
         logger.log(Level.INFO, "System fully converted in {0} ms", (T1 - T0));
     }
     
-    public void convertSystemParallelAndPlayEffect(Solar system, JumpEffectPainter painter) throws InterruptedException
+    
+    public void convertSystemParallelAndPlayEffect(Solar system, JumpEffectPainter painter)
+            throws InterruptedException
     {
         long T0 =  System.currentTimeMillis();
     
         meshes.clear();
         
         convertersRunning = 0;
-        convertSystem(system);
-        
+        converterMessage = "starting";
+
+        convertSystem(system);        
         
         while(convertersRunning > 0)
         {
-            painter.paint(convertersRunning);    
+            painter.paint(converterMessage);    
             // System.err.println("converters left: " + convertersRunning);
         }
 
@@ -91,6 +99,7 @@ public class Space
         logger.log(Level.INFO, "System fully converted in {0} ms", (T1 - T0));
     }
 
+    
     private void convertSystem(Solar system)
     {        
         // Hajo: I don't know why async conversion fails 
@@ -100,16 +109,49 @@ public class Space
 
         if(osName.startsWith("Windows"))
         {
-            convertBody(system);
+            convertSystemAsync(system);                    
         }
         else
         {
-            convertBodyAsync(system);
+            convertSystemParallel(system);                    
         }
+    }
+    
+    
+    private void convertSystemAsync(Solar system)
+    {        
+        Thread t = new Thread() 
+        {
+            @Override
+            public void run()
+            {
+                convert(system);
+                notifyConverterDone();
+            }
+            
+            private void convert(Solar system)
+            {
+                convertBody(system);
+        
+                for(Solar body : system.children)
+                {
+                    convert(body);
+                }                
+            }
+        };
+        
+        convertersRunning ++;
+        t.start();
+    }
+    
+    
+    private void convertSystemParallel(Solar system)
+    {        
+        convertBodyAsync(system);
         
         for(Solar body : system.children)
         {
-            convertSystem(body);
+            convertSystemParallel(body);
         }
     }
     
@@ -139,7 +181,8 @@ public class Space
     public void convertBody(Solar system)
     {
         System.err.println("Converting: " + system.name);
-        
+        converterMessage = system.name;
+                
         MultiMesh mesh = null;
         
         switch(system.btype)
