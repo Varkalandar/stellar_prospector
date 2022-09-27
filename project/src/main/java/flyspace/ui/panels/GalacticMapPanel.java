@@ -227,7 +227,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         }
         else
         {
-            fillCircle(x, y, size/2, color);
+            fillCircle(x, y, size/2, color, 1.0f/255f);
         }
     }
 
@@ -460,6 +460,11 @@ public class GalacticMapPanel extends DecoratedUiPanel
     
     private void setHyperjumpDestination(SystemLocation loca) 
     {
+        if(loca.equals(ship.hyperjumpDestination))
+        {
+            game.showDistantSystemInfoPanel(loca);
+        }
+                
         ship.hyperjumpDestination = loca;
         double maxRange = ship.equipment.getEffectiveDriveRange(ship.getCurrentMass());
 
@@ -489,7 +494,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
         double  safeDistance;
         if(system.children.isEmpty())
         {
-            // nothing here but the a star
+            // nothing here but a star
             // arrive outside the star radius.
             safeDistance = system.radius * 5;
         }
@@ -505,7 +510,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
 
         ship.pos.x = Math.cos(angle) * safeDistance;
         ship.pos.y = 0;
-        ship.pos.z = Math.sin(angle) * safeDistance;;
+        ship.pos.z = Math.sin(angle) * safeDistance;
         ship.pos.scale(Space.DISPLAY_SCALE);
         
         ship.destination.set(ship.pos);

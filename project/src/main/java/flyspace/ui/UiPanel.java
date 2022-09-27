@@ -181,15 +181,24 @@ public abstract class UiPanel
         glEnd();
     }
     
+    
     public static void fillCircle(int x, int y, int radius, int argb)
+    {
+        fillCircle(x, y, radius, argb, 1f/255f);
+    }
+    
+    
+    public static void fillCircle(int x, int y, int radius, int argb, float brightness)
     {
         int corners = Math.max(12, radius/4);
         
         glBindTexture(GL_TEXTURE_2D, 0);
         glBegin(GL_POLYGON);
         
-        glColor4f(((argb >> 16) & 0xFF)/255f, ((argb >> 8) & 0xFF) /255f, (argb & 0xFF)/255f, 
-                  ((argb >> 24) & 0xFF)/255f);
+        glColor4f(((argb >> 16) & 0xFF)*brightness, 
+                  ((argb >> 8) & 0xFF)*brightness, 
+                  (argb & 0xFF)*brightness, 
+                  ((argb >> 24) & 0xFF)*brightness);
         
         for(int i=0; i<corners; i++)
         {
