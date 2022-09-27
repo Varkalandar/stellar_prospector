@@ -5,6 +5,7 @@ import flyspace.ogl.GlLifecycle;
 import flyspace.ogl.SpacePanel;
 import flyspace.ui.Display;
 import flyspace.ui.Fonts;
+import flyspace.ui.HyperjumpPainter;
 import flyspace.ui.TextPainter;
 import flyspace.ui.TitlePainter;
 import flyspace.ui.UiPanel;
@@ -406,7 +407,8 @@ public class FlySpace
      */
     public Solar changeSystem(SystemLocation loca)
     {
-        system = makeSystem(loca, localSpace, new JumpEffectPainter());
+        // system = makeSystem(loca, localSpace, new JumpEffectPainter());
+        system = makeSystem(loca, localSpace, new HyperjumpPainter());
         return system;
     }
     
