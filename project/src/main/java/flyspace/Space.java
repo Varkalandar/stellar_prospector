@@ -92,8 +92,20 @@ public class Space
     }
 
     private void convertSystem(Solar system)
-    {
-        convertBodyAsync(system);
+    {        
+        // Hajo: I don't know why async conversion fails 
+        // on windows, so this is a workaround till a better
+        // solution is found.
+        String osName = System.getProperty("os.name");
+
+        if(osName.startsWith("Windows"))
+        {
+            convertBody(system);
+        }
+        else
+        {
+            convertBodyAsync(system);
+        }
         
         for(Solar body : system.children)
         {
