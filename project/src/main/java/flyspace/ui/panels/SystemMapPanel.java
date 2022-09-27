@@ -27,17 +27,15 @@ public class SystemMapPanel extends DecoratedUiPanel
      * Station good storage
      */
     private Solar system;
-    private final FlySpace game;
     private final Ship ship;
     
     private boolean clicked;
     // private final DecoratedTrigger loungeTrigger;
     
-    // make system "lay" at 45° degree angle so once can see the orbits
+    // make system "lay" at 45° degree angle so one can see the orbits
     // better on screen.
     private final double yscale = 0.5;
     private double scale;
-    private int zoom;
     
     private double viewX, viewY;
 
@@ -58,7 +56,7 @@ public class SystemMapPanel extends DecoratedUiPanel
     {
         super(null);
 
-        this.game = game;
+//        this.game = game;
         this.space = space;
         this.ship = ship;
 
@@ -69,16 +67,26 @@ public class SystemMapPanel extends DecoratedUiPanel
         loungeTrigger.setArea(934, 200, 185, 24);
         addTrigger(loungeTrigger);
      */   
-        zoom = 10;
-        rescale();
-        
+        scale = 0.00001;
     }
 
     public void setSystem(Solar system)
     {
         this.system = system;
+        
+        // Hajo: A new system, can have much larger or smaller orbits than the
+        // former one. We need to find a scale that is working well for the
+        // system.
+        
+        // get the radius of the outermost planet
+        int i = system.children.size();
+        Solar planet = system.children.get(i-1);
+        
+        scale = 30000.0 / planet.orbit;
+
+        System.err.println("New system, outmost planet found=" + planet.name);
+        System.err.println("New system, scale=" + scale);
     }
-    
     
     
     @Override
@@ -136,18 +144,16 @@ public class SystemMapPanel extends DecoratedUiPanel
         
         int u = Mouse.getDWheel();
 
-        if(u < 0 && zoom > 1) 
+        if(u < 0) 
         {
-            zoom -=10;
-            rescale();
+            scale *= 1/1.2; 
         }
         if(u > 0) 
         {
-            zoom +=10;
-            rescale();
-        }
-        
+            scale *= 1.2;
+        }        
     }
+    
 
     @Override
     public void displayPanel() 
@@ -174,16 +180,10 @@ public class SystemMapPanel extends DecoratedUiPanel
         Fonts.c9.drawString("Drag map by mouse. Zoom with mouse wheel.", Colors.CYAN, 18, 185);
         Fonts.c9.drawString("Click to set autopilot destination.", Colors.CYAN, 18, 170);
         
-        
         displayTriggers();
     }
 
-
-    private void rescale()
-    {
-        scale = zoom*zoom * 0.00000001;
-    }
-
+    
     private void paintOrbit(final int xpos,
                             final int ypos,
                             final int rad)
