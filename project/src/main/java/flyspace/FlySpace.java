@@ -46,7 +46,7 @@ public class FlySpace
 {
     public static final Logger logger = Logger.getLogger(FlySpace.class.getName());
     
-    private static final String TITLE_VERSION = "Stellar Prospector r007";
+    private static final String TITLE_VERSION = "Stellar Prospector r008";
     
     /**
      * World master clock
