@@ -433,8 +433,7 @@ public class FlySpace
             {
                 // System.err.println(settlement.name + ", " + settlement.seed);
                 
-                if("Spaceport Chandra".equals(settlement.name) &&
-                   -5137065947034973289L == settlement.seed)
+                if("Seyfert Transfer".equals(settlement.name))
                 {
                     ship.arrive(galaxy, settlement);
                     home = settlement;

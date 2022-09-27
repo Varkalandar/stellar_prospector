@@ -27,10 +27,19 @@ public class NameGenerator {
         "i",
         "o",
         "u",
+        "a",
+        "e",
+        "i",
+        "o",
+        "u",
         "y",
-        "aú",
+        "t",
+        "s",
         
-        "oal",
+        "aú",
+        "qu",
+        
+        "ol",
         "al",
         "de",
         "gel",
@@ -39,8 +48,8 @@ public class NameGenerator {
         "bun",
         "cer",
         "zoo",
-        "tei",
-        "geu",
+        "te",
+        "go",
         "ze",
         "ge",
         "sil",
@@ -59,7 +68,7 @@ public class NameGenerator {
         "ben",
         "rei",
         "tur",
-        "sel",
+        "se",
         "fie",
         "pam",
         "mer",
@@ -118,7 +127,7 @@ public class NameGenerator {
         "shan",
         "tra",
         "wor",
-        "wan",
+        "pan",
         "xa",
         "xe",
         "xo",
@@ -140,7 +149,16 @@ public class NameGenerator {
         "i",
         "o",
         "u",
+        "a",
+        "e",
+        "i",
+        "o",
+        "u",
         "y",
+        "t",
+        "s",
+        "qu",
+
         "mer",
         "cur",
         "ius",
@@ -484,11 +502,14 @@ public class NameGenerator {
         
         int lastSyllable = -1;
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n | buf.length() < 5; i++) 
+        {
             int syllable;
-            do {
+            do 
+            {
                 syllable = rng.nextInt(syllables.length);
-            } while(lastSyllable < 6 && syllable == lastSyllable);
+            }
+            while(lastSyllable < 6 && syllable == lastSyllable);
             
             buf.append(syllables[syllable]);
             lastSyllable = syllable;
