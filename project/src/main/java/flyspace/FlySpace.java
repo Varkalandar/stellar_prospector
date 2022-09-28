@@ -226,6 +226,12 @@ public class FlySpace
             long currentTime = System.currentTimeMillis();
             int dt = (int)(currentTime - lastTime);
 
+            int sleep = 20 - dt;
+            if(sleep > 0)
+            {
+                safeSleep(sleep);
+            }
+            
             update(dt);
             display();
 
