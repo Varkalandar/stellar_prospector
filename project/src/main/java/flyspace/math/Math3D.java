@@ -5,7 +5,8 @@ import solarex.system.Matrix4;
 import solarex.system.Vec3;
 
 /**
- *
+ * 3D math functions, not thread safe.
+ * 
  * @author Hj. Malthaner
  */
 public class Math3D 
@@ -14,6 +15,7 @@ public class Math3D
     private static final Matrix4 rotY = new Matrix4();
     private static final Matrix4 rotZ = new Matrix4();
     private static final Matrix4 rotAxis = new Matrix4();
+    
     
     public static Vec3 rotX(Vec3 point, double angle, Vec3 result)
     {
@@ -32,6 +34,7 @@ public class Math3D
         return result;
     }
     
+    
     public static Vec3 rotY(Vec3 point, double angle, Vec3 result)
     {
         double angleY = angle * 2.0 * PI / 360.0;
@@ -49,14 +52,17 @@ public class Math3D
         return result;
     }
     
+    
     public static Vec3 rotZ(Vec3 point, double angle, Vec3 result)
     {
         double angleZ = angle * 2.0 * PI / 360.0;
+        float cosf = (float)cos(angleZ);
+        float sinf = (float)sin(angleZ);
         
-        rotZ.m00 = (float)cos(angleZ);
-        rotZ.m01 = (float)-sin(angleZ);
-        rotZ.m10 = (float)sin(angleZ);
-        rotZ.m11 = (float)cos(angleZ);
+        rotZ.m00 = cosf;
+        rotZ.m01 = -sinf;
+        rotZ.m10 = sinf;
+        rotZ.m11 = cosf;
         rotZ.m22 = 1.0f;
         
         Matrix4.transform(rotZ, point, result);
@@ -64,13 +70,13 @@ public class Math3D
         return result;
     }
     
+    
     public static Vec3 rotAxis(Vec3 point, Vec3 axis, double angle, Vec3 result)
     {
         double angleRad = angle * 2.0 * PI / 360.0;
         
         float cosf = (float)cos(angleRad);
         float sinf = (float)sin(angleRad);
-        
         
         rotAxis.m00 = cosf + axis.x * axis.x * (1 - cosf);
         rotAxis.m01 = axis.x * axis.y * (1 - cosf) - axis.z * sinf;
@@ -89,6 +95,7 @@ public class Math3D
         return result;
     }
 
+    
     public static Vec3 calcNormal(Vec3 left, Vec3 origin, Vec3 right) 
     {
         Vec3 normal = new Vec3();
@@ -104,9 +111,9 @@ public class Math3D
         return normal;
     }
 
+    
     public static double degToRad(double degrees) 
     {
         return degrees * (Math.PI / 180);
-    }
-    
+    }   
 }
