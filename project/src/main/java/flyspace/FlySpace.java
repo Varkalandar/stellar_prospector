@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -125,6 +126,7 @@ public class FlySpace
         }
         finally
         {
+            flySpace.destroyAL();
             flySpace.destroyGL();
         }
     }
@@ -144,15 +146,6 @@ public class FlySpace
     
     public FlySpace()
     {
-        try
-        {
-            BufferedImage icon = ImageIO.read(this.getClass().getResourceAsStream("/flyspace/resources/icon.png"));
-            // frame.setIconImage(icon);
-        }
-        catch(Exception ex)
-        {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-        }
 
         /*
         canvas.addComponentListener(new ComponentAdapter() 
@@ -175,6 +168,11 @@ public class FlySpace
     {
         GlLifecycle.create(TITLE_VERSION, false);
         GlLifecycle.init();
+
+        String iconPath = "/flyspace/resources/icon.png";
+        InputStream is = getClass().getResourceAsStream(iconPath);
+        
+        GlLifecycle.setWindowIcon(is);
     }
     
     
@@ -194,6 +192,16 @@ public class FlySpace
         soundPlayer = new SoundPlayer();
         soundPlayer.init();
         soundPlayer.loadSamples(samples);
+    }
+    
+    
+    public void destroyAL()
+    {
+        if(soundPlayer != null)
+        {
+            soundPlayer.destroy();
+            soundPlayer = null;
+        }
     }
     
     

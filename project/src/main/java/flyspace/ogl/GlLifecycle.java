@@ -6,19 +6,19 @@ import flyspace.ui.MouseFeeder;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.glfw.GLFW.*;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.Callback;
+import sun.misc.IOUtils;
 
 
 /**
@@ -171,4 +171,33 @@ public class GlLifecycle
     {
         glfwMakeContextCurrent(window);
     }
+
+    public static void setWindowIcon(InputStream is) throws IOException 
+    {
+        ByteBuffer isb = ByteBuffer.allocateDirect(8092*2);
+
+        int v;
+        while((v = is.read()) != -1)
+        {
+            isb.put((byte)v);
+        }
+        isb.flip();
+
+        int[] width = {0};
+        int[] height = {0};
+        int[] channels = {0};
+        ByteBuffer imageData = STBImage.stbi_load_from_memory(isb, width, height, channels, 4);
+
+        int w = width[0];
+        int h = height[0];
+
+        GLFWImage.Buffer gb = GLFWImage.create(1);
+        GLFWImage image = GLFWImage.create();
+        GLFWImage iconGI = image.set(w, h, imageData);
+
+        gb.put(0, iconGI);
+
+        glfwSetWindowIcon(window, gb);
+    }
 }
+    
