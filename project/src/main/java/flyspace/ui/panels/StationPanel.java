@@ -366,19 +366,23 @@ public class StationPanel extends DecoratedUiPanel
                 } 
                 else if(trigger == goodsExchangeTrigger)
                 {
+                    game.playSound(0, 1f);
                     game.activatePanel(goodsExchangePanel);
                 }
                 else if(trigger == prospectorsTrigger)
                 {
+                    game.playSound(0, 1f);
                     game.activatePanel(prospectorsPanel);
                 }
                 else if(trigger == bulletinBoardTrigger)
                 {
+                    game.playSound(0, 1f);
                     bulletinBoardPanel.setStation(station);
                     game.activatePanel(bulletinBoardPanel);
                 }
                 else if(trigger == equipmentShopTrigger)
                 {
+                    game.playSound(0, 1f);
                     equipmentShopPanel.setStation(station);
                     game.activatePanel(equipmentShopPanel);
                 }

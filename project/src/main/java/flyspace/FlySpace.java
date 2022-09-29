@@ -1,5 +1,6 @@
 package flyspace;
 
+import flyspace.oal.SoundPlayer;
 import flyspace.ui.JumpEffectPainter;
 import flyspace.ogl.GlLifecycle;
 import flyspace.ogl.SpacePanel;
@@ -39,6 +40,7 @@ import solarex.system.Vec3;
 import solarex.ui.ImageCache;
 import solarex.util.ClockThread;
 
+
 /**
  *
  * @author Hj. Malthaner
@@ -54,7 +56,8 @@ public class FlySpace
      */
     private ClockThread clockThread;
     
-    private ImageCache imageCache;    
+    private ImageCache imageCache;
+    private SoundPlayer soundPlayer;
     
     public boolean quitRequested;
     private SpacePanel spacePanel;
@@ -112,10 +115,11 @@ public class FlySpace
         try
         {
             flySpace.createGL();
+            flySpace.createAL();
             flySpace.createPanels();
             flySpace.run();
         }
-        catch (Exception ex) 
+        catch (IOException ex) 
         {
             Logger.getLogger(FlySpace.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -178,6 +182,25 @@ public class FlySpace
     {
         GlLifecycle.destroy();
     }
+    
+    
+    public void createAL() throws IOException
+    {
+        String [] samples = new String []
+        {
+            "/flyspace/resources/sfx/click.wav"
+        };
+        
+        soundPlayer = new SoundPlayer();
+        soundPlayer.init();
+        soundPlayer.loadSamples(samples);
+    }
+    
+    
+    public void playSound(int number, float volume)
+    {
+        soundPlayer.play(number, volume);
+    }        
     
     
     public void createPanels() throws IOException
