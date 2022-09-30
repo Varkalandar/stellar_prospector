@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import static org.lwjgl.opengl.GL11.*;
 import solarex.ship.Ship;
 import solarex.util.ClockThread;
@@ -115,33 +116,40 @@ public class CockpitPanel extends UiPanel
             
             if(t == sysInfoTrigger)
             {
+                game.playSound(Sounds.CLICK, 1f);
                 game.showSystemInfoPanel();
             }
             else if(t == sysMapTrigger)
             {
+                game.playSound(Sounds.CLICK, 1f);
                 game.showSystemMapPanel();
             }
             else if(t == galMapTrigger)
             {
+                game.playSound(Sounds.CLICK, 1f);
                 game.showGalacticMapPanel();
             }
             else if(t == spaceTrigger)
             {
                 if(ship.getState() == Ship.State.DOCKED)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     game.showStationPanel();
                 }
                 else
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     game.showSpacePanel();
                 }
             }
             else if(t == optionsTrigger)
             {
+                game.playSound(Sounds.CLICK, 1f);
                 game.showOptionsPanel();
             }
             else if(t == shipTrigger)
             {
+                game.playSound(Sounds.CLICK, 1f);
                 game.showShipPanel();
             }
         }

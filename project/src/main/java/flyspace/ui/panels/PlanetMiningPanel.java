@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
@@ -140,14 +141,17 @@ public class PlanetMiningPanel extends DecoratedUiPanel
                 
                 if(t == scanTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     performResourcesScan();
                 }
                 else if(t == launchTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     launchDrone();
                 }
                 else if(t == recallTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     recallDrone();
                 }
                 
@@ -231,12 +235,14 @@ public class PlanetMiningPanel extends DecoratedUiPanel
                 goodType = PlanetResources.metalToGood(operation.metal.ordinal());
             }
 
-            ship.cargo.goods[goodType].units += units;
-
+            if(goodType > -1)
+            {
+                ship.cargo.goods[goodType].units += units;
+            }
+            
             mining.stopOperation(operation);
             ship.equipment.addComponent(operation.drone);
-            availableDrones.add(operation.drone);
-            
+            availableDrones.add(operation.drone);            
         }
     }
     
@@ -250,6 +256,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
         if(mx > left && mx < left + bw && my < top && my > top-bh)
         {
+            game.playSound(Sounds.CLICK, 1f);
             resourceSelected = (top - my - 14) / 18;
         }
     }
@@ -264,6 +271,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
         if(mx > left && mx < left + bw && my < top && my > top-bh)
         {
+            game.playSound(Sounds.CLICK, 1f);
             availableDronesSelected = (top - my - 14) / 18;
         }
     }
@@ -278,6 +286,7 @@ public class PlanetMiningPanel extends DecoratedUiPanel
 
         if(mx > left && mx < left + bw && my < top && my > top-bh)
         {
+            game.playSound(Sounds.CLICK, 1f);
             activeDronesSelected = (top - my - 14) / 40;
         }
     }

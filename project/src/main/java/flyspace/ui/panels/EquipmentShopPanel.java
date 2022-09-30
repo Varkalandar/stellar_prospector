@@ -12,6 +12,7 @@ import static flyspace.ui.UiPanel.fillRect;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
@@ -110,14 +111,17 @@ public class EquipmentShopPanel extends DecoratedUiPanel
                 
                 if(t == loungeTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     game.showStationPanel();
                 }
                 if(t == buyTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     buy();
                 }
                 if(t == sellTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     sell();
                 }
                 else
@@ -320,12 +324,14 @@ public class EquipmentShopPanel extends DecoratedUiPanel
         
         if(mx < 600 && my > 200 && my < top && entry < availableEquipmentList.size())
         {
+            game.playSound(Sounds.CLICK, 1f);
             selectedList = 0;
             selectedComponent = availableEquipmentList.get(entry);
         }
         
         if(mx > 700 && my > 200 && my < top && entry < ship.equipment.components.size())
         {
+            game.playSound(Sounds.CLICK, 1f);
             selectedList = 1;
             selectedComponent = ship.equipment.components.get(entry);
         }

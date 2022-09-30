@@ -12,6 +12,7 @@ import flyspace.ui.Trigger;
 import static flyspace.ui.UiPanel.fillRect;
 import java.util.Random;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import java.util.logging.Logger;
 import static org.lwjgl.opengl.GL11.*;
 import solarex.galaxy.Galaxy;
@@ -362,27 +363,28 @@ public class StationPanel extends DecoratedUiPanel
             {
                 if(trigger == launchTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     launch();
                 } 
                 else if(trigger == goodsExchangeTrigger)
                 {
-                    game.playSound(0, 1f);
+                    game.playSound(Sounds.CLICK, 1f);
                     game.activatePanel(goodsExchangePanel);
                 }
                 else if(trigger == prospectorsTrigger)
                 {
-                    game.playSound(0, 1f);
+                    game.playSound(Sounds.CLICK, 1f);
                     game.activatePanel(prospectorsPanel);
                 }
                 else if(trigger == bulletinBoardTrigger)
                 {
-                    game.playSound(0, 1f);
+                    game.playSound(Sounds.CLICK, 1f);
                     bulletinBoardPanel.setStation(station);
                     game.activatePanel(bulletinBoardPanel);
                 }
                 else if(trigger == equipmentShopTrigger)
                 {
-                    game.playSound(0, 1f);
+                    game.playSound(Sounds.CLICK, 1f);
                     equipmentShopPanel.setStation(station);
                     game.activatePanel(equipmentShopPanel);
                 }

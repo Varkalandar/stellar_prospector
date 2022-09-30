@@ -7,8 +7,8 @@ import flyspace.ui.Fonts;
 import flyspace.ui.HTMLHelper;
 import flyspace.ui.Mouse;
 import flyspace.ui.PixFont;
+import flyspace.ui.Sounds;
 import flyspace.ui.Trigger;
-import flyspace.ui.UiPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -116,10 +116,12 @@ public class BulletinBoardPanel extends DecoratedUiPanel
 
                 if(t == loungeTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     game.showStationPanel();
                 }
                 else if(t == acceptTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     acceptQuest();
                 }
                 else
@@ -236,7 +238,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
         
         int n1 = 1 + rng.nextInt((int)Math.pow(population, 0.4));
         int n2 = rng.nextInt((int)Math.pow(population, 0.4));
-        int n = Math.min(17, (n1+n2) / 2);
+        int n = Math.min(15, (n1+n2) / 2);
 
         // Hajo: we create at most n quests. But we
         // need to split them by type.
@@ -388,6 +390,7 @@ public class BulletinBoardPanel extends DecoratedUiPanel
     {
         if(mx < 600 && my > 190 && my < 610)
         {
+            game.playSound(Sounds.CLICK, 1f);
             int entry = (610 - my) / 20 - 1;
             entry = Math.max(0, Math.min(questList.size() - 1, entry));
             selectQuest(entry);

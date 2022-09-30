@@ -24,6 +24,7 @@ import static flyspace.ui.UiPanel.fillCircle;
 import static flyspace.ui.UiPanel.fillRect;
 import java.util.List;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
@@ -301,10 +302,11 @@ public class GalacticMapPanel extends DecoratedUiPanel
         
         if(there != null)
         {
-            SystemLocation here = ship.loca;
-            
+            game.playSound(Sounds.CLICK, 1f);
+    
+            // Hajo: check distance
+            SystemLocation here = ship.loca;            
             double sectorDistance = there.distance(here);
-
             ok = ship.equipment.getEffectiveDriveRange(ship.getCurrentMass()) >= sectorDistance;
         }
         
@@ -332,7 +334,8 @@ public class GalacticMapPanel extends DecoratedUiPanel
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         // Hajo: clear wheel history
-        Mouse.getDWheel();        
+        Mouse.getDWheel();
+        updateControls();
     }
 
     
@@ -350,6 +353,12 @@ public class GalacticMapPanel extends DecoratedUiPanel
                 dragStartY = my;
                 dragCenterX = centerX;
                 dragCenterY = centerY;
+
+                // Hajo: don't handle cockpit area
+                if(my >= 150)
+                {
+                    updateControls();
+                }
             }
             else
             {
@@ -374,8 +383,6 @@ public class GalacticMapPanel extends DecoratedUiPanel
         {
             zoom ++;
         }
-
-        updateControls();
         
         if(Mouse.isButtonDown(0))
         {
@@ -385,6 +392,7 @@ public class GalacticMapPanel extends DecoratedUiPanel
             {
                 if(ship.hyperjumpDestination != null)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     performHyperjump();
                 }
             }

@@ -6,6 +6,7 @@ import flyspace.ui.DecoratedTrigger;
 import flyspace.ui.Fonts;
 import flyspace.ui.Mouse;
 import flyspace.ui.PixFont;
+import flyspace.ui.Sounds;
 import flyspace.ui.Trigger;
 import static flyspace.ui.UiPanel.fillBorder;
 import static flyspace.ui.UiPanel.fillRect;
@@ -102,6 +103,8 @@ public class GoodsExchangePanel extends DecoratedUiPanel
                     // Hajo: todo - max bounds
                     if(mx > 50 && my > 240)
                     {
+                        game.playSound(Sounds.CLICK, 1f);
+                        
                         // Hajo: check list
                         int lx = mx - 50;
                         int column = lx / 280;
@@ -116,6 +119,7 @@ public class GoodsExchangePanel extends DecoratedUiPanel
                 {
                     if(storage.goods[selectedGood].salesPrice < ship.cargo.money)
                     {
+                        game.playSound(Sounds.CLICK, 1f);
                         storage.goods[selectedGood].units --;
                         ship.cargo.goods[selectedGood].units ++;
                         ship.cargo.money -= storage.goods[selectedGood].salesPrice;
@@ -126,6 +130,7 @@ public class GoodsExchangePanel extends DecoratedUiPanel
                     if(ship.cargo.goods[selectedGood].units > 0 &&
                        storage.illegalGoods[selectedGood] == false)
                     {
+                        game.playSound(Sounds.CLICK, 1f);
                         storage.goods[selectedGood].units ++;
                         ship.cargo.goods[selectedGood].units --;
                         ship.cargo.money += storage.goods[selectedGood].salesPrice;
@@ -133,6 +138,7 @@ public class GoodsExchangePanel extends DecoratedUiPanel
                 }
                 else if(t == loungeTrigger)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
                     game.showStationPanel();
                 }
                 
@@ -156,11 +162,11 @@ public class GoodsExchangePanel extends DecoratedUiPanel
         int middleColumn = 330;
         int rightColumn = 610;
         
-        fillRect(leftColumn, 245, 830, 395, Colors.LIST_BG);
-        fillBorder(leftColumn, 245, 830, 395, 1, Colors.LIST_BORDER);
+        fillRect(leftColumn, 245, 838, 395, Colors.LIST_BG);
+        fillBorder(leftColumn, 245, 838, 395, 1, Colors.LIST_BORDER);
         
-        fillRect(910, 245, 224, 395, Colors.LIST_BG);
-        fillBorder(910, 245, 224, 395, 1, Colors.LIST_BORDER);
+        fillRect(914, 245, 224, 395, Colors.LIST_BG);
+        fillBorder(914, 245, 224, 395, 1, Colors.LIST_BORDER);
         
         for(int i=0; i<15; i++)
         {
@@ -177,17 +183,17 @@ public class GoodsExchangePanel extends DecoratedUiPanel
             displayGood(storage.goods[i], rightColumn, 590 - (i-30)*24);
         }
         
-        font.drawString("Status:", Colors.TEXT, 919, 590);
+        font.drawString("Status:", Colors.TEXT, 927, 590);
         if(storage.illegalGoods[selectedGood])
         {
-            font.drawString("Trade prohibited", Colors.RED, 965, 590);
+            font.drawString("Trade prohibited", Colors.RED, 973, 590);
         }
         else
         {
-            font.drawString("Trade allowed", Colors.GREEN, 965, 590);
+            font.drawString("Trade allowed", Colors.GREEN, 973, 590);
         }
             
-        font.drawText(storage.goods[selectedGood].type.description, Colors.TEXT, 919, 550, 206, 1.0f);
+        font.drawText(storage.goods[selectedGood].type.description, Colors.TEXT, 927, 550, 206, 1.0f);
   
         font.drawString("Cash:", Colors.LABEL, 480, 190);
         font.drawString(nf.format(ship.cargo.money) + "$", Colors.TEXT, 520, 190);
@@ -214,7 +220,6 @@ public class GoodsExchangePanel extends DecoratedUiPanel
             fillBorder(x+8, y+10, 260, 25, 1, Colors.LIST_SELECT_BORDER);
         }
         
-        
         font.drawString(good.type.toString(), color, x+15, y);
 
         String avail = "" + good.units;
@@ -229,7 +234,7 @@ public class GoodsExchangePanel extends DecoratedUiPanel
         String price = nf.format(good.salesPrice) + " $";
         int pw = font.getStringWidth(price);
         
-        font.drawString(price, color, x+260-pw, y);
+        font.drawString(price, color, x+268-pw, y);
     }
 
 }

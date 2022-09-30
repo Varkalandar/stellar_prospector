@@ -9,6 +9,7 @@ import flyspace.ui.Colors;
 import flyspace.ui.Fonts;
 import flyspace.ui.PixFont;
 import flyspace.ui.Mouse;
+import flyspace.ui.Sounds;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GL20;
@@ -51,22 +52,16 @@ public class SystemMapPanel extends DecoratedUiPanel
     private int bestDist;
     private int mx;
     private int my;
+    private final FlySpace game;
     
     public SystemMapPanel(FlySpace game, Space space, Ship ship) 
     {
         super(null);
 
-//        this.game = game;
+        this.game = game;
         this.space = space;
         this.ship = ship;
 
-        /*
-        loungeTrigger = new DecoratedTrigger(Fonts.g17, "Return to Lounge", 
-                Colors.TRIGGER_HOT, Colors.TRIGGER_HOT_TEXT);
-        
-        loungeTrigger.setArea(934, 200, 185, 24);
-        addTrigger(loungeTrigger);
-     */   
         scale = 0.00001;
     }
 
@@ -134,6 +129,8 @@ public class SystemMapPanel extends DecoratedUiPanel
             {
                 if(bestMesh != null)
                 {
+                    game.playSound(Sounds.CLICK, 1f);
+                    
                     space.selectedMesh = bestMesh;
                     SpacePanel.setDestination(ship, bestMesh);
                 }
